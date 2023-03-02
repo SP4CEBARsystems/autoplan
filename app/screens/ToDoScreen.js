@@ -185,7 +185,7 @@ const ToDoListItems = (props) => {
 	//let tasks = 
 	const [tasks, settasks] = useState([
 		{
-			name: 'TASK2',
+			name: 'first',
 			requiredTime: 5,
 			deadline: 35663,
 			priority: 0.7,
@@ -271,9 +271,46 @@ const ToDoListItems = (props) => {
 
 
 	useEffect(() => {
-		getDoc(doc(firestore, "ToDo", "testDocument")).then((doc) => {
-			console.log(doc.data().test);
+		getDoc(doc(firestore, "ToDo", "testDocument"))
+		.then((doc) => {
+			//console.log(doc.data().test);
 			settasks(doc.data().test);
+			// settasks([
+			// 	{
+			// 		name: 'almost',
+			// 		requiredTime: 5,
+			// 		deadline: 35663,
+			// 		priority: 0.7,
+			// 		like: 3,
+			// 		repeat: [0,0,0,0,0,0,0]
+			// 	},{
+			// 		name: 'MATH',
+			// 		requiredTime: 5,
+			// 		deadline: 35663,
+			// 		priority: 0.7,
+			// 		like: 3,
+			// 		repeat: [0,0,0,0,0,0,0]
+			// 	},{
+			// 		name: 'THIS',
+			// 		requiredTime: 5,
+			// 		deadline: 35663,
+			// 		priority: 0.7,
+			// 		like: 3,
+			// 		repeat: [0,0,0,0,0,0,0]
+			// 	},{
+			// 		name: 'work',
+			// 		requiredTime: 5,
+			// 		deadline: 35663,
+			// 		priority: 0.7,
+			// 		like: 3,
+			// 		repeat: [0,0,0,0,0,0,0]
+			// 	}
+			// ]);
+		})
+		.catch((e) => {
+			console.log(e)
+			//throw e;
+			//alert(error.message);
 		});
 	},[]);
 	
@@ -336,6 +373,8 @@ const ToDoListItem = (props) => {
 
 
 const ToDoScreen = ({ navigation }) => {
+	//process.on('unhandledRejection', r => console.log(r));
+
   return (
 		<View style={
 			styles.background
