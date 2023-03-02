@@ -4,8 +4,12 @@ import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, S
 import AsyncStorage from '@react-native-async-storage/async-storage';
 //import { AsyncStorage } from '@react-native-async-storage/async-storage';
 //import { AsyncStorage } from 'react-native';
-import { doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore"; 
-import { firestore, auth } from ".../config/firebase"
+
+
+// import { doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore"; 
+import { getFirestore, collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, firestore } from "../../firebase";
+//import { firestore, auth } from "/config/firebase"
 
 
 
@@ -177,45 +181,104 @@ const ToDoListItems = (props) => {
 	//let tasks=lst;
 	
 	//console.log(lst);
-	
-	let tasks = [{
-		name: 'TASK1',
-		requiredTime: 5,
-		deadline: 35663,
-		priority: 0.7,
-		like: 3,
-		repeat: [0,0,0,0,0,0,0]
-	},{
-		name: 'MATH',
-		requiredTime: 5,
-		deadline: 35663,
-		priority: 0.7,
-		like: 3,
-		repeat: [0,0,0,0,0,0,0]
-	},{
-		name: 'THIS',
-		requiredTime: 5,
-		deadline: 35663,
-		priority: 0.7,
-		like: 3,
-		repeat: [0,0,0,0,0,0,0]
-	},{
-		name: 'work',
-		requiredTime: 5,
-		deadline: 35663,
-		priority: 0.7,
-		like: 3,
-		repeat: [0,0,0,0,0,0,0]
-	}];
 
-	getDoc(doc(firestore, "ToDo", "FUpLyEGm0O08pThw1oHx")).then((tasks) => {
-		//successMessage is whatever we passed in the resolve(...) function above.
-		//It doesn't have to be a string, but if it is only a succeed message, it probably will be.
-		console.log(`Yay! ${tasks}`);
-	});
+	//let tasks = 
+	const [tasks, settasks] = useState([
+		{
+			name: 'TASK2',
+			requiredTime: 5,
+			deadline: 35663,
+			priority: 0.7,
+			like: 3,
+			repeat: [0,0,0,0,0,0,0]
+		},{
+			name: 'MATH',
+			requiredTime: 5,
+			deadline: 35663,
+			priority: 0.7,
+			like: 3,
+			repeat: [0,0,0,0,0,0,0]
+		},{
+			name: 'THIS',
+			requiredTime: 5,
+			deadline: 35663,
+			priority: 0.7,
+			like: 3,
+			repeat: [0,0,0,0,0,0,0]
+		},{
+			name: 'work',
+			requiredTime: 5,
+			deadline: 35663,
+			priority: 0.7,
+			like: 3,
+			repeat: [0,0,0,0,0,0,0]
+		}
+	]);
+
+	// settasks([
+	// 	{
+	// 		name: 'TASK3',
+	// 		requiredTime: 5,
+	// 		deadline: 35663,
+	// 		priority: 0.7,
+	// 		like: 3,
+	// 		repeat: [0,0,0,0,0,0,0]
+	// 	},{
+	// 		name: 'MATH',
+	// 		requiredTime: 5,
+	// 		deadline: 35663,
+	// 		priority: 0.7,
+	// 		like: 3,
+	// 		repeat: [0,0,0,0,0,0,0]
+	// 	},{
+	// 		name: 'THIS',
+	// 		requiredTime: 5,
+	// 		deadline: 35663,
+	// 		priority: 0.7,
+	// 		like: 3,
+	// 		repeat: [0,0,0,0,0,0,0]
+	// 	},{
+	// 		name: 'work',
+	// 		requiredTime: 5,
+	// 		deadline: 35663,
+	// 		priority: 0.7,
+	// 		like: 3,
+	// 		repeat: [0,0,0,0,0,0,0]
+	// 	}
+	// ]);
+
+
+  // {
+  //   string: "example",
+  //   number: 5,
+  //   array: [0,0,0,0,0,0,0]
+  // }
+
+//   useEffect(() => {
+//     // getDoc(doc(firestore, "testCollection", "testDocument"))
+//     getDoc(doc(firestore, "uitgevers", "Frontrunners", "boeken", "bidden = ontvangen"))
+//     .then((doc) => {
+//       console.log(doc.data()); 
+//       setUserData(doc.data());
+//     })
+//   }, [])
+
+	// getDoc(doc(firestore, "ToDo", "FUpLyEGm0O08pThw1oHx")).then((tasks) => {
+	// 	//successMessage is whatever we passed in the resolve(...) function above.
+	// 	//It doesn't have to be a string, but if it is only a succeed message, it probably will be.
+	// 	console.log(`Yay! ${tasks}`);
+	// });
+
+
+	useEffect(() => {
+		getDoc(doc(firestore, "ToDo", "testDocument")).then((doc) => {
+			console.log(doc.data().test);
+			settasks(doc.data().test);
+		});
+	},[]);
 	
 	const n = tasks.length;
-	return [...Array(n)].map((e, i) => 
+	return [...Array(n)].map((e, i) =>
 		<View key={i}>
 			{ToDoListItem (tasks[i])}
 		</View>
