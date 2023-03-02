@@ -2,7 +2,63 @@ import React, { useState, useEffect, useRef, Component } from 'react';
 import { ImageBackground, StyleSheet, View , Text, TouchableOpacity, SafeAreaView, Animated, PanResponder} from 'react-native';
 
 
+const ToDoListItems = (props) => {
 
+	const [tasks, settasks] = useState([
+		{
+			name: 'first',
+			requiredTime: 5,
+			deadline: 35663,
+			priority: 0.7,
+			like: 3,
+			repeat: [0,0,0,0,0,0,0]
+		},{
+			name: 'MATH',
+			requiredTime: 5,
+			deadline: 35663,
+			priority: 0.7,
+			like: 3,
+			repeat: [0,0,0,0,0,0,0]
+		},{
+			name: 'THIS',
+			requiredTime: 5,
+			deadline: 35663,
+			priority: 0.7,
+			like: 3,
+			repeat: [0,0,0,0,0,0,0]
+		},{
+			name: 'work',
+			requiredTime: 5,
+			deadline: 35663,
+			priority: 0.7,
+			like: 3,
+			repeat: [0,0,0,0,0,0,0]
+		}
+	]);
+
+
+	useEffect(() => {
+		getDoc(doc(firestore, "ToDo", "testDocument"))
+		.then((doc) => {
+			//console.log(doc.data().test);
+			settasks(doc.data().test);
+			// settasks([
+			// ]);
+		})
+		.catch((e) => {
+			console.log(e)
+			//throw e;
+			//alert(error.message);
+		});
+	},[]);
+	
+	const n = tasks.length;
+	return [...Array(n)].map((e, i) =>
+		<View key={i}>
+			{ToDoListItem (tasks[i])}
+		</View>
+	);
+}
 
 
 const ToDoScreen = ({ navigation }) => {
