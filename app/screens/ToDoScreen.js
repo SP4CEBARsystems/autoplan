@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button} from 'react-native';
+import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput} from 'react-native';
 //import { Box, FlatList, Center, NativeBaseProvider} from "native-base";
 
 
@@ -11,33 +11,91 @@ import { auth, firestore } from "../../firebase";
 
 
 
+let tasks = [
+	{
+		name: 'loading',
+		requiredTime: 0,
+		deadline: 0,
+		priority: 0,
+		like: 0,
+		repeat: [0,0,0,0,0,0,0]
+	},{
+		name: 'loading',
+		requiredTime: 0,
+		deadline: 0,
+		priority: 0,
+		like: 0,
+		repeat: [0,0,0,0,0,0,0]
+	}
+];
+
 
 const ToDoListItems = (props) => {
+	const [pendingRefresh, setPendingRefresh] = useState(false);
 	
-	const [tasks, settasks] = useState([
-		{
-			name: 'loading',
-			requiredTime: 5,
-			deadline: 35663,
-			priority: 0.7,
-			like: 3,
-			repeat: [0,0,0,0,0,0,0]
-		},{
-			name: 'loading',
-			requiredTime: 5,
-			deadline: 35663,
-			priority: 0.7,
-			like: 3,
-			repeat: [0,0,0,0,0,0,0]
-		}
-	]);
+	// name        setName        
+	// requiredTime setRequiredTime
+	// deadline    setDeadline    
+	// priority    setPriority    
+	// like        setLike   
+
+	// setName        
+	// setRequiredTime
+	// setDeadline    
+	// setPriority    
+	// setLike       
+	
+	// const [tasks, settasks] = useState([
+	// 	{
+	// 		name: 'loading',
+	// 		requiredTime: 5,
+	// 		deadline: 35663,
+	// 		priority: 0.7,
+	// 		like: 3,
+	// 		repeat: [0,0,0,0,0,0,0]
+	// 	},{
+	// 		name: 'loading',
+	// 		requiredTime: 5,
+	// 		deadline: 35663,
+	// 		priority: 0.7,
+	// 		like: 3,
+	// 		repeat: [0,0,0,0,0,0,0]
+	// 	}
+	// ]);
+
+	// const a = pendingRefresh;
 
 	useEffect(() => {
 		getDoc(doc(firestore, "ToDo", "testDocument"))
 		.then((doc) => {
 			//console.log(doc.data().test);
-			settasks(doc.data().test);
-			
+			// settasks(doc.data().test);
+			tasks = doc.data().test;
+
+			tasks = [
+				{
+					name: 'loadingg',
+					requiredTime: 0,
+					deadline: 0,
+					priority: 0,
+					like: 0,
+					repeat: [0,0,0,0,0,0,0]
+				},{
+					name: 'loadingg',
+					requiredTime: 0,
+					deadline: 0,
+					priority: 0,
+					like: 0,
+					repeat: [0,0,0,0,0,0,0]
+				}
+			];
+			setPendingRefresh(true);
+
+			// setName        (tasks.name        );
+			// setRequiredTime(tasks.requiredTime);
+			// setDeadline    (tasks.deadline    );
+			// setPriority    (tasks.priority    );
+			// setLike        (tasks.like        );
 		})
 		.catch((e) => {
 			console.log(e)
@@ -49,25 +107,51 @@ const ToDoListItems = (props) => {
 	const n = tasks.length;
 	return [...Array(n)].map((e, i) =>
 		<View key={i}>
-			{ToDoListItem (tasks[i])}
+			<ToDoListItem 
+				task={tasks[i]}
+				pendingRefresh={pendingRefresh}
+				setPendingRefresh={setPendingRefresh}
+			/>
 		</View>
 	);
+}
+
+const updateData = (props) => {
+
 }
 
 
 
 
-const ToDoListItem = (props) => {
+// const ToDoListItem = (props) => {
+const ToDoListItem = ({task, pendingRefresh, setPendingRefresh}) => {
+	// const [name        , setName        ] = useState("Loading");
+	// const [requiredTime, setRequiredTime] = useState(0);
+	// const [deadline    , setDeadline    ] = useState(0);
+	// const [priority    , setPriority    ] = useState(0);
+	// const [like        , setLike        ] = useState(0);
+	
+	const props = task;
+
 	return (
 		<View style={styles.scrollBlock}>
 			<View style={styles.scrollItem}>
-				<Text style={styles.scrollText}>
-					{props.name}
-				</Text>
+				<TextInput style={styles.scrollText} 
+					// value={props.name}
+					value={props.name}
+                    type="text"
+                    name="name"
+                    placeholder= "load"
+                    //onChange={(e) => setKvk(e.target.value)}
+					//onChange={(e) => props.set("name",e.target.value)} 
+                    onChange={(e) => setPendingRefresh(true)}
+				/>
 			</View>
 			<View style={styles.scrollItem}>
 				<Text style={styles.scrollText}>
-					{props.requiredTime}
+					{/* {props.requiredTime} */}
+					{/* {props.pendingRefresh.toString()} */}
+					{props.pendingRefresh ? "true" : "false"}
 				</Text>
 			</View>
 			<View style={styles.scrollItem}>
@@ -165,7 +249,7 @@ const HeaderBar = (props) => {
 			</View>
 			<View style={styles.headerBlock}>
 				<Text style={styles.headerText}>
-					Repeating Settings
+					Repeat Settings
 				</Text>
 			</View>
 		</View>
