@@ -108,7 +108,8 @@ const ToDoListItems = (props) => {
 	return [...Array(n)].map((e, i) =>
 		<View key={i}>
 			<ToDoListItem 
-				task={tasks[i]}
+				tasks={tasks}
+				key={i}
 				pendingRefresh={pendingRefresh}
 				setPendingRefresh={setPendingRefresh}
 			/>
@@ -124,21 +125,21 @@ const updateData = (props) => {
 
 
 // const ToDoListItem = (props) => {
-const ToDoListItem = ({task, pendingRefresh, setPendingRefresh}) => {
+const ToDoListItem = ({tasks, key, pendingRefresh, setPendingRefresh}) => {
 	// const [name        , setName        ] = useState("Loading");
 	// const [requiredTime, setRequiredTime] = useState(0);
 	// const [deadline    , setDeadline    ] = useState(0);
 	// const [priority    , setPriority    ] = useState(0);
 	// const [like        , setLike        ] = useState(0);
 	
-	const props = task;
+	const props = tasks[key];
 
 	return (
 		<View style={styles.scrollBlock}>
 			<View style={styles.scrollItem}>
 				<TextInput style={styles.scrollText} 
 					// value={props.name}
-					value={props.name}
+					value={tasks[key].name}
                     type="text"
                     name="name"
                     placeholder= "load"
