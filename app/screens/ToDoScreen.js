@@ -4,34 +4,34 @@ import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, S
 
 
 // import { doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore"; 
-import { getFirestore, collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, firestore } from "../../firebase";
 //import { firestore, auth } from "/config/firebase"
 
 
 
 
-let tasks = [
-	{
-		name: 'loading',
-		requiredTime: 0,
-		deadline: 0,
-		priority: 0,
-		like: 0,
-		repeat: [0,0,0,0,0,0,0]
-	},{
-		name: 'loading',
-		requiredTime: 0,
-		deadline: 0,
-		priority: 0,
-		like: 0,
-		repeat: [0,0,0,0,0,0,0]
-	}
-];
+// let tasks = [
+// 	{
+// 		name: 'loading',
+// 		requiredTime: 0,
+// 		deadline: 0,
+// 		priority: 0,
+// 		like: 0,
+// 		repeat: [0,0,0,0,0,0,0]
+// 	},{
+// 		name: 'loading',
+// 		requiredTime: 0,
+// 		deadline: 0,
+// 		priority: 0,
+// 		like: 0,
+// 		repeat: [0,0,0,0,0,0,0]
+// 	}
+// ];
 
 
-const ToDoListItems = (props) => {
-	const [pendingRefresh, setPendingRefresh] = useState(false);
+const ToDoListItems = ({tasks, setTasks, modified, setModified}) => {
+	// const [pendingRefresh, setPendingRefresh] = useState(false);
 	
 	// name        setName        
 	// requiredTime setRequiredTime
@@ -44,52 +44,43 @@ const ToDoListItems = (props) => {
 	// setDeadline    
 	// setPriority    
 	// setLike       
-	
-	// const [tasks, settasks] = useState([
-	// 	{
-	// 		name: 'loading',
-	// 		requiredTime: 5,
-	// 		deadline: 35663,
-	// 		priority: 0.7,
-	// 		like: 3,
-	// 		repeat: [0,0,0,0,0,0,0]
-	// 	},{
-	// 		name: 'loading',
-	// 		requiredTime: 5,
-	// 		deadline: 35663,
-	// 		priority: 0.7,
-	// 		like: 3,
-	// 		repeat: [0,0,0,0,0,0,0]
-	// 	}
-	// ]);
+
+
+	// let TasksVar = Tasks;
 
 	// const a = pendingRefresh;
 
+	// fetchData();
+	
+	
 	useEffect(() => {
+		console.log("database")
 		getDoc(doc(firestore, "ToDo", "testDocument"))
 		.then((doc) => {
-			//console.log(doc.data().test);
-			// settasks(doc.data().test);
-			tasks = doc.data().test;
+			setTasks(doc.data().test);
 
-			tasks = [
-				{
-					name: 'loadingg',
-					requiredTime: 0,
-					deadline: 0,
-					priority: 0,
-					like: 0,
-					repeat: [0,0,0,0,0,0,0]
-				},{
-					name: 'loadingg',
-					requiredTime: 0,
-					deadline: 0,
-					priority: 0,
-					like: 0,
-					repeat: [0,0,0,0,0,0,0]
-				}
-			];
-			setPendingRefresh(true);
+
+			//console.log(doc.data().test);
+			// tasks = doc.data().test;
+
+			// tasks = [
+			// 	{
+			// 		name: 'loadingg',
+			// 		requiredTime: 0,
+			// 		deadline: 0,
+			// 		priority: 0,
+			// 		like: 0,
+			// 		repeat: [0,0,0,0,0,0,0]
+			// 	},{
+			// 		name: 'loadingg',
+			// 		requiredTime: 0,
+			// 		deadline: 0,
+			// 		priority: 0,
+			// 		like: 0,
+			// 		repeat: [0,0,0,0,0,0,0]
+			// 	}
+			// ];
+			// setPendingRefresh(true);
 
 			// setName        (tasks.name        );
 			// setRequiredTime(tasks.requiredTime);
@@ -103,71 +94,123 @@ const ToDoListItems = (props) => {
 			//alert(error.message);
 		});
 	},[]);
+
+	console.log("hi")
+	console.log(tasks[0]);
 	
 	const n = tasks.length;
+
+	console.log(n);
+
+	if(modified){
+		setModified(false);
+		console.log("post database")
+		console.log(tasks)
+		updateDoc(doc(firestore, "ToDo", "testDocument"), {test: tasks})
+		// updateDoc(doc(firestore, "ToDo", "testDocument", tasks))
+		// updateData(tasks);
+	}
+
+	//the DOM seems to get lost here and it stops accepting state variables
+
 	return [...Array(n)].map((e, i) =>
+	// const i=0;
+	// return (
 		<View key={i}>
 			<ToDoListItem 
+				// {console.log("hey")}
 				tasks={tasks}
-				key={i}
-				pendingRefresh={pendingRefresh}
-				setPendingRefresh={setPendingRefresh}
+				taskId={i}
+				task={tasks[i]}
+				// pendingRefresh={pendingRefresh}
+				// setPendingRefresh={setPendingRefresh}
+				setModified={setModified}
+				setTasks={setTasks}
 			/>
 		</View>
 	);
 }
 
-const updateData = (props) => {
+// const fetchData = (props) => {
+// }
 
+
+
+function updateData (tasks) {
+	// useEffect(() => {
+		console.log("post database")
+		console.log(tasks)
+		updateDoc(doc(firestore, "ToDo", "testDocument", tasks))
+		// .then((doc) => {
+		// })
+		// .catch((e) => {
+		// 	console.log(e)
+		// 	//throw e;
+		// 	//alert(error.message);
+		// });
+	// },[]);
 }
 
 
-
+//use multiple arrays instead of a map array
 
 // const ToDoListItem = (props) => {
-const ToDoListItem = ({tasks, key, pendingRefresh, setPendingRefresh}) => {
+const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
+	// pendingRefresh, setPendingRefresh, 
 	// const [name        , setName        ] = useState("Loading");
 	// const [requiredTime, setRequiredTime] = useState(0);
 	// const [deadline    , setDeadline    ] = useState(0);
 	// const [priority    , setPriority    ] = useState(0);
 	// const [like        , setLike        ] = useState(0);
 	
-	const props = tasks[key];
+	console.log("in")
+	console.log(tasks[taskId]);
 
 	return (
 		<View style={styles.scrollBlock}>
 			<View style={styles.scrollItem}>
 				<TextInput style={styles.scrollText} 
 					// value={props.name}
-					value={tasks[key].name}
+					value={task.name}
+					//the issue is that it refuses to re-render
+					// value={Date.now().toString()}
+					// value={tasks[taskId].name}
                     type="text"
                     name="name"
-                    placeholder= "load"
+                    placeholder= "task name"
                     //onChange={(e) => setKvk(e.target.value)}
 					//onChange={(e) => props.set("name",e.target.value)} 
-                    onChange={(e) => setPendingRefresh(true)}
+                    onChange={(e) => {
+						// setPendingRefresh(true);
+						// tasks[key]["name"] = e.target.value;
+						// tasks[taskId].set("name",e.target.value)
+						tasks[taskId].name = e.target.value;
+						console.log(tasks[taskId].name);
+						setTasks(tasks);
+						setModified(true);
+					}}
 				/>
 			</View>
 			<View style={styles.scrollItem}>
 				<Text style={styles.scrollText}>
-					{/* {props.requiredTime} */}
+					{task.requiredTime}
 					{/* {props.pendingRefresh.toString()} */}
-					{props.pendingRefresh ? "true" : "false"}
+					{/* {props.pendingRefresh ? "true" : "false"} */}
 				</Text>
 			</View>
 			<View style={styles.scrollItem}>
 				<Text style={styles.scrollText}>
-					{props.deadline}
+					{task.deadline}
 				</Text>
 			</View>
 			<View style={styles.scrollItem}>
 				<Text style={styles.scrollText}>
-					{props.priority}
+					{task.priority}
 				</Text>
 			</View>
 			<View style={styles.scrollItem}>
 				<Text style={styles.scrollText}>
-					{props.like}
+					{task.like}
 				</Text>
 			</View>
 			<View style={styles.scrollItem}>
@@ -191,6 +234,25 @@ const ToDoListItem = ({tasks, key, pendingRefresh, setPendingRefresh}) => {
 
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
+	
+	const [modified, setModified] = useState(false);
+	const [tasks, setTasks] = useState([
+		{
+			name: 'loading',
+			requiredTime: 5,
+			deadline: 35663,
+			priority: 0.7,
+			like: 3,
+			repeat: [0,0,0,0,0,0,0]
+		},{
+			name: 'loading',
+			requiredTime: 5,
+			deadline: 35663,
+			priority: 0.7,
+			like: 3,
+			repeat: [0,0,0,0,0,0,0]
+		}
+	]);
 
   return (
 		<View style={
@@ -200,11 +262,23 @@ const ToDoScreen = ({ navigation }) => {
 				<HeaderBar/>
 				<ScrollView style={styles.scrollingList}>
 					
-					<ToDoListItems/>	
+					<ToDoListItems tasks={tasks} setTasks={setTasks} modified={modified} setModified={setModified} />	
 					
 				</ScrollView>
 				<View style={styles.plusParent}>
-					<TouchableOpacity style={styles.plus} onPress={() => {}}>
+					<TouchableOpacity style={styles.plus} onPress={() => {
+						tasks.push({
+							name: 'new Task',
+							requiredTime: 0,
+							deadline: 0,
+							priority: 0,
+							like: 0,
+							repeat: [0,0,0,0,0,0,0]
+						});
+						console.log(tasks);
+						setTasks(tasks);
+						setModified(true);
+					}}>
 						<Text style={styles.plusText}>
 							+
 						</Text>
