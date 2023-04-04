@@ -185,33 +185,77 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 						// tasks[key]["name"] = e.target.value;
 						// tasks[taskId].set("name",e.target.value)
 						tasks[taskId].name = e.target.value;
-						console.log(tasks[taskId].name);
+						// console.log(tasks[taskId].name);
 						setTasks(tasks);
 						setModified(true);
 					}}
 				/>
 			</View>
 			<View style={styles.scrollItem}>
-				<Text style={styles.scrollText}>
-					{task.requiredTime}
+				{/* <Text style={styles.scrollText}> */}
+					{/* {task.requiredTime} */}
 					{/* {props.pendingRefresh.toString()} */}
 					{/* {props.pendingRefresh ? "true" : "false"} */}
-				</Text>
+				{/* </Text> */}
+				<TextInput style={styles.scrollText} 
+					value={task.requiredTime}
+                    type="number"
+                    name="requiredTime"
+                    placeholder= "required time"
+                    onChange={(e) => {
+						tasks[taskId].requiredTime = e.target.value;
+						setTasks(tasks);
+						setModified(true);
+					}}
+				/>
 			</View>
 			<View style={styles.scrollItem}>
-				<Text style={styles.scrollText}>
+				{/* <Text style={styles.scrollText}>
 					{task.deadline}
-				</Text>
+				</Text> */}
+				<TextInput style={styles.scrollText} 
+					value={task.deadline}
+                    type="number"
+                    name="deadline"
+                    placeholder= "deadline"
+                    onChange={(e) => {
+						tasks[taskId].deadline = e.target.value;
+						setTasks(tasks);
+						setModified(true);
+					}}
+				/>
 			</View>
 			<View style={styles.scrollItem}>
-				<Text style={styles.scrollText}>
+				{/* <Text style={styles.scrollText}>
 					{task.priority}
-				</Text>
+				</Text> */}
+				<TextInput style={styles.scrollText} 
+					value={task.priority}
+                    type="number"
+                    name="priority"
+                    placeholder= "priority"
+                    onChange={(e) => {
+						tasks[taskId].priority = e.target.value;
+						setTasks(tasks);
+						setModified(true);
+					}}
+				/>
 			</View>
 			<View style={styles.scrollItem}>
-				<Text style={styles.scrollText}>
+				{/* <Text style={styles.scrollText}>
 					{task.like}
-				</Text>
+				</Text> */}
+				<TextInput style={styles.scrollText} 
+					value={task.like}
+                    type="number"
+                    name="like"
+                    placeholder= "number"
+                    onChange={(e) => {
+						tasks[taskId].like = e.target.value;
+						setTasks(tasks);
+						setModified(true);
+					}}
+				/>
 			</View>
 			<View style={styles.scrollItem}>
 				<Text style={styles.scrollText}>
@@ -261,9 +305,7 @@ const ToDoScreen = ({ navigation }) => {
 			<SafeAreaView style={styles.container}>
 				<HeaderBar/>
 				<ScrollView style={styles.scrollingList}>
-					
 					<ToDoListItems tasks={tasks} setTasks={setTasks} modified={modified} setModified={setModified} />	
-					
 				</ScrollView>
 				<View style={styles.plusParent}>
 					<TouchableOpacity style={styles.plus} onPress={() => {
