@@ -1,129 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput} from 'react-native';
 //import { Box, FlatList, Center, NativeBaseProvider} from "native-base";
-
-
 // import { doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore"; 
 import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, firestore } from "../../firebase";
 //import { firestore, auth } from "/config/firebase"
 
-
-
-
-// let tasks = [
-// 	{
-// 		name: 'loading',
-// 		requiredTime: 0,
-// 		deadline: 0,
-// 		priority: 0,
-// 		like: 0,
-// 		repeat: [0,0,0,0,0,0,0]
-// 	},{
-// 		name: 'loading',
-// 		requiredTime: 0,
-// 		deadline: 0,
-// 		priority: 0,
-// 		like: 0,
-// 		repeat: [0,0,0,0,0,0,0]
-// 	}
-// ];
-
-
 const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) => {
-	// const [pendingRefresh, setPendingRefresh] = useState(false);
-	
-	// name        setName        
-	// requiredTime setRequiredTime
-	// deadline    setDeadline    
-	// priority    setPriority    
-	// like        setLike   
-
-	// setName        
-	// setRequiredTime
-	// setDeadline    
-	// setPriority    
-	// setLike       
-
-
-	// let TasksVar = Tasks;
-
-	// const a = pendingRefresh;
-
 	// fetchData();
-	
-	
 	useEffect(() => {
-		console.log("database")
 		getDoc(doc(firestore, "ToDo", "activeTasks"))
 		.then((doc) => {
 			setTasks(doc.data().tasks);
 			setSync(true);
-
-			//console.log(doc.data().tasks);
-			// tasks = doc.data().tasks;
-
-			// tasks = [
-			// 	{
-			// 		name: 'loadingg',
-			// 		requiredTime: 0,
-			// 		deadline: 0,
-			// 		priority: 0,
-			// 		like: 0,
-			// 		repeat: [0,0,0,0,0,0,0]
-			// 	},{
-			// 		name: 'loadingg',
-			// 		requiredTime: 0,
-			// 		deadline: 0,
-			// 		priority: 0,
-			// 		like: 0,
-			// 		repeat: [0,0,0,0,0,0,0]
-			// 	}
-			// ];
-			// setPendingRefresh(true);
-
-			// setName        (tasks.name        );
-			// setRequiredTime(tasks.requiredTime);
-			// setDeadline    (tasks.deadline    );
-			// setPriority    (tasks.priority    );
-			// setLike        (tasks.like        );
 		})
 		.catch((e) => {
-			console.log(e)
+			console.log(e);
 			//throw e;
 			//alert(error.message);
 		});
 	},[]);
-
-	console.log("hi")
-	console.log(tasks[0]);
 	
 	const n = tasks.length;
-
-	console.log(n);
 
 	if(modified){
 		setModified(false);
 		if(sync){
 			updateDoc(doc(firestore, "ToDo", "activeTasks"), {tasks: tasks});
 		}
-		// updateDoc(doc(firestore, "ToDo", "activeTasks", tasks))
-		// updateData(tasks);
 	}
 
-	//the DOM seems to get lost here and it stops accepting state variables
-
 	return [...Array(n)].map((e, i) =>
-	// const i=0;
-	// return (
 		<View key={i}>
 			<ToDoListItem 
-				// {console.log("hey")}
 				tasks={tasks}
 				taskId={i}
 				task={tasks[i]}
-				// pendingRefresh={pendingRefresh}
-				// setPendingRefresh={setPendingRefresh}
 				setModified={setModified}
 				setTasks   ={setTasks}
 			/>
@@ -137,66 +49,34 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 
 
 function updateData (tasks) {
-	// useEffect(() => {
-	console.log("post database")
-	console.log(tasks)
 	updateDoc(doc(firestore, "ToDo", "activeTasks", tasks))
 		// .then((doc) => {
 		// })
-		// .catch((e) => {
-		// 	console.log(e)
-		// 	//throw e;
-		// 	//alert(error.message);
-		// });
-	// },[]);
+		.catch((e) => {
+			console.log(e)
+			//throw e;
+			//alert(error.message);
+		});
 }
 
 
-//use multiple arrays instead of a map array
-
-// const ToDoListItem = (props) => {
 const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
-	// pendingRefresh, setPendingRefresh, 
-	// const [name        , setName        ] = useState("Loading");
-	// const [requiredTime, setRequiredTime] = useState(0);
-	// const [deadline    , setDeadline    ] = useState(0);
-	// const [priority    , setPriority    ] = useState(0);
-	// const [like        , setLike        ] = useState(0);
-	
-	console.log("in")
-	console.log(tasks[taskId]);
-
 	return (
 		<View style={styles.scrollBlock}>
 			<View style={styles.scrollItem}>
 				<TextInput style={styles.scrollText} 
-					// value={props.name}
 					value={task.name}
-					//the issue is that it refuses to re-render
-					// value={Date.now().toString()}
-					// value={tasks[taskId].name}
                     type="text"
                     name="name"
                     placeholder= "task name"
-                    //onChange={(e) => setKvk(e.target.value)}
-					//onChange={(e) => props.set("name",e.target.value)} 
                     onChange={(e) => {
-						// setPendingRefresh(true);
-						// tasks[key]["name"] = e.target.value;
-						// tasks[taskId].set("name",e.target.value)
 						tasks[taskId].name = e.target.value;
-						// console.log(tasks[taskId].name);
 						setTasks(tasks);
 						setModified(true);
 					}}
 				/>
 			</View>
 			<View style={styles.scrollItem}>
-				{/* <Text style={styles.scrollText}> */}
-					{/* {task.requiredTime} */}
-					{/* {props.pendingRefresh.toString()} */}
-					{/* {props.pendingRefresh ? "true" : "false"} */}
-				{/* </Text> */}
 				<TextInput style={styles.scrollText} 
 					value={task.requiredTime}
                     type="number"
@@ -210,9 +90,6 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 				/>
 			</View>
 			<View style={styles.scrollItem}>
-				{/* <Text style={styles.scrollText}>
-					{task.deadline}
-				</Text> */}
 				<TextInput style={styles.scrollText} 
 					value={task.deadline}
                     type="number"
@@ -226,9 +103,6 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 				/>
 			</View>
 			<View style={styles.scrollItem}>
-				{/* <Text style={styles.scrollText}>
-					{task.priority}
-				</Text> */}
 				<TextInput style={styles.scrollText} 
 					value={task.priority}
                     type="number"
@@ -242,9 +116,6 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 				/>
 			</View>
 			<View style={styles.scrollItem}>
-				{/* <Text style={styles.scrollText}>
-					{task.like}
-				</Text> */}
 				<TextInput style={styles.scrollText} 
 					value={task.like}
                     type="number"
@@ -270,15 +141,6 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 		</View>
 	);
 }
-
-
-//syntax of a react component:
-// import styles from '../styles/WieZijnWij.module.css';
-
-// export const WieZijnWij = () => {
-//     return (
-
-
 
 
 const ToDoScreen = ({ navigation }) => {
@@ -330,7 +192,6 @@ const ToDoScreen = ({ navigation }) => {
 							repeatOffset  : 0,
 							repeatOffsets : []
 						});
-						console.log(tasks);
 						setTasks   (tasks);
 						setModified(true);
 					}}>
