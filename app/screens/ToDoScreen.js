@@ -6,146 +6,8 @@ import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'fireba
 import { auth, firestore } from "../../firebase";
 //import { firestore, auth } from "/config/firebase"
 
-const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) => {
-	// fetchData();
-	useEffect(() => {
-		getDoc(doc(firestore, "ToDo", "activeTasks"))
-		.then((doc) => {
-			setTasks(doc.data().tasks);
-			setSync(true);
-		})
-		.catch((e) => {
-			console.log(e);
-			//throw e;
-			//alert(error.message);
-		});
-	},[]);
-	
-	const n = tasks.length;
-
-	if(modified){
-		setModified(false);
-		if(sync){
-			updateDoc(doc(firestore, "ToDo", "activeTasks"), {tasks: tasks});
-		}
-	}
-
-	return [...Array(n)].map((e, i) =>
-		<View key={i}>
-			<ToDoListItem 
-				tasks={tasks}
-				taskId={i}
-				task={tasks[i]}
-				setModified={setModified}
-				setTasks   ={setTasks}
-			/>
-		</View>
-	);
-}
-
-// const fetchData = (props) => {
-// }
-
-
-
-function updateData (tasks) {
-	updateDoc(doc(firestore, "ToDo", "activeTasks", tasks))
-		// .then((doc) => {
-		// })
-		.catch((e) => {
-			console.log(e)
-			//throw e;
-			//alert(error.message);
-		});
-}
-
-
-const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
-	return (
-		<View style={styles.scrollBlock}>
-			<View style={styles.scrollItem}>
-				<TextInput style={styles.scrollText} 
-					value={task.name}
-                    type="text"
-                    name="name"
-                    placeholder= "task name"
-                    onChange={(e) => {
-						tasks[taskId].name = e.target.value;
-						setTasks(tasks);
-						setModified(true);
-					}}
-				/>
-			</View>
-			<View style={styles.scrollItem}>
-				<TextInput style={styles.scrollText} 
-					value={task.requiredTime}
-                    type="number"
-                    name="requiredTime"
-                    placeholder= "required time"
-                    onChange={(e) => {
-						tasks[taskId].requiredTime = e.target.value;
-						setTasks(tasks);
-						setModified(true);
-					}}
-				/>
-			</View>
-			<View style={styles.scrollItem}>
-				<TextInput style={styles.scrollText} 
-					value={task.deadline}
-                    type="number"
-                    name="deadline"
-                    placeholder= "deadline"
-                    onChange={(e) => {
-						tasks[taskId].deadline = e.target.value;
-						setTasks(tasks);
-						setModified(true);
-					}}
-				/>
-			</View>
-			<View style={styles.scrollItem}>
-				<TextInput style={styles.scrollText} 
-					value={task.priority}
-                    type="number"
-                    name="priority"
-                    placeholder= "priority"
-                    onChange={(e) => {
-						tasks[taskId].priority = e.target.value;
-						setTasks(tasks);
-						setModified(true);
-					}}
-				/>
-			</View>
-			<View style={styles.scrollItem}>
-				<TextInput style={styles.scrollText} 
-					value={task.like}
-                    type="number"
-                    name="like"
-                    placeholder= "number"
-                    onChange={(e) => {
-						tasks[taskId].like = e.target.value;
-						setTasks(tasks);
-						setModified(true);
-					}}
-				/>
-			</View>
-			<View style={styles.scrollItem}>
-				<Text style={styles.scrollText}>
-					...
-				</Text>
-			</View>
-			<TouchableOpacity style={styles.delete} onPress={() => {
-				tasks.splice(taskId, 1);
-				setTasks(tasks);
-				setModified(true);
-			}}/>
-		</View>
-	);
-}
-
-
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
-	
 	const [modified, setModified] = useState(false);
 	const [sync    , setSync    ] = useState(false);
 	const [tasks   , setTasks   ] = useState([
@@ -172,12 +34,19 @@ const ToDoScreen = ({ navigation }) => {
 		}
 	]);
 
-  return (
+	return (
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
 				<HeaderBar/>
 				<ScrollView style={styles.scrollingList}>
-					<ToDoListItems tasks={tasks} setTasks={setTasks} modified={modified} setModified={setModified} sync={sync} setSync={setSync} />
+					<ToDoListItems 
+						tasks       = {tasks} 
+						setTasks    = {setTasks} 
+						modified    = {modified} 
+						setModified = {setModified} 
+						sync        = {sync} 
+						setSync     = {setSync} 
+					/>
 				</ScrollView>
 				<View style={styles.plusParent}>
 					<TouchableOpacity style={styles.plus} onPress={() => {
@@ -210,7 +79,7 @@ const ToDoScreen = ({ navigation }) => {
 	);
 }
 
-const HeaderBar = (props) => {
+const HeaderBar = () => {
 	return(
 		<View style={styles.headerBar}>
 			<View style={styles.headerBlock}>
@@ -252,6 +121,133 @@ const HeaderBar = (props) => {
 	);
 }
 
+const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) => {
+	fetchData (setTasks, setSync);
+	updateData(modified, setModified, sync, tasks);
+	const n = tasks.length;
+	return [...Array(n)].map((e, i) =>
+		<View key={i}>
+			<ToDoListItem 
+				tasks       = {tasks      }
+				taskId      = {i          }
+				task        = {tasks[i]   }
+				setModified = {setModified}
+				setTasks    = {setTasks   }
+			/>
+		</View>
+	);
+}
+
+const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
+	return (
+		<View style={styles.scrollBlock}>
+			<View style={styles.scrollItem}>
+				<TextInput style={styles.scrollText} 
+					value={task.name}
+                    type="text"
+                    name="name"
+                    placeholder= "task name"
+                    onChange={(e) => {
+						tasks[taskId].name = e.target.value;
+						setTasks   (tasks);
+						setModified(true);
+					}}
+				/>
+			</View>
+			<View style={styles.scrollItem}>
+				<TextInput style={styles.scrollText} 
+					value={task.requiredTime}
+                    type="number"
+                    name="requiredTime"
+                    placeholder= "required time"
+                    onChange={(e) => {
+						tasks[taskId].requiredTime = e.target.value;
+						setTasks   (tasks);
+						setModified(true);
+					}}
+				/>
+			</View>
+			<View style={styles.scrollItem}>
+				<TextInput style={styles.scrollText} 
+					value={task.deadline}
+                    type="number"
+                    name="deadline"
+                    placeholder= "deadline"
+                    onChange={(e) => {
+						tasks[taskId].deadline = e.target.value;
+						setTasks   (tasks);
+						setModified(true);
+					}}
+				/>
+			</View>
+			<View style={styles.scrollItem}>
+				<TextInput style={styles.scrollText} 
+					value={task.priority}
+                    type="number"
+                    name="priority"
+                    placeholder= "priority"
+                    onChange={(e) => {
+						tasks[taskId].priority = e.target.value;
+						setTasks   (tasks);
+						setModified(true);
+					}}
+				/>
+			</View>
+			<View style={styles.scrollItem}>
+				<TextInput style={styles.scrollText} 
+					value={task.like}
+                    type="number"
+                    name="like"
+                    placeholder= "number"
+                    onChange={(e) => {
+						tasks[taskId].like = e.target.value;
+						setTasks   (tasks);
+						setModified(true);
+					}}
+				/>
+			</View>
+			<View style={styles.scrollItem}>
+				<Text style={styles.scrollText}>
+					...
+				</Text>
+			</View>
+			<TouchableOpacity style={styles.delete} onPress={() => {
+				tasks.splice(taskId, 1);
+				setTasks   (tasks);
+				setModified(true);
+			}}/>
+		</View>
+	);
+}
+
+function fetchData (setTasks, setSync) {
+	useEffect(() => {
+		getDoc(doc(firestore, "ToDo", "activeTasks"))
+		.then((doc) => {
+			setTasks(doc.data().tasks);
+			setSync(true);
+		})
+		.catch((e) => {
+			console.log(e);
+			//throw e;
+			//alert(error.message);
+		});
+	},[]);
+}
+
+function updateData (modified, setModified, sync, tasks) {
+	if(modified){
+		setModified(false);
+		if(sync){
+			updateDoc(doc(firestore, "ToDo", "activeTasks"), {tasks: tasks})
+			.catch((e) => {
+				console.log(e)
+				//throw e;
+				//alert(error.message);
+			});
+		}
+	}
+}
 
 const styles = StyleSheet.create({
 	background: {
