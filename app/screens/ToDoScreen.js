@@ -30,7 +30,7 @@ import { auth, firestore } from "../../firebase";
 // ];
 
 
-const ToDoListItems = ({tasks, setTasks, modified, setModified}) => {
+const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) => {
 	// const [pendingRefresh, setPendingRefresh] = useState(false);
 	
 	// name        setName        
@@ -55,13 +55,13 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified}) => {
 	
 	useEffect(() => {
 		console.log("database")
-		getDoc(doc(firestore, "ToDo", "testDocument"))
+		getDoc(doc(firestore, "ToDo", "activeTasks"))
 		.then((doc) => {
-			setTasks(doc.data().test);
+			setTasks(doc.data().tasks);
+			setSync(true);
 
-
-			//console.log(doc.data().test);
-			// tasks = doc.data().test;
+			//console.log(doc.data().tasks);
+			// tasks = doc.data().tasks;
 
 			// tasks = [
 			// 	{
@@ -104,10 +104,10 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified}) => {
 
 	if(modified){
 		setModified(false);
-		console.log("post database")
-		console.log(tasks)
-		updateDoc(doc(firestore, "ToDo", "testDocument"), {test: tasks})
-		// updateDoc(doc(firestore, "ToDo", "testDocument", tasks))
+		if(sync){
+			updateDoc(doc(firestore, "ToDo", "activeTasks"), {tasks: tasks});
+		}
+		// updateDoc(doc(firestore, "ToDo", "activeTasks", tasks))
 		// updateData(tasks);
 	}
 
@@ -125,7 +125,7 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified}) => {
 				// pendingRefresh={pendingRefresh}
 				// setPendingRefresh={setPendingRefresh}
 				setModified={setModified}
-				setTasks={setTasks}
+				setTasks   ={setTasks}
 			/>
 		</View>
 	);
@@ -138,9 +138,9 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified}) => {
 
 function updateData (tasks) {
 	// useEffect(() => {
-		console.log("post database")
-		console.log(tasks)
-		updateDoc(doc(firestore, "ToDo", "testDocument", tasks))
+	console.log("post database")
+	console.log(tasks)
+	updateDoc(doc(firestore, "ToDo", "activeTasks", tasks))
 		// .then((doc) => {
 		// })
 		// .catch((e) => {
@@ -285,45 +285,53 @@ const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
 	
 	const [modified, setModified] = useState(false);
-	const [tasks, setTasks] = useState([
+	const [sync    , setSync    ] = useState(false);
+	const [tasks   , setTasks   ] = useState([
 		{
-			name: 'loading',
-			requiredTime: 5,
-			deadline: 35663,
-			priority: 0.7,
-			like: 3,
-			repeat: [0,0,0,0,0,0,0]
+			name          : "loading",
+			requiredTime  : 0,
+			deadline      : 0,
+			priority      : 0,
+			like          : 0,
+			repeatTimespan: "loading",
+			repeatInterval: 0,
+			repeatOffset  : 0,
+			repeatOffsets : []
 		},{
-			name: 'loading',
-			requiredTime: 5,
-			deadline: 35663,
-			priority: 0.7,
-			like: 3,
-			repeat: [0,0,0,0,0,0,0]
+			name          : "loading",
+			requiredTime  : 0,
+			deadline      : 0,
+			priority      : 0,
+			like          : 0,
+			repeatTimespan: "loading",
+			repeatInterval: 0,
+			repeatOffset  : 0,
+			repeatOffsets : []
 		}
 	]);
 
   return (
-		<View style={
-			styles.background
-		}>
+		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
 				<HeaderBar/>
 				<ScrollView style={styles.scrollingList}>
-					<ToDoListItems tasks={tasks} setTasks={setTasks} modified={modified} setModified={setModified} />	
+					<ToDoListItems tasks={tasks} setTasks={setTasks} modified={modified} setModified={setModified} sync={sync} setSync={setSync} />
 				</ScrollView>
 				<View style={styles.plusParent}>
 					<TouchableOpacity style={styles.plus} onPress={() => {
 						tasks.push({
-							name: 'new Task',
-							requiredTime: 0,
-							deadline: 0,
-							priority: 0,
-							like: 0,
-							repeat: [0,0,0,0,0,0,0]
+							name          : "new Task",
+							requiredTime  : 0,
+							deadline      : 0,
+							priority      : 0,
+							like          : 0,
+							repeatTimespan: "days",
+							repeatInterval: 0,
+							repeatOffset  : 0,
+							repeatOffsets : []
 						});
 						console.log(tasks);
-						setTasks(tasks);
+						setTasks   (tasks);
 						setModified(true);
 					}}>
 						<Text style={styles.plusText}>
@@ -333,8 +341,8 @@ const ToDoScreen = ({ navigation }) => {
 				</View>
 				<View style={styles.menuButtons}>
 					<TouchableOpacity style={styles.menuButton1}/>
-					<TouchableOpacity style={styles.menuButton2} onPress={() => navigation.navigate('Planning')}/>
-					<TouchableOpacity style={styles.menuButton3} onPress={() => navigation.navigate('Focus'   )}/>
+					<TouchableOpacity style={styles.menuButton2} onPress={() => navigation.navigate("Planning")}/>
+					<TouchableOpacity style={styles.menuButton3} onPress={() => navigation.navigate("Focus"   )}/>
 				</View>
 			</SafeAreaView>
 		</View>
