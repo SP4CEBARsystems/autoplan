@@ -262,6 +262,11 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 					...
 				</Text>
 			</View>
+			<TouchableOpacity style={styles.delete} onPress={() => {
+				tasks.splice(taskId, 1);
+				setTasks(tasks);
+				setModified(true);
+			}}/>
 		</View>
 	);
 }
@@ -367,6 +372,11 @@ const HeaderBar = (props) => {
 			<View style={styles.headerBlock}>
 				<Text style={styles.headerText}>
 					Repeat Settings
+				</Text>
+			</View>
+			<View style={styles.headerBlock}>
+				<Text style={styles.headerText}>
+					delete
 				</Text>
 			</View>
 		</View>
@@ -479,6 +489,18 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		textAlignVertical: "center",
 		color: "#FFF"
+	},
+	delete: {
+		flex: 1,
+		backgroundColor: "#F00",
+		borderRadius: 50,
+		// fontSize: 100,
+		// textAlign: "center",
+		marginLeft: 1,
+		marginRight: 1,
+		marginTop: 4,
+		marginBottom: 4
+		// width: 1
 	}
 })
 
