@@ -138,17 +138,42 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 	);
 }
 
+
+
+
+//database
+//  agenda
+//    fixed meetings and events
+//      absolute times (they may be obsolete, apart from repeated tasks)
+//      planning settings
+//      repeat settings
+//    generated output, in order, contains empty spacers, empty spacers will be replaced with planned tasks, or breaks
+//      relative times
+//      source link in database
+
+//to do: 
+//  write dummy output in database
+//  make a viewer
+//  make it link to the agenda data for more info
+//  make the info editable
+//  make the time draggable and editable to modify both the output file and the source file
+//  if a repeated event is changed, it will prompt like google agenda does and create a new source task with updated data for that event and depending on the chosen action, all repeated occurrences after that
+
+
 const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
-	let x = 30;
-	let y = 90;
+	let x = task.duration;
+	// let y = 200;
 	//tasks.start
 	//tasks.end  
 	return (
 		<Animated.View
 			style={{
 				paddingTop    : x,
-				paddingBottom : y,
-				backgroundColor: "gray"
+				paddingBottom : x,
+				// padding          : x,0,
+				//backgroundColor  : "gray",
+				//backgroundColor  : 'grey',
+				borderWidth: 5,
 				// paddingLeft: pan.x,
 				//top : pan.y,
 				//left: pan.x,
@@ -244,7 +269,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 
 function fetchData (setTasks, setSync) {
 	useEffect(() => {
-		getDoc(doc(firestore, "Agenda", "TestDay"))
+		getDoc(doc(firestore, "Planning", "TestDay"))
 		.then((doc) => {
 			setTasks(doc.data().tasks);
 			setSync(true);
