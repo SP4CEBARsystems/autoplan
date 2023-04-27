@@ -37,7 +37,7 @@ const ToDoScreen = ({ navigation }) => {
 	return (
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
-				<HeaderBar/>
+				{/* <HeaderBar/> */}
 				<ScrollView style={styles.scrollingList}>
 					<ToDoListItems 
 						tasks       = {tasks} 
@@ -51,11 +51,11 @@ const ToDoScreen = ({ navigation }) => {
 				<View style={styles.plusParent}>
 					<TouchableOpacity style={styles.plus} onPress={() => {
 						tasks.push({
-							name          : "new Task",
-							requiredTime  : 0,
-							deadline      : 0,
-							priority      : 0,
-							like          : 0,
+							name          : "new Event",
+							duration      : 0,
+							startTime     : 0,
+							source        : "",
+							type          : "",
 							repeatTimespan: "days",
 							repeatInterval: 0,
 							repeatOffset  : 0,
@@ -122,7 +122,7 @@ const HeaderBar = () => {
 }
 
 const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) => {
-	fetchData (setTasks, setSync);
+	fetchData2 (setTasks, setSync);
 	updateData(modified, setModified, sync, tasks);
 	const n = tasks.length;
 	return [...Array(n)].map((e, i) =>
@@ -161,15 +161,30 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 
 
 const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
-	let x = task.duration;
+	let v = task.duration;
+	let w = task.startTime;
+	let offset = 200;
 	// let y = 200;
 	//tasks.start
 	//tasks.end  
 	return (
 		<Animated.View
 			style={{
-				paddingTop    : x,
-				paddingBottom : x,
+				// flex          : 0,
+				//position:'absolute',
+				position: 'absolute',
+				height: v,
+				top: w, 
+				bottom: 0,
+				// top: w, bottom: w+x,
+				left: 0, right: 0, 
+				//width: 100%,
+				//height: x,
+				//paddingTop    : x,
+				//paddingBottom : x,
+				// translateY    : offset - 2*x,
+				//translateY    : offset,
+				//translateY    : this.state.mapViewOffset.y
 				// padding          : x,0,
 				//backgroundColor  : "gray",
 				//backgroundColor  : 'grey',
@@ -177,6 +192,8 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 				// paddingLeft: pan.x,
 				//top : pan.y,
 				//left: pan.x,
+				//paddingTop    : x,
+				//paddingBottom : x,
 			}}
 			// style={[styles.animatedBox,{
 			// 	paddingTop    : x,
@@ -200,7 +217,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 						}}
 					/>
 				</View>
-				<View style={styles.scrollItem}>
+				{/* <View style={styles.scrollItem}>
 					<TextInput style={styles.scrollText} 
 						value={task.requiredTime}
 						type="number"
@@ -256,7 +273,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 					<Text style={styles.scrollText}>
 						...
 					</Text>
-				</View>
+				</View> */}
 				<TouchableOpacity style={styles.delete} onPress={() => {
 					tasks.splice(taskId, 1);
 					setTasks   (tasks);
@@ -267,9 +284,18 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 	);
 }
 
-function fetchData (setTasks, setSync) {
+function fetchData2 (setTasks, setSync) {
+	//refAgenda = doc(firestore, "Agenda", "TestDay")
+	//refToDo   = doc(firestore, "ToDo", "activeTasks")
+	fetchData (setTasks, setSync, doc(firestore, "Planning", "TestDay"));
+	//doc(firestore, "Agenda", "TestDay")
+	//fetchData (setTasks, setSync, doc(firestore, "Planning", "TestDay"));
+}
+
+//doc(firestore, "Planning", "TestDay")
+function fetchData (setTasks, setSync, ref) {
 	useEffect(() => {
-		getDoc(doc(firestore, "Planning", "TestDay"))
+		getDoc(ref)
 		.then((doc) => {
 			setTasks(doc.data().tasks);
 			setSync(true);
@@ -286,7 +312,7 @@ function updateData (modified, setModified, sync, tasks) {
 	if(modified){
 		setModified(false);
 		if(sync){
-			updateDoc(doc(firestore, "Agenda", "TestDay"), {tasks: tasks})
+			updateDoc(doc(firestore, "Planning", "TestDay"), {tasks: tasks})
 			.catch((e) => {
 				console.log(e)
 				//throw e;
@@ -323,9 +349,9 @@ const styles = StyleSheet.create({
 		backgroundColor: "#444",
 		//borderRadius: 4,
 		//top: 10,
-		marginLeft: 1,
-		marginRight: 1,
-		marginTop: 4,
+		marginLeft  : 1,
+		marginRight : 1,
+		marginTop   : 4,
 		marginBottom: 4,
 	},
 	headerText: {
