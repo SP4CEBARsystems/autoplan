@@ -6,6 +6,10 @@ import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'fireba
 import { auth, firestore } from "../../firebase";
 //import { firestore, auth } from "/config/firebase"
 
+//panresponder's animated variables are prepared and defined too early so that the data is still a placeholder
+let sync2 = false;
+let tasks2 = [];
+
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
 	const [modified, setModified] = useState(false);
@@ -13,20 +17,10 @@ const ToDoScreen = ({ navigation }) => {
 	const [tasks   , setTasks   ] = useState([
 		{
 			name          : "loading",
-			requiredTime  : 0,
-			deadline      : 0,
-			priority      : 0,
-			like          : 0,
-			repeatTimespan: "loading",
-			repeatInterval: 0,
-			repeatOffset  : 0,
-			repeatOffsets : []
-		},{
-			name          : "loading",
-			requiredTime  : 0,
-			deadline      : 0,
-			priority      : 0,
-			like          : 0,
+			duration      : 0,
+			startTime     : 0,
+			source        : "",
+			type          : "",
 			repeatTimespan: "loading",
 			repeatInterval: 0,
 			repeatOffset  : 0,
@@ -38,6 +32,12 @@ const ToDoScreen = ({ navigation }) => {
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
 				{/* <HeaderBar/> */}
+				{/* <Animated.View
+					style={{
+					transform: [{translateX: pan.x}, {translateY: pan.y}],
+					}}
+					{...panResponder.panHandlers}>
+				</Animated.View> */}
 				<ScrollView style={styles.scrollingList}>
 					<ToDoListItems 
 						tasks       = {tasks} 
@@ -70,9 +70,9 @@ const ToDoScreen = ({ navigation }) => {
 					</TouchableOpacity>
 				</View>
 				<View style={styles.menuButtons}>
-					<TouchableOpacity style={styles.menuButton1} onPress={() => navigation.navigate("ToDo" )}/>
+					<TouchableOpacity style={styles.menuButton1} onPress={() => {setSync(false); navigation.navigate("ToDo" );}}/>
 					<TouchableOpacity style={styles.menuButton2}/>
-					<TouchableOpacity style={styles.menuButton3} onPress={() => navigation.navigate("Focus")}/>
+					<TouchableOpacity style={styles.menuButton3} onPress={() => {setSync(false); navigation.navigate("Focus");}}/>
 				</View>
 			</SafeAreaView>
 		</View>
@@ -125,6 +125,10 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 	fetchData2 (setTasks, setSync);
 	updateData(modified, setModified, sync, tasks);
 	const n = tasks.length;
+	console.log(tasks);
+	console.log(sync);
+	sync2 = sync;
+	tasks2 = tasks;
 	return [...Array(n)].map((e, i) =>
 		<View key={i}>
 			<ToDoListItem 
@@ -133,6 +137,7 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 				task        = {tasks[i]   }
 				setModified = {setModified}
 				setTasks    = {setTasks   }
+				sync        = {sync       }
 			/>
 		</View>
 	);
@@ -160,21 +165,58 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 //  if a repeated event is changed, it will prompt like google agenda does and create a new source task with updated data for that event and depending on the chosen action, all repeated occurrences after that
 
 
-const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
-	let v = task.duration;
-	let w = task.startTime;
-	let offset = 200;
-	// let y = 200;
-	//tasks.start
-	//tasks.end  
+const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, sync}) => {
+	let duration  = task.duration;
+	let startTime = task.startTime;
+	// console.log("active");
+
+	const pan = useRef(new Animated.ValueXY()).current;
+	//if (pan.y==0) {pan.y = w;}
+	// Animated.add(pan.x, v)
+	// pan.setOffset(pan: {x: v; y: w});
+	pan.setOffset({x: duration, y: startTime});
+
+	console.log("sync  check 1: ",sync);
+	console.log("sync2 check 1: ",sync2);
+
+	const panResponder = useRef(
+		PanResponder.create({
+			onMoveShouldSetPanResponder: () => true,
+			onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
+			onPanResponderRelease: () => {
+				pan.extractOffset();
+				// console.log("hi");
+				// console.log(pan.x._offset, pan.y._offset);
+				//saveAgendaTimes(pan.x._offset, pan.y._offset);
+				// tasks[taskId].duration  = pan.x._offset;
+				// tasks[taskId].startTime = pan.y._offset;
+				//console.log("written");
+				// saveAgendaTimes(tasks, sync);
+				saveAgendaTimes(pan.x._offset, pan.y._offset, taskId);
+				//problem 1: when the page is visited the second time it won't load properly: all names are "loading" and it creates a new task, written in one write
+				//problem 2: when there are two events, the second one gets its timings messed up
+			},
+		}),
+	).current;
+
+	// static add(a: Animated, b: Animated): AnimatedAddition;
+	//pan.x v
+
 	return (
 		<Animated.View
+		//[styles.animatedBox,
 			style={{
 				// flex          : 0,
 				//position:'absolute',
 				position: 'absolute',
-				height: v,
-				top: w, 
+				height: pan.x,
+				//height: v,
+				// paddingBottom : pan.x,
+				// top: w, 
+				//translateY    : w,
+				//marginTop: w,
+				top: pan.y, 
+				// top:0,
 				bottom: 0,
 				// top: w, bottom: w+x,
 				left: 0, right: 0, 
@@ -185,16 +227,18 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 				// translateY    : offset - 2*x,
 				//translateY    : offset,
 				//translateY    : this.state.mapViewOffset.y
-				// padding          : x,0,
+				//padding          : x,0,
 				//backgroundColor  : "gray",
 				//backgroundColor  : 'grey',
+				backgroundColor  : "black",
 				borderWidth: 5,
-				// paddingLeft: pan.x,
+				borderColor: "green",
+				//paddingLeft: pan.x,
 				//top : pan.y,
 				//left: pan.x,
 				//paddingTop    : x,
 				//paddingBottom : x,
-			}}
+			}}{...panResponder.panHandlers}
 			// style={[styles.animatedBox,{
 			// 	paddingTop    : x,
 			// 	paddingBottom : y,
@@ -217,6 +261,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 						}}
 					/>
 				</View>
+				{/* <View> */}
+					{/* bar */}
+				{/* </View> */}
 				{/* <View style={styles.scrollItem}>
 					<TextInput style={styles.scrollText} 
 						value={task.requiredTime}
@@ -308,17 +355,33 @@ function fetchData (setTasks, setSync, ref) {
 	},[]);
 }
 
+function saveAgendaTimes(duration, startTime, taskId){
+	tasks2[taskId].duration  = duration;
+	tasks2[taskId].startTime = startTime;
+	saveData(tasks2, sync2)
+}
+
+function saveData(tasks, sync){
+// function saveData(tasks){
+	console.log("ready to write");
+	console.log("sync  check 2: ",sync);
+	console.log("sync2 check 2: ",sync2);
+	
+	if(sync){
+		console.log("written");
+		updateDoc(doc(firestore, "Planning", "TestDay"), {tasks: tasks})
+		.catch((e) => {
+			console.log(e)
+			//throw e;
+			//alert(error.message);
+		});
+	}
+}
+
 function updateData (modified, setModified, sync, tasks) {
 	if(modified){
 		setModified(false);
-		if(sync){
-			updateDoc(doc(firestore, "Planning", "TestDay"), {tasks: tasks})
-			.catch((e) => {
-				console.log(e)
-				//throw e;
-				//alert(error.message);
-			});
-		}
+		saveData(tasks, sync);
 	}
 }
 
