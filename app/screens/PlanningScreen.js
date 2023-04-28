@@ -125,8 +125,8 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 	fetchData2 (setTasks, setSync);
 	updateData(modified, setModified, sync, tasks);
 	const n = tasks.length;
-	console.log(tasks);
-	console.log(sync);
+	// console.log(tasks);
+	// console.log(sync);
 	sync2 = sync;
 	tasks2 = tasks;
 	return [...Array(n)].map((e, i) =>
@@ -176,8 +176,8 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, sync}) => {
 	// pan.setOffset(pan: {x: v; y: w});
 	pan.setOffset({x: duration, y: startTime});
 
-	console.log("sync  check 1: ",sync);
-	console.log("sync2 check 1: ",sync2);
+	// console.log("sync  check 1: ",sync);
+	// console.log("sync2 check 1: ",sync2);
 
 	const panResponder = useRef(
 		PanResponder.create({
@@ -363,12 +363,12 @@ function saveAgendaTimes(duration, startTime, taskId){
 
 function saveData(tasks, sync){
 // function saveData(tasks){
-	console.log("ready to write");
-	console.log("sync  check 2: ",sync);
-	console.log("sync2 check 2: ",sync2);
+	// console.log("ready to write");
+	// console.log("sync  check 2: ",sync);
+	// console.log("sync2 check 2: ",sync2);
 	
 	if(sync){
-		console.log("written");
+		// console.log("written");
 		updateDoc(doc(firestore, "Planning", "TestDay"), {tasks: tasks})
 		.catch((e) => {
 			console.log(e)
