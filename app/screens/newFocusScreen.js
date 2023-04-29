@@ -1,86 +1,16 @@
-// import React, { useState, useEffect } from 'react';
-// import { ImageBackground, StyleSheet, View , Text, TouchableOpacity, SafeAreaView} from 'react-native';
-
-
 import React, { useState, useEffect, useRef, Component } from 'react';
 import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput, Animated, PanResponder } from 'react-native';
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { auth, firestore } from "../../firebase";
-
 //import { Box, FlatList, Center, NativeBaseProvider} from "native-base";
 // import { doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore"; 
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { auth, firestore } from "../../firebase";
 //import { firestore, auth } from "/config/firebase"
 
-
-const FocusScreen = ({ navigation }) => {
-	const [str  , setStr  ] = useState("");
-	const [timeV, setTimeV] = useState(0 );
-
-	let scrollValue = -(timeV - 34459300)*0.001;
-	console.log(scrollValue);
-	return (
-		<View style={styles.background}>
-			<View style={styles.topBar}>
-				<View style={styles.noteBar}>
-					<Text style={styles.noteText}>
-						note
-					</Text>
-				</View>
-				<TouchableOpacity 
-					style={styles.exitButton}
-					onPress={() => navigation.navigate('ToDo')}
-				/>
-			</View>
-			<View style={styles.taskBar}>
-				<ToDoScreen scrollValue={scrollValue} />
-			</View>
-			<View style={styles.bottomBar}>
-				<View style={styles.musicBar}>
-					<View style={styles.musicButton}/>
-					<View style={styles.musicButton}/>
-					<View style={styles.musicButton}/>
-				</View>
-			</View>
-			<DispUpdate str={str} setStr={setStr} setTimeV={setTimeV} />
-		</View>
-	);
-}
-
-const DispUpdate = ({str, setStr, setTimeV}) => {
-	useEffect(() => {
-		var ms=new Date(Date.now())
-		//Auto-correcting timer (A is the time to wait) - Designed in BASIC
-		var A=1500-(ms.getMilliseconds()+500)%1000
-		//console.log(A)
-		const trigger = setInterval(() => {
-			setTimeV(Math.round(ms.getTime() % 86400000));
-			setStr(ms.getHours().toString()+":"+ms.getMinutes().toString()+":"+ms.getSeconds().toString());
-		}, A);
-
-    	return () => clearInterval(trigger);
-	});
-	// },[]);
-
-	return (
-		<View style={styles.timerBar}>
-			<Text style={styles.textStyle1} >
-				{str}
-			</Text>
-			<View style={styles.nowLine}/>
-			<Text style={styles.textStyle2} >
-				{str}
-			</Text>
-		</View>
-	);
-}
-
-//--
-
 //panresponder's animated variables are prepared and defined too early so that the data is still a placeholder
-// let sync2 = false;
-// let tasks2 = [];
+let sync2 = false;
+let tasks2 = [];
 
-const ToDoScreen = ({ navigation, scrollValue }) => {
+const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
 	const [modified, setModified] = useState(false);
 	const [sync    , setSync    ] = useState(false);
@@ -97,6 +27,8 @@ const ToDoScreen = ({ navigation, scrollValue }) => {
 			repeatOffsets : []
 		}
 	]);
+	
+	let scrollValue = -4000;
 
 	return (
 		<View style={styles.background}>
@@ -139,11 +71,11 @@ const ToDoScreen = ({ navigation, scrollValue }) => {
 						</Text>
 					</TouchableOpacity>
 				</View>
-				{/* <View style={styles.menuButtons}>
+				<View style={styles.menuButtons}>
 					<TouchableOpacity style={styles.menuButton1} onPress={() => {setSync(false); navigation.navigate("ToDo" );}}/>
 					<TouchableOpacity style={styles.menuButton2}/>
 					<TouchableOpacity style={styles.menuButton3} onPress={() => {setSync(false); navigation.navigate("Focus");}}/>
-				</View> */}
+				</View>
 			</SafeAreaView>
 		</View>
 	);
@@ -197,8 +129,8 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 	const n = tasks.length;
 	// console.log(tasks);
 	// console.log(sync);
-	// sync2 = sync;
-	// tasks2 = tasks;
+	sync2 = sync;
+	tasks2 = tasks;
 	return [...Array(n)].map((e, i) =>
 		<View key={i}>
 			<ToDoListItem 
@@ -382,124 +314,13 @@ function updateData (modified, setModified, sync, tasks) {
 	}
 }
 
-// const styles = StyleSheet.create({
-// })
-
-// export default ToDoScreen;
-
-//--
-
 const styles = StyleSheet.create({
 	background: {
 		flex: 1,
 		justifyContent: "center",
 		//alignItems: "center",
-		//position: "relative",
-		backgroundColor: "#111",
-	},
-	// background: {
-	// 	flex: 1,
-	// 	justifyContent: "center",
-	// 	//alignItems: "center",
-	// 	backgroundColor: "#000",
-	// },
-	timerBar:{
-		alignSelf: "center",
-		alignItems: "center",
-		//justifyContent: "center",
-		position: "absolute",
-	},
-	textStyle1:{
-		fontSize: 50,
-		color: "#fff",
-	},
-	textStyle2:{
-		fontSize: 50,
-		color: "#fff",
-	},
-	nowLine:{
-		backgroundColor: "#222",
-		//flex: 1,
-		width: 10,
-		height: 200,
-	},
-	topBar:{
-		//justifyContent:"flex-start",
-		//alignItems:"center",
-		//position: "relative",
-		//backgroundColor: "#777",
-		flex: 1,
-		//height: 1000,
-	},
-	bottomBar:{
-		//justifyContent:"flex-end",
-		//position: "relative",
-		//backgroundColor: "#777",
-		flex: 1,
-		flexDirection:"column-reverse",
-		//height: 200,
-	},
-	taskBar: {
-		//flex: 1,
-		height: 200,
-		backgroundColor: "#555",
-	},
-	task: {
-		flex: 1,
 		backgroundColor: "#000",
 	},
-	taskText: {
-		flex: 1,
-		fontSize: 90,
-		color: "#fff",
-	},
-	noteBar: {
-		alignSelf: "center",
-		//flex: 1,
-		paddingHorizontal: 15,
-		borderRadius: 4,
-		backgroundColor: "#333",
-		top: 30,
-		position: "absolute",
-	},
-	noteText: {
-		marginTop: -4,
-		textAlign: "center",
-		flex: 1,
-		fontSize: 40,
-		color: "#fff",
-	},
-	musicBar: {
-		alignSelf: "center",
-		//flex: 1,
-		width:300,
-		height:75,
-		top: 10,
-		borderRadius: 4,
-		backgroundColor: "#444",
-		flexDirection:"row",
-		justifyContent:"space-evenly",
-		alignItems:"center",
-	},
-	musicButton: {
-		width:50,
-		height:50,
-		backgroundColor: "#222",
-		borderRadius: 4,
-		//marginLeft: 10,
-	},
-	exitButton: {
-		position: "absolute",
-		//flex: 1,
-		top:30,
-		right:5,
-		width:50,
-		height:50,
-		borderRadius: 4,
-		backgroundColor: "#222",
-		alignSelf: "flex-end",
-	},
-	//--
 	container: {
 		flex: 1,
 		backgroundColor: "#000",
@@ -614,4 +435,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default FocusScreen;
+export default ToDoScreen;
