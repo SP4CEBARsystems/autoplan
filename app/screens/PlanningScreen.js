@@ -355,6 +355,74 @@ function fetchData (setTasks, setSync, ref) {
 	},[]);
 }
 
+//a function to find all gaps
+
+function findGaps(tasks){
+	//gapStart is 00:00
+	//loop through tasks in order:
+	//  if taskStart > gapStart then write a new gap to the database
+	//  loop through the next tasks
+	//    if taskEnd >= nextTaskStart then taskEnd = nextTaskEnd else break;
+	//    nextTask();
+	//  nextTask();
+	let taskStart;
+	// let taskEnd;
+	// let nextTaskStart;
+	// let nextTaskEnd;
+	// let gapStart = 0;
+	let prevTaskEnd = 0;
+	let gaps = [];
+	for (i=0; i<tasks.length-1; i++) {
+
+		taskStart   = tasks[i].startTime
+		if (prevTaskEnd < taskStart) {
+			gaps.push({start: prevTaskEnd, end: taskStart});
+		}
+		prevTaskEnd = tasks[i].duration + start
+		// taskEnd       = tasks[i  ].duration + start
+		// nextTaskStart = tasks[i+1].startTime
+		// nextTaskEnd   = tasks[i+1].duration + nextTaskStart
+		// if(gapStart < taskStart){
+		// 	gaps.push({start: gapStart, end: taskStart});
+		// }
+		// while(taskEnd >= nextTaskStart && i<tasks.length-1){
+		// 	i++;
+		// 	taskStart     = tasks[i  ].startTime
+		// 	taskEnd       = tasks[i  ].duration + start
+		// 	nextTaskStart = tasks[i+1].startTime
+		// 	// nextTaskEnd   = tasks[i+1].duration + nextTaskStart
+		// }
+		// gapStart = taskEnd;
+	}
+}
+
+//postpone for now:
+//a function to find a (new) gap's size after the task and to find if it's previous gap is merged with another gap
+//a promising method:
+//it looks up the details of the initial gap data, and it looks at the delta times to figure out what tasks are being stepped past, this can be any number of tasks
+//it handles the event's start points and end points using the same function, but one at a time:
+//the function: 
+//- look at the sign of the delta value
+//- determine if that means fill or clear for this node
+//- look up the gap data
+//- loop until the delta value is reached
+//  - calculate if it escapes this gap
+//  - if not then calculate the new time
+
+//previous methods:
+//situations:
+//- a change in the gap's start time and or duration and the creation and or removal of gaps
+//  creation:
+//    task is inserted
+//  removal
+//    task is removed
+//first approach:
+//the gap's initial start time and end time and it's new start time and end time are analysed
+//these are usually gap borders, so the details are looked up, example: "gap 4 end"
+//the initial state is compared with the new state
+//if there are no gap borders detected then it's just 0
+
+
 function saveAgendaTimes(duration, startTime, taskId){
 	tasks2[taskId].duration  = duration;
 	tasks2[taskId].startTime = startTime;
