@@ -17,6 +17,7 @@ const ToDoScreen = ({ navigation }) => {
 			deadline      : 0,
 			priority      : 0,
 			like          : 0,
+			urgency       : 0,
 			repeatTimespan: "loading",
 			repeatInterval: 0,
 			repeatOffset  : 0,
@@ -27,6 +28,7 @@ const ToDoScreen = ({ navigation }) => {
 			deadline      : 0,
 			priority      : 0,
 			like          : 0,
+			urgency       : 0,
 			repeatTimespan: "loading",
 			repeatInterval: 0,
 			repeatOffset  : 0,
@@ -52,17 +54,21 @@ const ToDoScreen = ({ navigation }) => {
 					<TouchableOpacity style={styles.plus} onPress={() => {
 						tasks.push({
 							name          : "new Task",
-							requiredTime  : 0,
-							deadline      : 0,
-							priority      : 0,
-							like          : 0,
+							requiredTime  : 120,
+							deadline      : 7,
+							priority      : 0.5,
+							like          : 0.5,
+							urgency       : 0,
 							repeatTimespan: "days",
 							repeatInterval: 0,
 							repeatOffset  : 0,
 							repeatOffsets : []
 						});
-						setTasks   (tasks);
-						setModified(true);
+						const l = tasks.length-1;
+						reRenderTasksAndUrgency(setTasks, tasks, tasks[l], l, setModified);
+						// reRenderTasks(setTasks, tasks, setModified);
+						// setTasks   (tasks);
+						// setModified(true);
 					}}>
 						<Text style={styles.plusText}>
 							+
@@ -85,6 +91,11 @@ const HeaderBar = () => {
 			<View style={styles.headerBlock}>
 				<Text style={styles.headerText}>
 					Name
+				</Text>
+			</View>
+			<View style={styles.headerBlock}>
+				<Text style={styles.headerText}>
+					Urgency
 				</Text>
 			</View>
 			<View style={styles.headerBlock}>
@@ -149,10 +160,16 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
                     placeholder= "task name"
                     onChange={(e) => {
 						tasks[taskId].name = e.target.value;
-						setTasks   (tasks);
-						setModified(true);
+						reRenderTasks(setTasks, tasks, setModified);
+						// setTasks   (tasks);
+						// setModified(true);
 					}}
 				/>
+			</View>
+			<View style={styles.scrollItem}>
+				<Text style={styles.scrollText}>
+					{task.urgency}
+				</Text>
 			</View>
 			<View style={styles.scrollItem}>
 				<TextInput style={styles.scrollText} 
@@ -162,8 +179,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
                     placeholder= "required time"
                     onChange={(e) => {
 						tasks[taskId].requiredTime = e.target.value;
-						setTasks   (tasks);
-						setModified(true);
+						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						// setTasks   (tasks);
+						// setModified(true);
 					}}
 				/>
 			</View>
@@ -175,8 +193,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
                     placeholder= "deadline"
                     onChange={(e) => {
 						tasks[taskId].deadline = e.target.value;
-						setTasks   (tasks);
-						setModified(true);
+						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						// setTasks   (tasks);
+						// setModified(true);
 					}}
 				/>
 			</View>
@@ -188,8 +207,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
                     placeholder= "priority"
                     onChange={(e) => {
 						tasks[taskId].priority = e.target.value;
-						setTasks   (tasks);
-						setModified(true);
+						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						// setTasks   (tasks);
+						// setModified(true);
 					}}
 				/>
 			</View>
@@ -201,8 +221,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
                     placeholder= "number"
                     onChange={(e) => {
 						tasks[taskId].like = e.target.value;
-						setTasks   (tasks);
-						setModified(true);
+						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						// setTasks   (tasks);
+						// setModified(true);
 					}}
 				/>
 			</View>
@@ -213,11 +234,30 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 			</View>
 			<TouchableOpacity style={styles.delete} onPress={() => {
 				tasks.splice(taskId, 1);
-				setTasks   (tasks);
-				setModified(true);
+				reRenderTasks(setTasks, tasks, setModified);
+				// setTasks   (tasks);
+				// setModified(true);
 			}}/>
 		</View>
 	);
+}
+
+const reRenderTasksAndUrgency = (setTasks, tasks, task, taskId, setModified) => {
+	tasks[taskId].urgency = calculateUrgency(task);
+	reRenderTasks(setTasks, tasks, setModified);
+}
+
+const reRenderTasks = (setTasks, tasks, setModified) => {
+	console.log("set: ", tasks);
+	setTasks   (tasks);
+	setModified(true);
+}
+
+const calculateUrgency = (task) => {
+	// return -1;
+	const timePressure = task.deadline ? task.requiredTime / task.deadline : -1
+	const urgency = task.priority * timePressure
+	return urgency;
 }
 
 function fetchData (setTasks, setSync) {
