@@ -127,7 +127,7 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 	const n = tasks.length;
 	// console.log(tasks);
 	// console.log(sync);
-	sync2 = sync;
+	sync2  = sync;
 	tasks2 = tasks;
 	return [...Array(n)].map((e, i) =>
 		<View key={i}>
@@ -144,7 +144,8 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 }
 
 
-
+//index the todo list to get the urgencies in order
+//index the agenda to analyse it in start time order
 
 //database
 //  agenda
@@ -371,14 +372,15 @@ function findGaps(tasks){
 	// let nextTaskEnd;
 	// let gapStart = 0;
 	let prevTaskEnd = 0;
+	let maxEnd      = 1000;
 	let gaps = [];
-	for (i=0; i<tasks.length-1; i++) {
+	for (let i=0; i<tasks.length-1; i++) {
 
 		taskStart   = tasks[i].startTime
 		if (prevTaskEnd < taskStart) {
 			gaps.push({start: prevTaskEnd, end: taskStart});
 		}
-		prevTaskEnd = tasks[i].duration + start
+		prevTaskEnd = tasks[i].duration + taskStart
 		// taskEnd       = tasks[i  ].duration + start
 		// nextTaskStart = tasks[i+1].startTime
 		// nextTaskEnd   = tasks[i+1].duration + nextTaskStart
@@ -394,6 +396,17 @@ function findGaps(tasks){
 		// }
 		// gapStart = taskEnd;
 	}
+	if (prevTaskEnd < maxEnd) {
+		gaps.push({start: prevTaskEnd, end: maxEnd});
+	}
+
+	console.log("gaps: ", gaps);
+	actallySaveTheData(gaps, doc(firestore, "Gaps", "TestDay"));
+	PlanOut(gaps);
+}
+
+function PlanOut(tasks){
+
 }
 
 //postpone for now:
@@ -426,7 +439,8 @@ function findGaps(tasks){
 function saveAgendaTimes(duration, startTime, taskId){
 	tasks2[taskId].duration  = duration;
 	tasks2[taskId].startTime = startTime;
-	saveData(tasks2, sync2)
+	saveData(tasks2, sync2);
+	findGaps(tasks2);
 }
 
 function saveData(tasks, sync){
@@ -437,13 +451,17 @@ function saveData(tasks, sync){
 	
 	if(sync){
 		// console.log("written");
-		updateDoc(doc(firestore, "Planning", "TestDay"), {tasks: tasks})
-		.catch((e) => {
-			console.log(e)
-			//throw e;
-			//alert(error.message);
-		});
+		actallySaveTheData(tasks, doc(firestore, "Planning", "TestDay"));
 	}
+}
+
+function actallySaveTheData(tasks, ref){
+	updateDoc(ref, {tasks: tasks})
+	.catch((e) => {
+		console.log(e)
+		//throw e;
+		//alert(error.message);
+	});
 }
 
 function updateData (modified, setModified, sync, tasks) {
