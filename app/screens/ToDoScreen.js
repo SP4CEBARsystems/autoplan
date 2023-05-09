@@ -279,6 +279,7 @@ function updateData (modified, setModified, sync, tasks) {
 	if(modified){
 		setModified(false);
 		if(sync){
+			tasks.sort((a, b) => b.urgency - a.urgency);
 			updateDoc(doc(firestore, "ToDo", "activeTasks"), {tasks: tasks})
 			.catch((e) => {
 				console.log(e)

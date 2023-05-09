@@ -7,6 +7,9 @@ import { auth, firestore } from "../../firebase";
 //import { firestore, auth } from "/config/firebase"
 
 //panresponder's animated variables are prepared and defined too early so that the data is still a placeholder
+import { query, orderBy, limit } from "firebase/firestore";  
+
+
 let sync2 = false;
 let tasks2 = [];
 
@@ -340,9 +343,13 @@ function fetchData2 (setTasks, setSync) {
 	//fetchData (setTasks, setSync, doc(firestore, "Planning", "TestDay"));
 }
 
+//the structure is bad: I need to split all the tasks up into separate documents for queries to be useful
+//for now I can sort the tasks array before uploading it
+
 //doc(firestore, "Planning", "TestDay")
 function fetchData (setTasks, setSync, ref) {
 	useEffect(() => {
+		// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
 		getDoc(ref)
 		.then((doc) => {
 			setTasks(doc.data().tasks);
@@ -372,7 +379,7 @@ function findGaps(tasks){
 	// let nextTaskEnd;
 	// let gapStart = 0;
 	let prevTaskEnd = 0;
-	let maxEnd      = 1000;
+	let maxEnd      = 2000;
 	let gaps = [];
 	for (let i=0; i<tasks.length-1; i++) {
 
@@ -451,6 +458,7 @@ function saveData(tasks, sync){
 	
 	if(sync){
 		// console.log("written");
+		tasks.sort((a, b) => a.startTime - b.startTime);
 		actallySaveTheData(tasks, doc(firestore, "Planning", "TestDay"));
 	}
 }
