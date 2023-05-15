@@ -9,6 +9,8 @@ import { auth, firestore } from "../../firebase";
 //panresponder's animated variables are prepared and defined too early so that the data is still a placeholder
 import { query, orderBy, limit } from "firebase/firestore";  
 
+import {todo_tasks} from "./ToDoScreen"
+
 
 let sync2 = false;
 let tasks2 = [];
@@ -30,6 +32,7 @@ const ToDoScreen = ({ navigation }) => {
 			repeatOffsets : []
 		}
 	]);
+	// console.log("tasks", todo_tasks);
 
 	return (
 		<View style={styles.background}>
@@ -409,11 +412,32 @@ function findGaps(tasks){
 
 	console.log("gaps: ", gaps);
 	actallySaveTheData(gaps, doc(firestore, "Gaps", "TestDay"));
-	PlanOut(gaps);
+	PlanOut(gaps, todo_tasks);
 }
 
-function PlanOut(tasks){
-
+function PlanOut(gaps, tasks){
+	for(let i=0; i<gaps.length; i++){
+		let gap=gaps[i];
+		let gapEnd = gap.end;
+		let time   = gap.start;
+		let taskID = 0;
+		while(time<gapEnd){
+			let task     = tasks[taskID];
+			let timeLeft = gapEnd-time;
+			console.log("time: ", i, taskID, time, timeLeft, task.maxLength);
+			if (time + task.minlength > timeLeft){
+				// continue;
+				break;
+			} else if (time + task.maxLength > timeLeft){
+				console.log(task);
+				time += task.maxLength;
+			} else {
+				time = gapEnd;
+				break;
+			}
+			taskID++;
+		}
+	}
 }
 
 //postpone for now:

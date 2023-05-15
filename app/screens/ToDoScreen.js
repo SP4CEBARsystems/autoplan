@@ -6,6 +6,8 @@ import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'fireba
 import { auth, firestore } from "../../firebase";
 //import { firestore, auth } from "/config/firebase"
 
+export let todo_tasks
+
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
 	const [modified, setModified] = useState(false);
@@ -18,6 +20,8 @@ const ToDoScreen = ({ navigation }) => {
 			priority      : 0,
 			like          : 0,
 			urgency       : 0,
+			minLength     : 0,
+			maxLength     : 0,
 			repeatTimespan: "loading",
 			repeatInterval: 0,
 			repeatOffset  : 0,
@@ -29,12 +33,15 @@ const ToDoScreen = ({ navigation }) => {
 			priority      : 0,
 			like          : 0,
 			urgency       : 0,
+			minLength     : 0,
+			maxLength     : 0,
 			repeatTimespan: "loading",
 			repeatInterval: 0,
 			repeatOffset  : 0,
 			repeatOffsets : []
 		}
 	]);
+	todo_tasks = tasks;
 
 	return (
 		<View style={styles.background}>
@@ -59,6 +66,8 @@ const ToDoScreen = ({ navigation }) => {
 							priority      : 0.5,
 							like          : 0.5,
 							urgency       : 0,
+							minLength     : 0,
+							maxLength     : 120,
 							repeatTimespan: "days",
 							repeatInterval: 0,
 							repeatOffset  : 0,
@@ -241,6 +250,10 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 		</View>
 	);
 }
+
+// const test = 0
+// // export test
+// export default test
 
 const reRenderTasksAndUrgency = (setTasks, tasks, task, taskId, setModified) => {
 	tasks[taskId].urgency = calculateUrgency(task);
