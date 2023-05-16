@@ -238,7 +238,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 			</View>
 			<View style={styles.scrollItem}>
 				<Text style={styles.scrollText}>
-					...
+					Λ
 				</Text>
 			</View>
 			<TouchableOpacity style={styles.delete} onPress={() => {
