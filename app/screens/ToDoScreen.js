@@ -157,7 +157,7 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 		</View>
 	);
 }
-
+//regular expression for dots
 const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 	return (
 		<View style={styles.scrollBlock}>
@@ -187,7 +187,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
                     name="requiredTime"
                     placeholder= "required time"
                     onChange={(e) => {
-						tasks[taskId].requiredTime = e.target.value;
+						tasks[taskId].requiredTime = e.target.value.replace(/[^0-9||.]/g,"");
 						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						// setTasks   (tasks);
 						// setModified(true);
@@ -201,7 +201,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
                     name="deadline"
                     placeholder= "deadline"
                     onChange={(e) => {
-						tasks[taskId].deadline = e.target.value;
+						tasks[taskId].deadline = e.target.value.replace(/[^0-9||.]/g,"");
 						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						// setTasks   (tasks);
 						// setModified(true);
@@ -215,7 +215,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
                     name="priority"
                     placeholder= "priority"
                     onChange={(e) => {
-						tasks[taskId].priority = e.target.value;
+						tasks[taskId].priority = e.target.value.replace(/[^0-9||.]/g,"");
 						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						// setTasks   (tasks);
 						// setModified(true);
@@ -229,7 +229,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
                     name="like"
                     placeholder= "number"
                     onChange={(e) => {
-						tasks[taskId].like = e.target.value;
+						tasks[taskId].like = e.target.value.replace(/[^0-9||.]/g,"");
 						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						// setTasks   (tasks);
 						// setModified(true);
