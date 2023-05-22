@@ -560,7 +560,7 @@ function saveData2(tasks, sync){
 		let plannedGaps = PlanOut(gaps, todo_tasks);
 		console.log("A4", plannedGaps);
 		let planning    = tasks;
-		planning.concat(plannedGaps);
+		planning = planning.concat(plannedGaps);
 		console.log("A5", planning);
 		planning.sort((a, b) => a.startTime - b.startTime);
 		console.log("A6", planning);
