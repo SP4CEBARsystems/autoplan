@@ -12,13 +12,47 @@ import { query, orderBy, limit } from "firebase/firestore";
 import {todo_tasks} from "./ToDoScreen"
 
 
-let sync2 = false;
+let sync2  = false;
 let tasks2 = [];
+
+function fetchData2 (setTasks, setSync) {
+	//, setAgenda
+	//refAgenda = doc(firestore, "Agenda", "TestDay")
+	//refToDo   = doc(firestore, "ToDo", "activeTasks")
+	// fetchData (setAgenda, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
+	// fetchData (setTasks , setSync, doc(firestore, "PlannedGaps", "TestDay"    ));
+	fetchData (setTasks, setSync, doc(firestore, "Planning"   , "TestDay"    ));
+	// fetchData (setTasks, setSync, doc(firestore, "Gaps"       , "TestDay"    ));
+	// fetchData (setTasks, setSync, doc(firestore, "ToDo"       , "activeTasks"));
+	//doc(firestore, "Agenda", "TestDay")
+	//fetchData (setTasks, setSync, doc(firestore, "Planning", "TestDay"));
+}
+
+//the structure is bad: I need to split all the tasks up into separate documents for queries to be useful
+//for now I can sort the tasks array before uploading it
+
+//doc(firestore, "Planning", "TestDay")
+function fetchData (setTasks, setSync, ref) {
+	useEffect(() => {
+		// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
+		//don't add a semicolon ";" after "getDoc()", Don't do that
+		getDoc(ref).then((doc) => {
+			setTasks(doc.data().tasks);
+			setSync(true);
+		}).catch((e) => {
+			console.log(e);
+			//throw e;
+			//alert(error.message);
+		});
+	},[]);
+}
 
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
 	const [modified, setModified] = useState(false);
 	const [sync    , setSync    ] = useState(false);
+	const [gaps    , setGaps    ] = useState([]);
+	const [agenda  , setAgenda  ] = useState([]);
 	const [tasks   , setTasks   ] = useState([
 		{
 			name          : "loading",
@@ -34,6 +68,21 @@ const ToDoScreen = ({ navigation }) => {
 	]);
 	// console.log("tasks", todo_tasks);
 
+	// fetchData2(setTasks, setSync);
+	
+	// fetchData (setAgenda, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
+	fetchData (setTasks, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
+	// fetchData (setTasks , setSync, doc(firestore, "PlannedGaps", "TestDay"    ));
+	// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
+	fetchData (setGaps  , setSync, doc(firestore, "Gaps"       , "TestDay"    ));
+	// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
+	updateData(modified , setModified, sync, tasks);
+	// console.log(tasks);
+	// console.log(sync);
+	sync2  = sync;
+	tasks2 = tasks;
+	console.log ("new: ", tasks2)
+	
 	return (
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
@@ -45,14 +94,28 @@ const ToDoScreen = ({ navigation }) => {
 					{...panResponder.panHandlers}>
 				</Animated.View> */}
 				<ScrollView style={styles.scrollingList}>
-					<ToDoListItems 
-						tasks       = {tasks} 
-						setTasks    = {setTasks} 
-						modified    = {modified} 
-						setModified = {setModified} 
-						sync        = {sync} 
-						setSync     = {setSync} 
-					/>
+					<View style={styles.items}>
+						<ToDoListItems2
+							tasks       = {gaps       } 
+							setTasks    = {setGaps    }
+							// tasks       = {tasks      } 
+							// setTasks    = {setTasks   } 
+							modified    = {modified   } 
+							setModified = {setModified} 
+							sync        = {sync       } 
+							setSync     = {setSync    } 
+						/>
+					</View>
+					<View style={styles.items}>
+						<ToDoListItems
+							tasks       = {tasks     } 
+							setTasks    = {setTasks  } 
+							modified    = {modified   } 
+							setModified = {setModified} 
+							sync        = {sync       } 
+							setSync     = {setSync    } 
+						/>
+					</View>
 				</ScrollView>
 				<View style={styles.plusParent}>
 					<TouchableOpacity style={styles.plus} onPress={() => {
@@ -127,17 +190,27 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) => {
-	fetchData2 (setTasks, setSync);
-	updateData(modified, setModified, sync, tasks);
+const ToDoListItems = ({tasks, setTasks, setModified, sync}) => {
 	const n = tasks.length;
-	// console.log(tasks);
-	// console.log(sync);
-	sync2  = sync;
-	tasks2 = tasks;
 	return [...Array(n)].map((e, i) =>
 		<View key={i}>
 			<ToDoListItem 
+				tasks       = {tasks      }
+				taskId      = {i          }
+				task        = {tasks[i]   }
+				setModified = {setModified}
+				setTasks    = {setTasks   }
+				sync        = {sync       }
+			/>
+		</View>
+	);
+}
+
+const ToDoListItems2 = ({tasks, setTasks, setModified, sync}) => {
+	const n = tasks.length;
+	return [...Array(n)].map((e, i) =>
+		<View key={i}>
+			<ToDoListItem2 
 				tasks       = {tasks      }
 				taskId      = {i          }
 				task        = {tasks[i]   }
@@ -338,32 +411,133 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, sync}) => {
 	);
 }
 
-function fetchData2 (setTasks, setSync) {
-	//refAgenda = doc(firestore, "Agenda", "TestDay")
-	//refToDo   = doc(firestore, "ToDo", "activeTasks")
-	fetchData (setTasks, setSync, doc(firestore, "Planning", "TestDay"));
-	//doc(firestore, "Agenda", "TestDay")
-	//fetchData (setTasks, setSync, doc(firestore, "Planning", "TestDay"));
-}
-
-//the structure is bad: I need to split all the tasks up into separate documents for queries to be useful
-//for now I can sort the tasks array before uploading it
-
-//doc(firestore, "Planning", "TestDay")
-function fetchData (setTasks, setSync, ref) {
-	useEffect(() => {
-		// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
-		getDoc(ref)
-		.then((doc) => {
-			setTasks(doc.data().tasks);
-			setSync(true);
-		})
-		.catch((e) => {
-			console.log(e);
-			//throw e;
-			//alert(error.message);
-		});
-	},[]);
+const ToDoListItem2 = ({tasks, taskId, task, setTasks, setModified, sync}) => {
+	let duration  = task.duration;
+	let startTime = task.startTime;
+	// console.log("active");
+	// static add(a: Animated, b: Animated): AnimatedAddition;
+	//pan.x v
+	return (
+		<View
+		//[styles.animatedBox,
+			style={{
+				// flex          : 0,
+				//position:'absolute',
+				position: 'absolute',
+				height: duration,
+				//height: v,
+				// paddingBottom : pan.x,
+				// top: w, 
+				//translateY    : w,
+				//marginTop: w,
+				top: startTime, 
+				//x: duration, y: startTime
+				// top:0,
+				bottom: 0,
+				// top: w, bottom: w+x,
+				left: 0, right: 0, 
+				//width: 100%,
+				//height: x,
+				//paddingTop    : x,
+				//paddingBottom : x,
+				// translateY    : offset - 2*x,
+				//translateY    : offset,
+				//translateY    : this.state.mapViewOffset.y
+				//padding          : x,0,
+				//backgroundColor  : "gray",
+				//backgroundColor  : 'grey',
+				backgroundColor  : "black",
+				borderWidth: 5,
+				borderColor: "green",
+				//paddingLeft: pan.x,
+				//top : pan.y,
+				//left: pan.x,
+				//paddingTop    : x,
+				//paddingBottom : x,
+			}}
+		>
+			<View style={styles.scrollBlock}>
+				<View style={styles.scrollItem}>
+					<TextInput style={styles.scrollText} 
+						value={task.name}
+						type="text"
+						name="name"
+						placeholder= "task name"
+						onChange={(e) => {
+							tasks[taskId].name = e.target.value;
+							setTasks   (tasks);
+							setModified(true);
+						}}
+					/>
+				</View>
+				{/* <View> */}
+					{/* bar */}
+				{/* </View> */}
+				{/* <View style={styles.scrollItem}>
+					<TextInput style={styles.scrollText} 
+						value={task.requiredTime}
+						type="number"
+						name="requiredTime"
+						placeholder= "required time"
+						onChange={(e) => {
+							tasks[taskId].requiredTime = e.target.value;
+							setTasks   (tasks);
+							setModified(true);
+						}}
+					/>
+				</View>
+				<View style={styles.scrollItem}>
+					<TextInput style={styles.scrollText} 
+						value={task.deadline}
+						type="number"
+						name="deadline"
+						placeholder= "deadline"
+						onChange={(e) => {
+							tasks[taskId].deadline = e.target.value;
+							setTasks   (tasks);
+							setModified(true);
+						}}
+					/>
+				</View>
+				<View style={styles.scrollItem}>
+					<TextInput style={styles.scrollText} 
+						value={task.priority}
+						type="number"
+						name="priority"
+						placeholder= "priority"
+						onChange={(e) => {
+							tasks[taskId].priority = e.target.value;
+							setTasks   (tasks);
+							setModified(true);
+						}}
+					/>
+				</View>
+				<View style={styles.scrollItem}>
+					<TextInput style={styles.scrollText} 
+						value={task.like}
+						type="number"
+						name="like"
+						placeholder= "number"
+						onChange={(e) => {
+							tasks[taskId].like = e.target.value;
+							setTasks   (tasks);
+							setModified(true);
+						}}
+					/>
+				</View>
+				<View style={styles.scrollItem}>
+					<Text style={styles.scrollText}>
+						...
+					</Text>
+				</View> */}
+				<TouchableOpacity style={styles.delete} onPress={() => {
+					tasks.splice(taskId, 1);
+					setTasks   (tasks);
+					setModified(true);
+				}}/>
+			</View>
+		</View>
+	);
 }
 
 //a function to find all gaps
@@ -384,11 +558,12 @@ function findGaps(tasks){
 	let prevTaskEnd = 0;
 	let maxEnd      = 2000;
 	let gaps = [];
-	for (let i=0; i<tasks.length-1; i++) {
-
+	console.log("tt: ", tasks)
+	for (let i=0; i<tasks.length; i++) {
 		taskStart   = tasks[i].startTime
+		console.log("taskStart: ", prevTaskEnd, taskStart)
 		if (prevTaskEnd < taskStart) {
-			gaps.push({start: prevTaskEnd, end: taskStart});
+			gaps.push({name: "gap", startTime: prevTaskEnd, duration: taskStart-prevTaskEnd});
 		}
 		prevTaskEnd = tasks[i].duration + taskStart
 		// taskEnd       = tasks[i  ].duration + start
@@ -407,7 +582,7 @@ function findGaps(tasks){
 		// gapStart = taskEnd;
 	}
 	if (prevTaskEnd < maxEnd) {
-		gaps.push({start: prevTaskEnd, end: maxEnd});
+		gaps.push({name: "gap", startTime: prevTaskEnd, duration: maxEnd-prevTaskEnd});
 	}
 
 	// console.log("gaps: ", gaps);
@@ -523,9 +698,13 @@ function PlanOut(gaps, tasks){
 
 
 function saveAgendaTimes(duration, startTime, taskId){
+	console.log("dur: ", duration)
+	console.log("tas: ", tasks2, taskId)
+	console.log("is: ", tasks2[taskId])
 	tasks2[taskId].duration  = duration;
 	tasks2[taskId].startTime = startTime;
 	saveData2(tasks2, sync2);
+	console.log("dur2: ", duration)
 }
 
 function saveData(tasks, sync){
@@ -626,7 +805,16 @@ const styles = StyleSheet.create({
 	},
 	scrollingList: {
 		flex: 1,
+		// position: 'absolute',
 		backgroundColor: "#AAA",
+	},
+	items: {
+		flex: 1,
+		position: 'absolute',
+		width: 3000,
+		// top: 1000,
+		// backgroundColor: "#00A",
+		// padding: 100,
 	},
 	scrollBlock: {
 		height: 50,
