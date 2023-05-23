@@ -561,22 +561,23 @@ function PlanOut(gaps, tasks){
 			let task     = tasks[taskID];
 			let timeLeft = gapEnd-time;
 			console.log("time: ", i, taskID, time, timeLeft, task.maxLength);
-			if (time + task.minlength > timeLeft){
-				// continue;
-				plannedGaps[ID]= {name : task.name, duration : timeLeft, startTime : time};
-				ID++;
-				break;
-			} else if (time + task.maxLength > timeLeft){
+			// if (time + task.minlength > timeLeft){
+			// 	// //continue;
+			// 	// plannedGaps[ID]= {name : task.name, duration : timeLeft, startTime : time};
+			// 	// ID++;
+			// 	// break;
+			// } else 
+			if (time + task.maxLength > timeLeft){
 				console.log(task);
-				time += task.maxLength;
 				let duration = task.maxLength;
 				plannedGaps[ID]= {name : task.name, duration : timeLeft, startTime : time};
 				ID++;
+				time += task.maxLength;
 			} else {
-				time = gapEnd;
 				let duration = gapEnd;
 				plannedGaps[ID]= {name : task.name, duration : timeLeft, startTime : time};
 				ID++;
+				time = gapEnd;
 				break;
 			}
 			taskID++;
