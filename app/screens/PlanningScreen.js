@@ -52,6 +52,7 @@ const ToDoScreen = ({ navigation }) => {
 	const [modified, setModified] = useState(false);
 	const [sync    , setSync    ] = useState(false);
 	const [reload  , setReload  ] = useState(false);
+	const [replan  , setReplan  ] = useState(false);
 	const [gaps    , setGaps    ] = useState([]);
 	const [agenda  , setAgenda  ] = useState([]);
 	const [tasks   , setTasks   ] = useState([
@@ -79,7 +80,8 @@ const ToDoScreen = ({ navigation }) => {
 	// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
 	fetchData (setGaps  , setSync, doc(firestore, "Gaps"       , "TestDay"    ));
 	// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
-	updateData(modified , setModified, sync, tasks);
+	// updateData(modified , setModified, sync, tasks);
+	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload);
 	// console.log(tasks);
 	// console.log(sync);
 	sync2  = sync;
@@ -118,6 +120,7 @@ const ToDoScreen = ({ navigation }) => {
 							setReload   = {setReload  }
 							setGaps     = {setGaps    }
 							sync        = {sync       } 
+							setReplan   = {setReplan  }
 							setSync     = {setSync    } 
 						/>
 					</View>
@@ -126,7 +129,7 @@ const ToDoScreen = ({ navigation }) => {
 					<TouchableOpacity style={styles.plus} onPress={() => {
 						tasks.push({
 							name          : "new Event",
-							duration      : 0,
+							duration      : 500,
 							startTime     : 0,
 							source        : "",
 							type          : "",
@@ -136,7 +139,7 @@ const ToDoScreen = ({ navigation }) => {
 							repeatOffsets : []
 						});
 						setTasks   (tasks);
-						setModified(true);
+						setReplan(true);
 					}}>
 						<Text style={styles.plusText}>
 							+
@@ -195,7 +198,7 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, sync}) => {
+const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, setReplan, sync}) => {
 	const n = tasks.length;
 	return [...Array(n)].map((e, i) =>
 		<View key={i}>
@@ -207,6 +210,7 @@ const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, sync})
 				setTasks    = {setTasks   }
 				setReload   = {setReload  }
 				setGaps     = {setGaps    }
+				setReplan   = {setReplan  }
 				sync        = {sync       }
 			/>
 		</View>
@@ -252,7 +256,7 @@ const ToDoListItems2 = ({tasks, setTasks, setModified, sync}) => {
 //  if a repeated event is changed, it will prompt like google agenda does and create a new source task with updated data for that event and depending on the chosen action, all repeated occurrences after that
 
 
-const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, sync}) => {
+const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, sync}) => {
 	let duration  = task.duration;
 	let startTime = task.startTime;
 	// console.log("active");
@@ -411,7 +415,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 				<TouchableOpacity style={styles.delete} onPress={() => {
 					tasks.splice(taskId, 1);
 					setTasks   (tasks);
-					setModified(true);
+					setReplan(true);
 				}}/>
 			</View>
 		</Animated.View>
@@ -540,7 +544,7 @@ const ToDoListItem2 = ({tasks, taskId, task, setTasks, setModified, sync}) => {
 				<TouchableOpacity style={styles.delete} onPress={() => {
 					tasks.splice(taskId, 1);
 					setTasks   (tasks);
-					setModified(true);
+					setReplan(true);
 				}}/>
 			</View>
 		</View>
@@ -723,9 +727,9 @@ function saveData(tasks, sync){
 	if(sync){
 		// console.log("written");
 		// TEMPORARY
-		planning = tasks;
+		// planning = tasks;
 		//
-		actuallySaveTheData(planning, doc(firestore, "Planning", "TestDay"));
+		// actuallySaveTheData(planning, doc(firestore, "Planning", "TestDay"));
 		actuallySaveTheData(tasks   , doc(firestore, "Agenda"  , "TestDay"));
 	}
 }
@@ -771,8 +775,11 @@ function actuallySaveTheData(tasks, ref){
 	});
 }
 
-function updateData (modified, setModified, sync, tasks) {
-	if(modified){
+function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload) {
+	if (replan){
+		setReplan(false);
+		saveData2(tasks, sync, setTasks, setGaps, setReload)
+	} else if(modified){
 		setModified(false);
 		saveData(tasks, sync);
 	}
