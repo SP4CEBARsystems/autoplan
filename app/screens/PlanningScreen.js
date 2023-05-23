@@ -49,13 +49,14 @@ function fetchData (setTasks, setSync, ref) {
 
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
-	const [modified, setModified] = useState(false);
-	const [sync    , setSync    ] = useState(false);
-	const [reload  , setReload  ] = useState(false);
-	const [replan  , setReplan  ] = useState(false);
-	const [gaps    , setGaps    ] = useState([]);
-	const [agenda  , setAgenda  ] = useState([]);
-	const [tasks   , setTasks   ] = useState([
+	const [modified   , setModified   ] = useState(false);
+	const [sync       , setSync       ] = useState(false);
+	const [reload     , setReload     ] = useState(false);
+	const [replan     , setReplan     ] = useState(false);
+	const [gaps       , setGaps       ] = useState([]);
+	const [agenda     , setAgenda     ] = useState([]);
+	const [plannedGaps, setPlannedGaps] = useState([]);
+	const [tasks      , setTasks      ] = useState([
 		{
 			name          : "loading",
 			duration      : 0,
@@ -76,9 +77,9 @@ const ToDoScreen = ({ navigation }) => {
 	
 	// fetchData (setAgenda, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
 	fetchData (setTasks, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
-	// fetchData (setTasks , setSync, doc(firestore, "PlannedGaps", "TestDay"    ));
+	fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"    ));
 	// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
-	fetchData (setGaps  , setSync, doc(firestore, "Gaps"       , "TestDay"    ));
+	fetchData (setGaps , setSync, doc(firestore, "Gaps"       , "TestDay"    ));
 	// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
 	// updateData(modified , setModified, sync, tasks);
 	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload);
@@ -99,16 +100,28 @@ const ToDoScreen = ({ navigation }) => {
 					{...panResponder.panHandlers}>
 				</Animated.View> */}
 				<ScrollView style={styles.scrollingList}>
-					<View style={styles.items}>
+					{/* <View style={styles.items}>
 						<ToDoListItems2
 							tasks       = {gaps       } 
 							setTasks    = {setGaps    }
 							// tasks       = {tasks      } 
 							// setTasks    = {setTasks   } 
 							modified    = {modified   } 
-							setModified = {setModified} 
-							sync        = {sync       } 
-							setSync     = {setSync    } 
+							setModified = {setModified}
+							sync        = {sync       }
+							setSync     = {setSync    }
+						/>
+					</View> */}
+					<View style={styles.items}>
+						<ToDoListItems2
+							tasks       = {plannedGaps   } 
+							setTasks    = {setPlannedGaps}
+							// tasks       = {tasks      } 
+							// setTasks    = {setTasks   } 
+							modified    = {modified   } 
+							setModified = {setModified}
+							sync        = {sync       }
+							setSync     = {setSync    }
 						/>
 					</View>
 					<View style={styles.items}>
@@ -222,12 +235,7 @@ const ToDoListItems2 = ({tasks, setTasks, setModified, sync}) => {
 	return [...Array(n)].map((e, i) =>
 		<View key={i}>
 			<ToDoListItem2 
-				tasks       = {tasks      }
-				taskId      = {i          }
 				task        = {tasks[i]   }
-				setModified = {setModified}
-				setTasks    = {setTasks   }
-				sync        = {sync       }
 			/>
 		</View>
 	);
@@ -321,9 +329,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 				//padding          : x,0,
 				//backgroundColor  : "gray",
 				//backgroundColor  : 'grey',
-				backgroundColor  : "black",
+				backgroundColor  : "#22f",
+				borderColor      : "#222",
 				borderWidth: 5,
-				borderColor: "green",
 				//paddingLeft: pan.x,
 				//top : pan.y,
 				//left: pan.x,
@@ -422,130 +430,26 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 	);
 }
 
-const ToDoListItem2 = ({tasks, taskId, task, setTasks, setModified, sync}) => {
+const ToDoListItem2 = ({task}) => {
 	let duration  = task.duration;
 	let startTime = task.startTime;
-	// console.log("active");
-	// static add(a: Animated, b: Animated): AnimatedAddition;
-	//pan.x v
 	return (
-		<View
-		//[styles.animatedBox,
-			style={{
-				// flex          : 0,
-				//position:'absolute',
-				position: 'absolute',
-				height: duration,
-				//height: v,
-				// paddingBottom : pan.x,
-				// top: w, 
-				//translateY    : w,
-				//marginTop: w,
-				top: startTime, 
-				//x: duration, y: startTime
-				// top:0,
-				bottom: 0,
-				// top: w, bottom: w+x,
-				left: 0, right: 0, 
-				//width: 100%,
-				//height: x,
-				//paddingTop    : x,
-				//paddingBottom : x,
-				// translateY    : offset - 2*x,
-				//translateY    : offset,
-				//translateY    : this.state.mapViewOffset.y
-				//padding          : x,0,
-				//backgroundColor  : "gray",
-				//backgroundColor  : 'grey',
-				backgroundColor  : "black",
-				borderWidth: 5,
-				borderColor: "green",
-				//paddingLeft: pan.x,
-				//top : pan.y,
-				//left: pan.x,
-				//paddingTop    : x,
-				//paddingBottom : x,
-			}}
-		>
+		<View style={{
+			position: 'absolute',
+			height: duration,
+			top: startTime, 
+			bottom: 0,
+			left: 0, right: 0, 
+			backgroundColor  : "#111",
+			borderColor      : "#222",
+			borderWidth: 5,
+		}}>
 			<View style={styles.scrollBlock}>
 				<View style={styles.scrollItem}>
-					<TextInput style={styles.scrollText} 
-						value={task.name}
-						type="text"
-						name="name"
-						placeholder= "task name"
-						onChange={(e) => {
-							tasks[taskId].name = e.target.value;
-							setTasks   (tasks);
-							setModified(true);
-						}}
-					/>
-				</View>
-				{/* <View> */}
-					{/* bar */}
-				{/* </View> */}
-				{/* <View style={styles.scrollItem}>
-					<TextInput style={styles.scrollText} 
-						value={task.requiredTime}
-						type="number"
-						name="requiredTime"
-						placeholder= "required time"
-						onChange={(e) => {
-							tasks[taskId].requiredTime = e.target.value;
-							setTasks   (tasks);
-							setModified(true);
-						}}
-					/>
-				</View>
-				<View style={styles.scrollItem}>
-					<TextInput style={styles.scrollText} 
-						value={task.deadline}
-						type="number"
-						name="deadline"
-						placeholder= "deadline"
-						onChange={(e) => {
-							tasks[taskId].deadline = e.target.value;
-							setTasks   (tasks);
-							setModified(true);
-						}}
-					/>
-				</View>
-				<View style={styles.scrollItem}>
-					<TextInput style={styles.scrollText} 
-						value={task.priority}
-						type="number"
-						name="priority"
-						placeholder= "priority"
-						onChange={(e) => {
-							tasks[taskId].priority = e.target.value;
-							setTasks   (tasks);
-							setModified(true);
-						}}
-					/>
-				</View>
-				<View style={styles.scrollItem}>
-					<TextInput style={styles.scrollText} 
-						value={task.like}
-						type="number"
-						name="like"
-						placeholder= "number"
-						onChange={(e) => {
-							tasks[taskId].like = e.target.value;
-							setTasks   (tasks);
-							setModified(true);
-						}}
-					/>
-				</View>
-				<View style={styles.scrollItem}>
 					<Text style={styles.scrollText}>
-						...
+						{task.name}
 					</Text>
-				</View> */}
-				<TouchableOpacity style={styles.delete} onPress={() => {
-					tasks.splice(taskId, 1);
-					setTasks   (tasks);
-					setReplan(true);
-				}}/>
+				</View>
 			</View>
 		</View>
 	);
@@ -649,9 +553,10 @@ function PlanOut(gaps, tasks){
 	let ID = 0;
 	for(let i=0; i<gaps.length; i++){
 		let gap    = gaps[i];
-		let gapEnd = gap.end;
-		let time   = gap.start;
+		let time   = gap.startTime;
+		let gapEnd = time + gap.duration;
 		let taskID = 0;
+		console.log("planning loop", time, gapEnd, gap)
 		while(time < gapEnd){
 			let task     = tasks[taskID];
 			let timeLeft = gapEnd-time;
@@ -844,9 +749,9 @@ const styles = StyleSheet.create({
 	scrollItem: {
 		flex: 1,
 		backgroundColor: "#444",
-		marginLeft: 1,
-		marginRight: 1,
-		marginTop: 4,
+		marginLeft  : 1,
+		marginRight : 1,
+		marginTop   : 4,
 		marginBottom: 4,
 	},
 	scrollText: {
