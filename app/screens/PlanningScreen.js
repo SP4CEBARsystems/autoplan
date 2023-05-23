@@ -82,7 +82,7 @@ const ToDoScreen = ({ navigation }) => {
 	fetchData (setGaps , setSync, doc(firestore, "Gaps"       , "TestDay"    ));
 	// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
 	// updateData(modified , setModified, sync, tasks);
-	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload);
+	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps);
 	// console.log(tasks);
 	// console.log(sync);
 	sync2  = sync;
@@ -126,15 +126,16 @@ const ToDoScreen = ({ navigation }) => {
 					</View>
 					<View style={styles.items}>
 						<ToDoListItems
-							tasks       = {tasks      } 
-							setTasks    = {setTasks   } 
-							modified    = {modified   } 
-							setModified = {setModified} 
-							setReload   = {setReload  }
-							setGaps     = {setGaps    }
-							sync        = {sync       } 
-							setReplan   = {setReplan  }
-							setSync     = {setSync    } 
+							tasks          = {tasks         } 
+							setTasks       = {setTasks      } 
+							modified       = {modified      } 
+							setModified    = {setModified   } 
+							setReload      = {setReload     }
+							setGaps        = {setGaps       }
+							sync           = {sync          } 
+							setReplan      = {setReplan     }
+							setPlannedGaps = {setPlannedGaps}
+							setSync        = {setSync       } 
 						/>
 					</View>
 				</ScrollView>
@@ -211,20 +212,21 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, setReplan, sync}) => {
+const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, sync}) => {
 	const n = tasks.length;
 	return [...Array(n)].map((e, i) =>
 		<View key={i}>
 			<ToDoListItem 
-				tasks       = {tasks      }
-				taskId      = {i          }
-				task        = {tasks[i]   }
-				setModified = {setModified}
-				setTasks    = {setTasks   }
-				setReload   = {setReload  }
-				setGaps     = {setGaps    }
-				setReplan   = {setReplan  }
-				sync        = {sync       }
+				tasks          = {tasks         }
+				taskId         = {i             }
+				task           = {tasks[i]      }
+				setModified    = {setModified   }
+				setTasks       = {setTasks      }
+				setReload      = {setReload     }
+				setGaps        = {setGaps       }
+				setReplan      = {setReplan     }
+				setPlannedGaps = {setPlannedGaps}
+				sync           = {sync          }
 			/>
 		</View>
 	);
@@ -264,7 +266,7 @@ const ToDoListItems2 = ({tasks, setTasks, setModified, sync}) => {
 //  if a repeated event is changed, it will prompt like google agenda does and create a new source task with updated data for that event and depending on the chosen action, all repeated occurrences after that
 
 
-const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, sync}) => {
+const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, sync}) => {
 	let duration  = task.duration;
 	let startTime = task.startTime;
 	// console.log("active");
@@ -291,7 +293,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 				// tasks[taskId].startTime = pan.y._offset;
 				//console.log("written");
 				// saveAgendaTimes(tasks, sync);
-				saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload);
+				saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
 				//problem 1: when the page is visited the second time it won't load properly: all names are "loading" and it creates a new task, written in one write
 				//problem 2: when there are two events, the second one gets its timings messed up
 			},
@@ -614,13 +616,13 @@ function PlanOut(gaps, tasks){
 //if there are no gap borders detected then it's just 0
 
 
-function saveAgendaTimes(duration, startTime, taskId, setTasks, setGaps, setReload){
+function saveAgendaTimes(duration, startTime, taskId, setTasks, setGaps, setReload, setPlannedGaps){
 	console.log("dur: ", duration)
 	console.log("tas: ", tasks2, taskId)
 	console.log("is: ", tasks2[taskId])
 	tasks2[taskId].duration  = duration;
 	tasks2[taskId].startTime = startTime;
-	saveData2(tasks2, sync2, setTasks, setGaps, setReload);
+	saveData2(tasks2, sync2, setTasks, setGaps, setReload, setPlannedGaps);
 	console.log("dur2: ", duration)
 }
 
@@ -640,7 +642,7 @@ function saveData(tasks, sync){
 	}
 }
 
-function saveData2(tasks, sync, setTasks, setGaps, setReload){
+function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps){
 // function saveData(tasks){
 	// console.log("ready to write");
 	// console.log("sync  check 2: ",sync);
@@ -666,6 +668,7 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload){
 		actuallySaveTheData(planning   , doc(firestore, "Planning"   , "TestDay"));
 		setTasks      (tasks      );
 		setGaps       (gaps       );
+		setPlannedGaps(plannedGaps);
 		// setPlannedGaps(plannedGaps);
 		// setPlanning   (planning   );
 		setReload     (true );
@@ -681,10 +684,10 @@ function actuallySaveTheData(tasks, ref){
 	});
 }
 
-function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload) {
+function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps) {
 	if (replan){
 		setReplan(false);
-		saveData2(tasks, sync, setTasks, setGaps, setReload)
+		saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps)
 	} else if(modified){
 		setModified(false);
 		saveData(tasks, sync);
