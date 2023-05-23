@@ -51,6 +51,7 @@ const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
 	const [modified, setModified] = useState(false);
 	const [sync    , setSync    ] = useState(false);
+	const [reload  , setReload  ] = useState(false);
 	const [gaps    , setGaps    ] = useState([]);
 	const [agenda  , setAgenda  ] = useState([]);
 	const [tasks   , setTasks   ] = useState([
@@ -66,6 +67,8 @@ const ToDoScreen = ({ navigation }) => {
 			repeatOffsets : []
 		}
 	]);
+
+	if (reload) {console.log("reloading"); setReload(false);}
 	// console.log("tasks", todo_tasks);
 
 	// fetchData2(setTasks, setSync);
@@ -108,10 +111,12 @@ const ToDoScreen = ({ navigation }) => {
 					</View>
 					<View style={styles.items}>
 						<ToDoListItems
-							tasks       = {tasks     } 
-							setTasks    = {setTasks  } 
+							tasks       = {tasks      } 
+							setTasks    = {setTasks   } 
 							modified    = {modified   } 
 							setModified = {setModified} 
+							setReload   = {setReload  }
+							setGaps     = {setGaps    }
 							sync        = {sync       } 
 							setSync     = {setSync    } 
 						/>
@@ -190,7 +195,7 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItems = ({tasks, setTasks, setModified, sync}) => {
+const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, sync}) => {
 	const n = tasks.length;
 	return [...Array(n)].map((e, i) =>
 		<View key={i}>
@@ -200,6 +205,8 @@ const ToDoListItems = ({tasks, setTasks, setModified, sync}) => {
 				task        = {tasks[i]   }
 				setModified = {setModified}
 				setTasks    = {setTasks   }
+				setReload   = {setReload  }
+				setGaps     = {setGaps    }
 				sync        = {sync       }
 			/>
 		</View>
@@ -245,7 +252,7 @@ const ToDoListItems2 = ({tasks, setTasks, setModified, sync}) => {
 //  if a repeated event is changed, it will prompt like google agenda does and create a new source task with updated data for that event and depending on the chosen action, all repeated occurrences after that
 
 
-const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, sync}) => {
+const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, sync}) => {
 	let duration  = task.duration;
 	let startTime = task.startTime;
 	// console.log("active");
@@ -272,7 +279,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, sync}) => {
 				// tasks[taskId].startTime = pan.y._offset;
 				//console.log("written");
 				// saveAgendaTimes(tasks, sync);
-				saveAgendaTimes(pan.x._offset, pan.y._offset, taskId);
+				saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload);
 				//problem 1: when the page is visited the second time it won't load properly: all names are "loading" and it creates a new task, written in one write
 				//problem 2: when there are two events, the second one gets its timings messed up
 			},
@@ -697,13 +704,13 @@ function PlanOut(gaps, tasks){
 //if there are no gap borders detected then it's just 0
 
 
-function saveAgendaTimes(duration, startTime, taskId){
+function saveAgendaTimes(duration, startTime, taskId, setTasks, setGaps, setReload){
 	console.log("dur: ", duration)
 	console.log("tas: ", tasks2, taskId)
 	console.log("is: ", tasks2[taskId])
 	tasks2[taskId].duration  = duration;
 	tasks2[taskId].startTime = startTime;
-	saveData2(tasks2, sync2);
+	saveData2(tasks2, sync2, setTasks, setGaps, setReload);
 	console.log("dur2: ", duration)
 }
 
@@ -723,7 +730,7 @@ function saveData(tasks, sync){
 	}
 }
 
-function saveData2(tasks, sync){
+function saveData2(tasks, sync, setTasks, setGaps, setReload){
 // function saveData(tasks){
 	// console.log("ready to write");
 	// console.log("sync  check 2: ",sync);
@@ -747,6 +754,11 @@ function saveData2(tasks, sync){
 		actuallySaveTheData(gaps       , doc(firestore, "Gaps"       , "TestDay"));
 		actuallySaveTheData(plannedGaps, doc(firestore, "PlannedGaps", "TestDay"));
 		actuallySaveTheData(planning   , doc(firestore, "Planning"   , "TestDay"));
+		setTasks      (tasks      );
+		setGaps       (gaps       );
+		// setPlannedGaps(plannedGaps);
+		// setPlanning   (planning   );
+		setReload     (true );
 	}
 }
 
