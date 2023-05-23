@@ -447,7 +447,7 @@ const ToDoListItem2 = ({task}) => {
 			borderWidth: 5,
 		}}>
 			<View style={styles.scrollBlock}>
-				<View style={styles.scrollItem}>
+				<View style={styles.scrollItem2}>
 					<Text style={styles.scrollText}>
 						{task.name}
 					</Text>
@@ -569,18 +569,18 @@ function PlanOut(gaps, tasks){
 			// 	// ID++;
 			// 	// break;
 			// } else 
-			if (time + task.maxLength > timeLeft){
+			if (task.maxLength > timeLeft){
 				console.log(task);
-				let duration = task.maxLength;
+				// let duration = task.maxLength;
 				plannedGaps[ID]= {name : task.name, duration : timeLeft, startTime : time};
+				ID++;
+				// time = gapEnd;
+				break;
+			} else {
+				// let duration = gapEnd;
+				plannedGaps[ID]= {name : task.name, duration : task.maxLength, startTime : time};
 				ID++;
 				time += task.maxLength;
-			} else {
-				let duration = gapEnd;
-				plannedGaps[ID]= {name : task.name, duration : timeLeft, startTime : time};
-				ID++;
-				time = gapEnd;
-				break;
 			}
 			taskID++;
 		}
@@ -753,6 +753,14 @@ const styles = StyleSheet.create({
 	scrollItem: {
 		flex: 1,
 		backgroundColor: "#444",
+		marginLeft  : 1,
+		marginRight : 1,
+		marginTop   : 4,
+		marginBottom: 4,
+	},
+	scrollItem2: {
+		flex: 1,
+		backgroundColor: "#111",
 		marginLeft  : 1,
 		marginRight : 1,
 		marginTop   : 4,
