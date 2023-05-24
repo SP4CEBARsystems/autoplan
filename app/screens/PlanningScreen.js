@@ -49,14 +49,15 @@ function fetchData (setTasks, setSync, ref) {
 
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
-	const [modified   , setModified   ] = useState(false);
-	const [sync       , setSync       ] = useState(false);
-	const [reload     , setReload     ] = useState(false);
-	const [replan     , setReplan     ] = useState(false);
-	const [gaps       , setGaps       ] = useState([]);
-	const [agenda     , setAgenda     ] = useState([]);
-	const [plannedGaps, setPlannedGaps] = useState([]);
-	const [tasks      , setTasks      ] = useState([
+	const [modified    , setModified    ] = useState(false);
+	const [sync        , setSync        ] = useState(false);
+	const [reload      , setReload      ] = useState(false);
+	const [replan      , setReplan      ] = useState(false);
+	const [unlockScroll, setUnlockScroll] = useState(true);
+	const [gaps        , setGaps        ] = useState([]);
+	const [agenda      , setAgenda      ] = useState([]);
+	const [plannedGaps , setPlannedGaps ] = useState([]);
+	const [tasks       , setTasks       ] = useState([
 		{
 			name          : "loading",
 			duration      : 0,
@@ -76,10 +77,10 @@ const ToDoScreen = ({ navigation }) => {
 	// fetchData2(setTasks, setSync);
 	
 	// fetchData (setAgenda, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
-	fetchData (setTasks, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
-	fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"    ));
+	fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
+	fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
 	// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
-	fetchData (setGaps , setSync, doc(firestore, "Gaps"       , "TestDay"    ));
+	fetchData (setGaps       , setSync, doc(firestore, "Gaps"       , "TestDay"));
 	// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
 	// updateData(modified , setModified, sync, tasks);
 	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps);
@@ -88,6 +89,7 @@ const ToDoScreen = ({ navigation }) => {
 	sync2  = sync;
 	tasks2 = tasks;
 	console.log ("new: ", tasks2)
+	console.log("unlockScroll: ", unlockScroll);
 	
 	return (
 		<View style={styles.background}>
@@ -99,8 +101,8 @@ const ToDoScreen = ({ navigation }) => {
 					}}
 					{...panResponder.panHandlers}>
 				</Animated.View> */}
-				<ScrollView style={styles.scrollingList}>
-				{/* <ScrollView style={styles.scrollingList} scrollEnabled={this.state.scroll}> */}
+				{/* <ScrollView style={styles.scrollingList}> */}
+				<ScrollView style={styles.scrollingList} scrollEnabled={unlockScroll}>
 					{/* <View style={styles.items}>
 						<ToDoListItems2
 							tasks       = {gaps       } 
@@ -127,16 +129,17 @@ const ToDoScreen = ({ navigation }) => {
 					</View>
 					<View style={styles.items}>
 						<ToDoListItems
-							tasks          = {tasks         } 
-							setTasks       = {setTasks      } 
-							modified       = {modified      } 
-							setModified    = {setModified   } 
-							setReload      = {setReload     }
-							setGaps        = {setGaps       }
-							sync           = {sync          } 
-							setReplan      = {setReplan     }
-							setPlannedGaps = {setPlannedGaps}
-							setSync        = {setSync       } 
+							tasks           = {tasks          } 
+							setTasks        = {setTasks       } 
+							modified        = {modified       } 
+							setModified     = {setModified    } 
+							setReload       = {setReload      }
+							setGaps         = {setGaps        }
+							setReplan       = {setReplan      }
+							setPlannedGaps  = {setPlannedGaps }
+							setSync         = {setSync        } 
+							setUnlockScroll = {setUnlockScroll}
+							sync            = {sync           }
 						/>
 					</View>
 				</ScrollView>
@@ -213,7 +216,7 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, sync}) => {
+const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync}) => {
 	const n = tasks.length;
 	return [...Array(n)].map((e, i) =>
 		<View key={i}>
@@ -227,6 +230,7 @@ const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, setRep
 				setGaps        = {setGaps       }
 				setReplan      = {setReplan     }
 				setPlannedGaps = {setPlannedGaps}
+				setUnlockScroll  = {setUnlockScroll }
 				sync           = {sync          }
 			/>
 		</View>
@@ -267,7 +271,7 @@ const ToDoListItems2 = ({tasks, setTasks, setModified, sync}) => {
 //  if a repeated event is changed, it will prompt like google agenda does and create a new source task with updated data for that event and depending on the chosen action, all repeated occurrences after that
 
 
-const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, sync}) => {
+const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync}) => {
 	let duration  = task.duration;
 	let startTime = task.startTime;
 	// console.log("active");
@@ -284,6 +288,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 	const panResponder = useRef(
 		PanResponder.create({
 			// onPanResponderGrant: () => this.setState({ scroll: false }),
+			onPanResponderGrant: () => setUnlockScroll(false),
 			onMoveShouldSetPanResponder: () => true,
 			onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver: false}),
 			onPanResponderRelease: () => {
@@ -299,6 +304,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 				//problem 1: when the page is visited the second time it won't load properly: all names are "loading" and it creates a new task, written in one write
 				//problem 2: when there are two events, the second one gets its timings messed up
 				// this.setState({ scroll: true });
+				setUnlockScroll(true);
 			},
 		}),
 	).current;
