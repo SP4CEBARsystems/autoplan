@@ -12,8 +12,9 @@ import { query, orderBy, limit } from "firebase/firestore";
 import {todo_tasks} from "./ToDoScreen"
 
 
-let sync2  = false;
-let tasks2 = [];
+let sync2        = false;
+let tasks2       = [];
+// let unlockScroll = true;
 
 function fetchData2 (setTasks, setSync) {
 	//, setAgenda
@@ -88,7 +89,7 @@ const ToDoScreen = ({ navigation }) => {
 	// console.log(sync);
 	sync2  = sync;
 	tasks2 = tasks;
-	console.log ("new: ", tasks2)
+	console.log("new: "         , tasks2      );
 	console.log("unlockScroll: ", unlockScroll);
 	
 	return (
@@ -230,7 +231,7 @@ const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, setRep
 				setGaps        = {setGaps       }
 				setReplan      = {setReplan     }
 				setPlannedGaps = {setPlannedGaps}
-				setUnlockScroll  = {setUnlockScroll }
+				setUnlockScroll= {setUnlockScroll }
 				sync           = {sync          }
 			/>
 		</View>
@@ -289,6 +290,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 		PanResponder.create({
 			// onPanResponderGrant: () => this.setState({ scroll: false }),
 			onPanResponderGrant: () => setUnlockScroll(false),
+			// onPanResponderGrant: () => unlockScroll = false,
 			onMoveShouldSetPanResponder: () => true,
 			onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver: false}),
 			onPanResponderRelease: () => {
@@ -305,6 +307,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 				//problem 2: when there are two events, the second one gets its timings messed up
 				// this.setState({ scroll: true });
 				setUnlockScroll(true);
+				// unlockScroll = true;
 			},
 		}),
 	).current;
