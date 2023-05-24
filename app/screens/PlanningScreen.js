@@ -563,6 +563,10 @@ function PlanOut(gaps, tasks){
 		let taskID = 0;
 		console.log("planning loop", time, gapEnd, gap)
 		while(time < gapEnd){
+			if (taskID >= tasks.length) {
+				taskID = 0;
+				// break;
+			}
 			let task     = tasks[taskID];
 			let timeLeft = gapEnd-time;
 			console.log("time: ", i, taskID, time, timeLeft, task.maxLength);
