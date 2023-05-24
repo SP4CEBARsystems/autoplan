@@ -100,6 +100,7 @@ const ToDoScreen = ({ navigation }) => {
 					{...panResponder.panHandlers}>
 				</Animated.View> */}
 				<ScrollView style={styles.scrollingList}>
+				{/* <ScrollView style={styles.scrollingList} scrollEnabled={this.state.scroll}> */}
 					{/* <View style={styles.items}>
 						<ToDoListItems2
 							tasks       = {gaps       } 
@@ -282,8 +283,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 
 	const panResponder = useRef(
 		PanResponder.create({
+			// onPanResponderGrant: () => this.setState({ scroll: false }),
 			onMoveShouldSetPanResponder: () => true,
-			onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
+			onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver: false}),
 			onPanResponderRelease: () => {
 				pan.extractOffset();
 				// console.log("hi");
@@ -296,6 +298,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 				saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
 				//problem 1: when the page is visited the second time it won't load properly: all names are "loading" and it creates a new task, written in one write
 				//problem 2: when there are two events, the second one gets its timings messed up
+				// this.setState({ scroll: true });
 			},
 		}),
 	).current;
