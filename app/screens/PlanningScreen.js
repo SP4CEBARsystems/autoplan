@@ -55,6 +55,7 @@ const ToDoScreen = ({ navigation }) => {
 	const [reload      , setReload      ] = useState(false);
 	const [replan      , setReplan      ] = useState(false);
 	const [unlockScroll, setUnlockScroll] = useState(true);
+	const [startScrolling, setStartScrolling] = useState(false);
 	const [gaps        , setGaps        ] = useState([]);
 	const [agenda      , setAgenda      ] = useState([]);
 	const [plannedGaps , setPlannedGaps ] = useState([]);
@@ -104,6 +105,8 @@ const ToDoScreen = ({ navigation }) => {
 				</Animated.View> */}
 				{/* <ScrollView style={styles.scrollingList}> */}
 				<ScrollView style={styles.scrollingList} scrollEnabled={unlockScroll}>
+					{/* onPress={setStartScrolling(true)} waitFor={startScrolling} */}
+					{/* onPress={} onScroll={} onScroll={setUnlockScroll(true)} waitFor={}*/}
 					{/* <View style={styles.items}>
 						<ToDoListItems2
 							tasks       = {gaps       } 
@@ -293,6 +296,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 			// onPanResponderGrant: () => unlockScroll = false,
 			onMoveShouldSetPanResponder: () => true,
 			onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver: false}),
+			// onPanResponderTerminationRequest: () => {
+			// 	return false
+			// },
 			onPanResponderRelease: () => {
 				pan.extractOffset();
 				// console.log("hi");
@@ -309,6 +315,11 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 				setUnlockScroll(true);
 				// unlockScroll = true;
 			},
+			onPanResponderTerminate: () => {
+				pan.extractOffset();
+				saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
+				setUnlockScroll(true)
+			},
 		}),
 	).current;
 
@@ -316,8 +327,10 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 	//pan.x v
 
 	return (
+		// <TouchableOpacity >
 		<Animated.View
 		//[styles.animatedBox,
+		// onPress={()=>{setUnlockScroll(false)}}
 			style={{
 				// flex          : 0,
 				//position:'absolute',
@@ -441,6 +454,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 				}}/>
 			</View>
 		</Animated.View>
+		// </TouchableOpacity>
 	);
 }
 

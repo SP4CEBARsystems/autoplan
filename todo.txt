@@ -2,3 +2,8 @@ make the agenda scroll through days
 make the agenda display dates
 conflicting touch events (resize conflicts with text select or scroll)
 fix focus mode
+
+
+
+postponed
+- agenda times: this system can be changed completely to add handles or a switch, the goal is to allow scrolling through full agendas, make changing times easy, and make it intuitive for users
