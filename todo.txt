@@ -1,7 +1,7 @@
 make the agenda scroll through days
 make the agenda display dates
 conflicting touch events (resize conflicts with text select or scroll)
-fix focus mode
+fix focus mode (it needs to properly point to it on all screen widths)
 
 
 

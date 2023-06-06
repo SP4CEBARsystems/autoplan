@@ -104,6 +104,7 @@ const ToDoScreen = ({ navigation }) => {
 					{...panResponder.panHandlers}>
 				</Animated.View> */}
 				{/* <ScrollView style={styles.scrollingList}> */}
+				
 				<ScrollView style={styles.scrollingList} scrollEnabled={unlockScroll}>
 					{/* onPress={setStartScrolling(true)} waitFor={startScrolling} */}
 					{/* onPress={} onScroll={} onScroll={setUnlockScroll(true)} waitFor={}*/}
@@ -119,20 +120,45 @@ const ToDoScreen = ({ navigation }) => {
 							setSync     = {setSync    }
 						/>
 					</View> */}
+					
+					{/* <View style={{
+						width:  '100%',
+						// height: '100%',
+						height: 100000,
+						backgroundColor: 'transparent',
+						position: 'absolute',
+						zIndex: -10,
+					}} /> */}
+					
 					<View style={styles.items}>
-						<ToDoListItems2
+						{/* <ToDoListItems2
 							tasks       = {plannedGaps   } 
-							setTasks    = {setPlannedGaps}
+							// setTasks    = {setPlannedGaps}
 							// tasks       = {tasks      } 
 							// setTasks    = {setTasks   } 
-							modified    = {modified   } 
-							setModified = {setModified}
-							sync        = {sync       }
-							setSync     = {setSync    }
-						/>
+							// modified    = {modified   } 
+							// setModified = {setModified}
+							// sync        = {sync       }
+							// setSync     = {setSync    }
+						/> */}
+
+						{/* <View style={{
+							width:  '100%',
+							// height: '100%',
+							height: 100000,
+							backgroundColor: 'transparent',
+							position: 'absolute',
+							zIndex: 1,
+						}} /> */}
+
+						{plannedGaps.map((task, i) => ( 
+							<View key={i}>
+								<ToDoListItem2 task={task} />
+							</View> 
+						))}
 					</View>
 					<View style={styles.items}>
-						<ToDoListItems
+						{/* <ToDoListItems
 							tasks           = {tasks          } 
 							setTasks        = {setTasks       } 
 							modified        = {modified       } 
@@ -144,7 +170,34 @@ const ToDoScreen = ({ navigation }) => {
 							setSync         = {setSync        } 
 							setUnlockScroll = {setUnlockScroll}
 							sync            = {sync           }
-						/>
+						/> */}
+						
+						{/* chat GPT rewritten snippet */}
+						{tasks.map((task, i) => ( 
+							<View key={i}> 
+								<ToDoListItem
+									tasks=           {tasks}
+									taskId=          {i}
+									task=            {task}
+									setModified=     {setModified}
+									setTasks=        {setTasks}
+									setReload=       {setReload}
+									setGaps=         {setGaps}
+									setReplan=       {setReplan}
+									setPlannedGaps=  {setPlannedGaps}
+									setUnlockScroll= {setUnlockScroll}
+									sync=            {sync}
+								/> 
+							</View> 
+						))}
+
+						{/* <View style={{
+							width:  '100%',
+							height: '100%',
+							backgroundColor: 'transparent',
+							position: 'absolute',
+							zIndex: 1,
+						}} /> */}
 					</View>
 				</ScrollView>
 				<View style={styles.plusParent}>
@@ -220,37 +273,87 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync}) => {
-	const n = tasks.length;
-	return [...Array(n)].map((e, i) =>
-		<View key={i}>
-			<ToDoListItem 
-				tasks          = {tasks         }
-				taskId         = {i             }
-				task           = {tasks[i]      }
-				setModified    = {setModified   }
-				setTasks       = {setTasks      }
-				setReload      = {setReload     }
-				setGaps        = {setGaps       }
-				setReplan      = {setReplan     }
-				setPlannedGaps = {setPlannedGaps}
-				setUnlockScroll= {setUnlockScroll }
-				sync           = {sync          }
-			/>
-		</View>
-	);
-}
+// const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync}) => {
+// 	const n = tasks.length;
+// 	return [...Array(n)].map((e, i) =>
+// 		<View key={i}>
+// 			<ToDoListItem 
+// 				tasks           = { tasks           }
+// 				taskId          = { i               }
+// 				task            = { tasks[i]        }
+// 				setModified     = { setModified     }
+// 				setTasks        = { setTasks        }
+// 				setReload       = { setReload       }
+// 				setGaps         = { setGaps         }
+// 				setReplan       = { setReplan       }
+// 				setPlannedGaps  = { setPlannedGaps  }
+// 				setUnlockScroll = { setUnlockScroll }
+// 				sync            = { sync            }
+// 			/>
+// 		</View>
+// 	);
+// }
 
-const ToDoListItems2 = ({tasks, setTasks, setModified, sync}) => {
-	const n = tasks.length;
-	return [...Array(n)].map((e, i) =>
-		<View key={i}>
-			<ToDoListItem2 
-				task        = {tasks[i]   }
-			/>
-		</View>
-	);
-}
+// Here is a possible way to rewrite the code snippet you provided:
+
+// ```javascript
+
+//chat GPT rewritten snippet
+// const ToDoListItems = ({tasks, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync}) => {
+//   return tasks.map((task, i) => (
+//     <View key={i}>
+//       <ToDoListItem
+//         tasks=           {tasks}
+//         taskId=          {i}
+//         task=            {task}
+//         setModified=     {setModified}
+//         setTasks=        {setTasks}
+//         setReload=       {setReload}
+//         setGaps=         {setGaps}
+//         setReplan=       {setReplan}
+//         setPlannedGaps=  {setPlannedGaps}
+//         setUnlockScroll= {setUnlockScroll}
+//         sync=            {sync}
+//       />
+//     </View>
+//   ))
+// };
+
+// ```
+
+// I hope this helps! Let me know if you have any other questions.
+
+// Source: Conversation with Bing, 6/6/2023(1) How to Write Cleaner React Code - freeCodeCamp.org. https://www.freecodecamp.org/news/how-to-write-cleaner-react-code/ Accessed 6/6/2023.
+// (2) React Getting Started - W3Schools. https://www.w3schools.com/react/react_getstarted.asp Accessed 6/6/2023.
+// (3) Building a React code editor and syntax highlighter from scratch. https://blog.logrocket.com/building-react-code-editor-syntax-highlighter/ Accessed 6/6/2023.
+
+// const ToDoListItems2 = ({tasks, setTasks, setModified, sync}) => {
+// 	const n = tasks.length;
+// 	return [...Array(n)].map((e, i) =>
+// 		<View key={i}>
+// 			<ToDoListItem2 
+// 				task        = {tasks[i]   }
+// 			/>
+// 		</View>
+// 	);
+// }
+
+
+// const ToDoListItems2 = ({tasks, setTasks, setModified, sync}) => {
+// 	return tasks.map((task, i) => (
+// 		<View key={i}>
+// 			<ToDoListItem2 task={task} />
+// 		</View>
+// 	));
+// }
+
+// const ToDoListItems2 = ({tasks}) => {
+// 	return tasks.map((task, i) => (
+// 	  <View key={i}>
+// 		<ToDoListItem2 task={task} />
+// 	  </View>
+// 	))
+// };
 
 
 //index the todo list to get the urgencies in order
@@ -769,7 +872,7 @@ const styles = StyleSheet.create({
 	items: {
 		flex: 1,
 		position: 'absolute',
-		width: 3000,
+		width: "100%",
 		// top: 1000,
 		// backgroundColor: "#00A",
 		// padding: 100,
