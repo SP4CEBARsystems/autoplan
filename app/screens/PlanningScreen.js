@@ -175,7 +175,7 @@ const ToDoScreen = ({ navigation }) => {
 						{/* chat GPT rewritten snippet */}
 						{tasks.map((task, i) => ( 
 							<View key={i}> 
-								<ToDoListItem
+								<ToDoListItem9
 									tasks=           {tasks}
 									taskId=          {i}
 									task=            {task}
@@ -378,103 +378,204 @@ const HeaderBar = () => {
 //  if a repeated event is changed, it will prompt like google agenda does and create a new source task with updated data for that event and depending on the chosen action, all repeated occurrences after that
 
 
-const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync}) => {
-	let duration  = task.duration;
-	let startTime = task.startTime;
-	// console.log("active");
+// const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync}) => {
+// 	let duration  = task.duration;
+// 	let startTime = task.startTime;
+// 	// console.log("active");
 
-	const pan = useRef(new Animated.ValueXY()).current;
-	//if (pan.y==0) {pan.y = w;}
-	// Animated.add(pan.x, v)
-	// pan.setOffset(pan: {x: v; y: w});
-	pan.setOffset({x: duration, y: startTime});
+// 	const pan = useRef(new Animated.ValueXY()).current;
+// 	//if (pan.y==0) {pan.y = w;}
+// 	// Animated.add(pan.x, v)
+// 	// pan.setOffset(pan: {x: v; y: w});
+// 	pan.setOffset({x: duration, y: startTime});
 
-	// console.log("sync  check 1: ",sync);
-	// console.log("sync2 check 1: ",sync2);
+// 	// console.log("sync  check 1: ",sync);
+// 	// console.log("sync2 check 1: ",sync2);
 
-	const panResponder = useRef(
-		PanResponder.create({
-			// onPanResponderGrant: () => this.setState({ scroll: false }),
-			onPanResponderGrant: () => setUnlockScroll(false),
-			// onPanResponderGrant: () => unlockScroll = false,
-			onMoveShouldSetPanResponder: () => true,
-			onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver: false}),
-			// onPanResponderTerminationRequest: () => {
-			// 	return false
-			// },
-			onPanResponderRelease: () => {
-				pan.extractOffset();
-				// console.log("hi");
-				// console.log(pan.x._offset, pan.y._offset);
-				//saveAgendaTimes(pan.x._offset, pan.y._offset);
-				// tasks[taskId].duration  = pan.x._offset;
-				// tasks[taskId].startTime = pan.y._offset;
-				//console.log("written");
-				// saveAgendaTimes(tasks, sync);
-				saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
-				//problem 1: when the page is visited the second time it won't load properly: all names are "loading" and it creates a new task, written in one write
-				//problem 2: when there are two events, the second one gets its timings messed up
-				// this.setState({ scroll: true });
-				setUnlockScroll(true);
-				// unlockScroll = true;
-			},
-			onPanResponderTerminate: () => {
-				pan.extractOffset();
-				saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
-				setUnlockScroll(true)
-			},
-		}),
-	).current;
+// 	const panResponder = useRef(
+// 		PanResponder.create({
+// 			// onPanResponderGrant: () => this.setState({ scroll: false }),
+// 			onPanResponderGrant: () => setUnlockScroll(false),
+// 			// onPanResponderGrant: () => unlockScroll = false,
+// 			onMoveShouldSetPanResponder: () => true,
+// 			onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}], {useNativeDriver: false}),
+// 			// onPanResponderTerminationRequest: () => {
+// 			// 	return false
+// 			// },
+// 			onPanResponderRelease: () => {
+// 				pan.extractOffset();
+// 				// console.log("hi");
+// 				// console.log(pan.x._offset, pan.y._offset);
+// 				//saveAgendaTimes(pan.x._offset, pan.y._offset);
+// 				// tasks[taskId].duration  = pan.x._offset;
+// 				// tasks[taskId].startTime = pan.y._offset;
+// 				//console.log("written");
+// 				// saveAgendaTimes(tasks, sync);
+// 				saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
+// 				//problem 1: when the page is visited the second time it won't load properly: all names are "loading" and it creates a new task, written in one write
+// 				//problem 2: when there are two events, the second one gets its timings messed up
+// 				// this.setState({ scroll: true });
+// 				setUnlockScroll(true);
+// 				// unlockScroll = true;
+// 			},
+// 			onPanResponderTerminate: () => {
+// 				pan.extractOffset();
+// 				saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
+// 				setUnlockScroll(true)
+// 			},
+// 		}),
+// 	).current;
 
-	// static add(a: Animated, b: Animated): AnimatedAddition;
-	//pan.x v
+// 	// static add(a: Animated, b: Animated): AnimatedAddition;
+// 	//pan.x v
 
+// 	return (
+// 		// <TouchableOpacity >
+// 		<Animated.View
+// 		//[styles.animatedBox,
+// 		// onPress={()=>{setUnlockScroll(false)}}
+// 			style={{
+// 				// flex          : 0,
+// 				//position:'absolute',
+// 				position: 'absolute',
+// 				height: pan.x,
+// 				//height: v,
+// 				// paddingBottom : pan.x,
+// 				// top: w, 
+// 				//translateY    : w,
+// 				//marginTop: w,
+// 				top: pan.y, 
+// 				// top:0,
+// 				bottom: 0,
+// 				// top: w, bottom: w+x,
+// 				left: 0, right: 0, 
+// 				//width: 100%,
+// 				//height: x,
+// 				//paddingTop    : x,
+// 				//paddingBottom : x,
+// 				// translateY    : offset - 2*x,
+// 				//translateY    : offset,
+// 				//translateY    : this.state.mapViewOffset.y
+// 				//padding          : x,0,
+// 				//backgroundColor  : "gray",
+// 				//backgroundColor  : 'grey',
+// 				backgroundColor  : "#22f",
+// 				borderColor      : "#222",
+// 				borderWidth: 5,
+// 				//paddingLeft: pan.x,
+// 				//top : pan.y,
+// 				//left: pan.x,
+// 				//paddingTop    : x,
+// 				//paddingBottom : x,
+// 			}}{...panResponder.panHandlers}
+// 			// style={[styles.animatedBox,{
+// 			// 	paddingTop    : x,
+// 			// 	paddingBottom : y,
+// 			// 	// paddingLeft: pan.x,
+// 			// 	//top : pan.y,
+// 			// 	//left: pan.x,
+// 			// }]}{...panResponder.panHandlers}
+// 		>
+// 			<View style={styles.scrollBlock}>
+// 				<View style={styles.scrollItem}>
+// 					<TextInput style={styles.scrollText} 
+// 						value={task.name}
+// 						type="text"
+// 						name="name"
+// 						placeholder= "task name"
+// 						onChange={(e) => {
+// 							tasks[taskId].name = e.target.value;
+// 							setTasks   (tasks);
+// 							setModified(true);
+// 						}}
+// 					/>
+// 				</View>
+// 				{/* <View> */}
+// 					{/* bar */}
+// 				{/* </View> */}
+// 				{/* <View style={styles.scrollItem}>
+// 					<TextInput style={styles.scrollText} 
+// 						value={task.requiredTime}
+// 						type="number"
+// 						name="requiredTime"
+// 						placeholder= "required time"
+// 						onChange={(e) => {
+// 							tasks[taskId].requiredTime = e.target.value;
+// 							setTasks   (tasks);
+// 							setModified(true);
+// 						}}
+// 					/>
+// 				</View>
+// 				<View style={styles.scrollItem}>
+// 					<TextInput style={styles.scrollText} 
+// 						value={task.deadline}
+// 						type="number"
+// 						name="deadline"
+// 						placeholder= "deadline"
+// 						onChange={(e) => {
+// 							tasks[taskId].deadline = e.target.value;
+// 							setTasks   (tasks);
+// 							setModified(true);
+// 						}}
+// 					/>
+// 				</View>
+// 				<View style={styles.scrollItem}>
+// 					<TextInput style={styles.scrollText} 
+// 						value={task.priority}
+// 						type="number"
+// 						name="priority"
+// 						placeholder= "priority"
+// 						onChange={(e) => {
+// 							tasks[taskId].priority = e.target.value;
+// 							setTasks   (tasks);
+// 							setModified(true);
+// 						}}
+// 					/>
+// 				</View>
+// 				<View style={styles.scrollItem}>
+// 					<TextInput style={styles.scrollText} 
+// 						value={task.like}
+// 						type="number"
+// 						name="like"
+// 						placeholder= "number"
+// 						onChange={(e) => {
+// 							tasks[taskId].like = e.target.value;
+// 							setTasks   (tasks);
+// 							setModified(true);
+// 						}}
+// 					/>
+// 				</View>
+// 				<View style={styles.scrollItem}>
+// 					<Text style={styles.scrollText}>
+// 						...
+// 					</Text>
+// 				</View> */}
+// 				<TouchableOpacity style={styles.delete} onPress={() => {
+// 					tasks.splice(taskId, 1);
+// 					setTasks   (tasks);
+// 					setReplan(true);
+// 				}}/>
+// 			</View>
+// 		</Animated.View>
+// 		// </TouchableOpacity>
+// 	);
+// }
+
+const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync}) => {
+	//add buttons to increment and decrement the values
+	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
 	return (
-		// <TouchableOpacity >
-		<Animated.View
-		//[styles.animatedBox,
-		// onPress={()=>{setUnlockScroll(false)}}
+		<View
 			style={{
-				// flex          : 0,
-				//position:'absolute',
 				position: 'absolute',
-				height: pan.x,
-				//height: v,
-				// paddingBottom : pan.x,
-				// top: w, 
-				//translateY    : w,
-				//marginTop: w,
-				top: pan.y, 
-				// top:0,
+				height: task.duration,
+				top: task.startTime, 
 				bottom: 0,
-				// top: w, bottom: w+x,
 				left: 0, right: 0, 
-				//width: 100%,
-				//height: x,
-				//paddingTop    : x,
-				//paddingBottom : x,
-				// translateY    : offset - 2*x,
-				//translateY    : offset,
-				//translateY    : this.state.mapViewOffset.y
-				//padding          : x,0,
-				//backgroundColor  : "gray",
-				//backgroundColor  : 'grey',
 				backgroundColor  : "#22f",
 				borderColor      : "#222",
 				borderWidth: 5,
-				//paddingLeft: pan.x,
-				//top : pan.y,
-				//left: pan.x,
-				//paddingTop    : x,
-				//paddingBottom : x,
-			}}{...panResponder.panHandlers}
-			// style={[styles.animatedBox,{
-			// 	paddingTop    : x,
-			// 	paddingBottom : y,
-			// 	// paddingLeft: pan.x,
-			// 	//top : pan.y,
-			// 	//left: pan.x,
-			// }]}{...panResponder.panHandlers}
+			}}
 		>
 			<View style={styles.scrollBlock}>
 				<View style={styles.scrollItem}>
@@ -490,73 +591,77 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, setReload, se
 						}}
 					/>
 				</View>
-				{/* <View> */}
-					{/* bar */}
-				{/* </View> */}
-				{/* <View style={styles.scrollItem}>
-					<TextInput style={styles.scrollText} 
-						value={task.requiredTime}
-						type="number"
-						name="requiredTime"
-						placeholder= "required time"
-						onChange={(e) => {
-							tasks[taskId].requiredTime = e.target.value;
-							setTasks   (tasks);
-							setModified(true);
-						}}
-					/>
-				</View>
-				<View style={styles.scrollItem}>
-					<TextInput style={styles.scrollText} 
-						value={task.deadline}
-						type="number"
-						name="deadline"
-						placeholder= "deadline"
-						onChange={(e) => {
-							tasks[taskId].deadline = e.target.value;
-							setTasks   (tasks);
-							setModified(true);
-						}}
-					/>
-				</View>
-				<View style={styles.scrollItem}>
-					<TextInput style={styles.scrollText} 
-						value={task.priority}
-						type="number"
-						name="priority"
-						placeholder= "priority"
-						onChange={(e) => {
-							tasks[taskId].priority = e.target.value;
-							setTasks   (tasks);
-							setModified(true);
-						}}
-					/>
-				</View>
-				<View style={styles.scrollItem}>
-					<TextInput style={styles.scrollText} 
-						value={task.like}
-						type="number"
-						name="like"
-						placeholder= "number"
-						onChange={(e) => {
-							tasks[taskId].like = e.target.value;
-							setTasks   (tasks);
-							setModified(true);
-						}}
-					/>
-				</View>
-				<View style={styles.scrollItem}>
-					<Text style={styles.scrollText}>
-						...
+				<TouchableOpacity style={styles.counterButton} onPress={() => {
+					tasks[taskId].startTime += 50;
+					setTasks   (tasks);
+					setReplan(true);
+				}}>
+					<Text style={styles.counterText}>
+						+
 					</Text>
-				</View> */}
+				</TouchableOpacity>
+				<View style={styles.scrollItem}>
+					<TextInput style={styles.scrollText} 
+						value={task.startTime}
+						type="number"
+						name="startTime"
+						placeholder= "start time"
+						onChange={(e) => {
+							tasks[taskId].startTime = e.target.value;
+							setTasks   (tasks);
+							setModified(true);
+							setReplan(true);
+						}}
+					/>
+				</View>
+				<TouchableOpacity style={styles.counterButton} onPress={() => {
+					tasks[taskId].startTime += -50;
+					setTasks   (tasks);
+					setReplan(true);
+				}}>
+					<Text style={styles.counterText}>
+						-
+					</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={styles.counterButton} onPress={() => {
+					tasks[taskId].duration += 50;
+					setTasks   (tasks);
+					setReplan(true);
+				}}>
+					<Text style={styles.counterText}>
+						+
+					</Text>
+				</TouchableOpacity>
+				<View style={styles.scrollItem}>
+					<TextInput style={styles.scrollText} 
+						value={task.duration}
+						type="number"
+						name="duration"
+						placeholder= "duration"
+						onChange={(e) => {
+							tasks[taskId].duration = e.target.value;
+							setTasks   (tasks);
+							setModified(true);
+							setReplan(true);
+						}}
+					/>
+				</View>
+				<TouchableOpacity style={styles.counterButton} onPress={() => {
+					tasks[taskId].duration += -50;
+					setTasks   (tasks);
+					setReplan(true);
+				}}>
+					<Text style={styles.counterText}>
+						-
+					</Text>
+				</TouchableOpacity>
 				<TouchableOpacity style={styles.delete} onPress={() => {
 					tasks.splice(taskId, 1);
 					setTasks   (tasks);
 					setReplan(true);
 				}}/>
 			</View>
-		</Animated.View>
+		</View>
 		// </TouchableOpacity>
 	);
 }
@@ -961,6 +1066,24 @@ const styles = StyleSheet.create({
 		marginTop   : 4,
 		marginBottom: 4
 		// width: 1
+	},
+	counterButton: {
+		flex: 1,
+		backgroundColor: "#555",
+		borderRadius: 20,
+		// fontSize: 100,
+		// textAlign: "center",
+		marginLeft  : 1,
+		marginRight : 1,
+		marginTop   : 4,
+		marginBottom: 4,
+		maxWidth: 200
+	},
+	counterText: {
+		fontSize: 40,
+		textAlign: "center",
+		textAlignVertical: "center",
+		color: "#FFF"
 	}
 })
 
