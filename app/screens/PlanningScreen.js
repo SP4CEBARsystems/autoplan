@@ -48,6 +48,9 @@ function fetchData (setTasks, setSync, ref) {
 	},[]);
 }
 
+
+var scrollOffsetY = 0;
+
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
 	const [modified      , setModified      ] = useState(false);
@@ -131,10 +134,10 @@ const ToDoScreen = ({ navigation }) => {
 					// ref={(ref) => { this.theFlatList = ref; }}
 					// ref={(ref) => { theFlatList = ref; }}
 					data={tasks}
-					renderItem={({item}) => 
+					renderItem={({item, index}) => 
 					<ToDoListItem9
 						tasks=           {tasks}
-						taskId=          {item.id}
+						taskId=          {index}
 						task=            {item}
 						setModified=     {setModified}
 						setTasks=        {setTasks}
@@ -146,8 +149,20 @@ const ToDoScreen = ({ navigation }) => {
 						sync=            {sync}
 						setScrollOffset= {setScrollOffset}
 						flatListRef=     {flatListRef}
+						// scrollOffsetY=   {scrollOffsetY}
 					/> }
 					keyExtractor={item => item.id}
+					onScroll={(event) => {
+						scrollOffsetY=event.nativeEvent.contentOffset.y; 
+						// console.log("event: ", event.nativeEvent.contentOffset.y);
+					}}
+					// onPress={() => {
+					// 	scrollOffsetY = 0;
+					// 	console.log("PRESSED");
+					// }}		
+
+					// scrollOffsetY = 0;
+
 					// scrollToOffset = ({
 					// 	offset: number,
 					// 	animated: false
@@ -621,6 +636,7 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
+	console.log("taskID: ", taskId);
 	console.log("task 1", task);
 	return (
 		<View
@@ -651,12 +667,16 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					tasks[taskId].startTime += 50;
+					scrollOffsetY += 50;
 					// setScrollOffset(50);
+					console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
 					flatListRef.current.scrollToOffset({
-						animated: true,
-						offset: 50
+						animated: false,
+						offset: scrollOffsetY
 					})
+					//it only works when the direction is changed: check unique values, and cumulating values (I need these)
 					setTasks   (tasks);
+					setModified(true);
 					setReplan  (true);
 				}}>
 					<Text style={styles.counterText}>
@@ -678,10 +698,12 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					tasks[taskId].startTime += -50;
+					scrollOffsetY += -50;
+					console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
 					
 					flatListRef.current.scrollToOffset({
-						animated: true,
-						offset: -50
+						animated: false,
+						offset: scrollOffsetY
 					})
 					// setScrollOffset(-50);
 					
@@ -694,7 +716,7 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 					// 	animated: false
 					// })
 					setTasks   (tasks);
-					// setModified(true);
+					setModified(true);
 					setReplan  (true);
 				}}>
 					<Text style={styles.counterText}>
