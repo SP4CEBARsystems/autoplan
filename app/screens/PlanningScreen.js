@@ -563,6 +563,7 @@ const HeaderBar = () => {
 
 const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync}) => {
 	//add buttons to increment and decrement the values
+	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
 	return (
 		<View
