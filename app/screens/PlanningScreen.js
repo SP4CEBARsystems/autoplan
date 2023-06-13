@@ -69,7 +69,7 @@ const ToDoScreen = ({ navigation }) => {
 			duration      : 0,
 			startTime     : 0,
 			source        : "",
-			type          : "",
+			type          : "agenda",
 			repeatTimespan: "loading",
 			repeatInterval: 0,
 			repeatOffset  : 0,
@@ -136,6 +136,7 @@ const ToDoScreen = ({ navigation }) => {
 					data={tasks}
 					renderItem={({item, index}) => 
 					<ToDoListItem9
+					// <ToDoListItemSelector
 						tasks=           {tasks}
 						taskId=          {index}
 						task=            {item}
@@ -277,7 +278,7 @@ const ToDoScreen = ({ navigation }) => {
 							duration      : 500,
 							startTime     : 0,
 							source        : "",
-							type          : "",
+							type          : "agenda",
 							repeatTimespan: "days",
 							repeatInterval: 0,
 							repeatOffset  : 0,
@@ -632,10 +633,33 @@ const HeaderBar = () => {
 // 	);
 // }
 
+// const ToDoListItemSelector = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef}) => {
+// 	if (task.type == "agenda"){
+// 		ToDoListItem9 (tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef);
+// 	} else if (task.type == "generated"){
+// 		// ToDoListItem2 (task);
+// 	} else if (task.type == ""){
+
+// 	} else {
+
+// 	}
+// }
+
 const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef}) => {
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
+
+	if (task.type == "agenda"){
+		// ToDoListItem9 (tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef);
+	} else if (task.type == "generated"){
+		return ToDoListItem2 (task);
+	} else if (task.type == ""){
+		return ToDoListItem2 (task);
+	} else {
+		return ToDoListItem2 (task);
+	}
+
 	console.log("taskID: ", taskId);
 	console.log("task 1", task);
 	return (
@@ -911,13 +935,13 @@ function PlanOut(gaps, tasks){
 			if (task.maxLength > timeLeft){
 				console.log(task);
 				// let duration = task.maxLength;
-				plannedGaps[ID]= {name : task.name, duration : timeLeft, startTime : time};
+				plannedGaps[ID]= {name : task.name, duration : timeLeft, startTime : time, type : "generated"};
 				ID++;
 				// time = gapEnd;
 				break;
 			} else {
 				// let duration = gapEnd;
-				plannedGaps[ID]= {name : task.name, duration : task.maxLength, startTime : time};
+				plannedGaps[ID]= {name : task.name, duration : task.maxLength, startTime : time, type : "generated"};
 				ID++;
 				time += task.maxLength;
 			}

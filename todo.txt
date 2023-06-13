@@ -1,9 +1,43 @@
-make the agenda scroll through days
-make the agenda display dates
-conflicting touch events (resize conflicts with text select or scroll)
-fix focus mode (it needs to properly point to it on all screen widths)
+make the agenda scroll through days and display dates
+    make the agenda display "planning" instead of "agenda" (use the app to update the database in preparation for this change)
+    make the flatlist-display day indicator component
+    make one database planning document per day
+    make the flatlist fetch for more contents when the end is reached and add the day displays to the array (just prepend it)
+    add a day display bar at the top of the screen
+    make the flatlist display time indicators: add them to the day indicator component and set the z index to be behind everything else
 
+    memory usage: keep one array for "today" for the live planner, have another array for browsing through the agenda
 
+    add break data types and break components
 
-postponed
-- agenda times: this system can be changed completely to add handles or a switch, the goal is to allow scrolling through full agendas, make changing times easy, and make it intuitive for users
+planning algorithm
+    add breaks
+
+reliability (when used):
+    lock the agenda page when it's loading (confirm if the to do page is still locked)
+    find a function or package that can extract a valid float or int from a string
+
+compatibillity
+    test ios
+    test android
+
+settings
+    break patterns
+
+focus mode
+    fix focus mode (it needs to properly point to it on all screen widths)
+    add timers
+    add a mini-viewer
+
+todo page
+    add a folding menu for extra parameters
+    move the like parameter in there and add more parameters
+    add tags types and categories to classify, and organize them, and to set break behavior rules 
+
+production
+    remove console logs
+    update database rules
+
+done 
+    X conflicting touch events (resize conflicts with text select or scroll)
+    X agenda time defining: this system can be changed completely to add handles or a switch, the goal is to allow scrolling through full agendas, make changing times easy, and make it intuitive for users
