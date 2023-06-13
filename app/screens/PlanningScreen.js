@@ -50,16 +50,17 @@ function fetchData (setTasks, setSync, ref) {
 
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
-	const [modified    , setModified    ] = useState(false);
-	const [sync        , setSync        ] = useState(false);
-	const [reload      , setReload      ] = useState(false);
-	const [replan      , setReplan      ] = useState(false);
-	const [unlockScroll, setUnlockScroll] = useState(true);
+	const [modified      , setModified      ] = useState(false);
+	const [sync          , setSync          ] = useState(false);
+	const [reload        , setReload        ] = useState(false);
+	const [replan        , setReplan        ] = useState(false);
+	const [unlockScroll  , setUnlockScroll  ] = useState(true);
 	const [startScrolling, setStartScrolling] = useState(false);
-	const [gaps        , setGaps        ] = useState([]);
-	const [agenda      , setAgenda      ] = useState([]);
-	const [plannedGaps , setPlannedGaps ] = useState([]);
-	const [tasks       , setTasks       ] = useState([
+	const [gaps          , setGaps          ] = useState([]);
+	const [agenda        , setAgenda        ] = useState([]);
+	const [plannedGaps   , setPlannedGaps   ] = useState([]);
+	const [scrollOffset  , setScrollOffset  ] = useState(0);
+	const [tasks         , setTasks         ] = useState([
 		{
 			name          : "loading",
 			duration      : 0,
@@ -69,7 +70,8 @@ const ToDoScreen = ({ navigation }) => {
 			repeatTimespan: "loading",
 			repeatInterval: 0,
 			repeatOffset  : 0,
-			repeatOffsets : []
+			repeatOffsets : [],
+			id            : 0
 		}
 	]);
 
@@ -92,10 +94,65 @@ const ToDoScreen = ({ navigation }) => {
 	tasks2 = tasks;
 	console.log("new: "         , tasks2      );
 	console.log("unlockScroll: ", unlockScroll);
+
+	// super(this)
+
+	// setScrollOffset(-50)
+	// const theFlatList = useRef("");
+					
+	// this.theFlatList.scrollToOffset({
+	// 	offset: scrollOffset,
+	// 	animated: false
+	// })
+	// console.log("this: ", this)
+
+	const flatListRef = React.useRef()
+	// toTop()
+  	// const toTop = () => {
+	// 	flatListRef.current.scrollToOffset({
+	// 		animated: true,
+	// 		offset: scrollOffset
+	// 	})
+	// }
+
+	
+	// flatListRef.current.scrollToOffset({
+	// 	animated: true,
+	// 	offset: scrollOffset
+	// })
 	
 	return (
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
+				<FlatList
+					// ref={this.theFlatList}
+					ref={flatListRef}
+					// ref={(ref) => { this._flatList = ref; }}
+					// ref={(ref) => { this.theFlatList = ref; }}
+					// ref={(ref) => { theFlatList = ref; }}
+					data={tasks}
+					renderItem={({item}) => 
+					<ToDoListItem9
+						tasks=           {tasks}
+						taskId=          {item.id}
+						task=            {item}
+						setModified=     {setModified}
+						setTasks=        {setTasks}
+						setReload=       {setReload}
+						setGaps=         {setGaps}
+						setReplan=       {setReplan}
+						setPlannedGaps=  {setPlannedGaps}
+						setUnlockScroll= {setUnlockScroll}
+						sync=            {sync}
+						setScrollOffset= {setScrollOffset}
+						flatListRef=     {flatListRef}
+					/> }
+					keyExtractor={item => item.id}
+					// scrollToOffset = ({
+					// 	offset: number,
+					// 	animated: false
+					// })
+				/>
 				{/* <HeaderBar/> */}
 				{/* <Animated.View
 					style={{
@@ -105,7 +162,6 @@ const ToDoScreen = ({ navigation }) => {
 				</Animated.View> */}
 				{/* <ScrollView style={styles.scrollingList}> */}
 				
-				<ScrollView style={styles.scrollingList} scrollEnabled={unlockScroll}>
 					{/* onPress={setStartScrolling(true)} waitFor={startScrolling} */}
 					{/* onPress={} onScroll={} onScroll={setUnlockScroll(true)} waitFor={}*/}
 					{/* <View style={styles.items}>
@@ -130,7 +186,6 @@ const ToDoScreen = ({ navigation }) => {
 						zIndex: -10,
 					}} /> */}
 					
-					<View style={styles.items}>
 						{/* <ToDoListItems2
 							tasks       = {plannedGaps   } 
 							// setTasks    = {setPlannedGaps}
@@ -150,14 +205,6 @@ const ToDoScreen = ({ navigation }) => {
 							position: 'absolute',
 							zIndex: 1,
 						}} /> */}
-
-						{plannedGaps.map((task, i) => ( 
-							<View key={i}>
-								<ToDoListItem2 task={task} />
-							</View> 
-						))}
-					</View>
-					<View style={styles.items}>
 						{/* <ToDoListItems
 							tasks           = {tasks          } 
 							setTasks        = {setTasks       } 
@@ -171,8 +218,24 @@ const ToDoScreen = ({ navigation }) => {
 							setUnlockScroll = {setUnlockScroll}
 							sync            = {sync           }
 						/> */}
-						
-						{/* chat GPT rewritten snippet */}
+
+						{/* <View style={{
+							width:  '100%',
+							height: '100%',
+							backgroundColor: 'transparent',
+							position: 'absolute',
+							zIndex: 1,
+						}} /> */}
+
+				{/* <ScrollView style={styles.scrollingList} scrollEnabled={unlockScroll}>
+					<View style={styles.items}>
+						{plannedGaps.map((task, i) => ( 
+							<View key={i}>
+								<ToDoListItem2 task={task} />
+							</View> 
+						))}
+					</View>
+					<View style={styles.items}>
 						{tasks.map((task, i) => ( 
 							<View key={i}> 
 								<ToDoListItem9
@@ -190,16 +253,8 @@ const ToDoScreen = ({ navigation }) => {
 								/> 
 							</View> 
 						))}
-
-						{/* <View style={{
-							width:  '100%',
-							height: '100%',
-							backgroundColor: 'transparent',
-							position: 'absolute',
-							zIndex: 1,
-						}} /> */}
 					</View>
-				</ScrollView>
+				</ScrollView> */}
 				<View style={styles.plusParent}>
 					<TouchableOpacity style={styles.plus} onPress={() => {
 						tasks.push({
@@ -211,7 +266,8 @@ const ToDoScreen = ({ navigation }) => {
 							repeatTimespan: "days",
 							repeatInterval: 0,
 							repeatOffset  : 0,
-							repeatOffsets : []
+							repeatOffsets : [],
+							id            : tasks.length
 						});
 						setTasks   (tasks);
 						setReplan(true);
@@ -561,10 +617,11 @@ const HeaderBar = () => {
 // 	);
 // }
 
-const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync}) => {
+const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef}) => {
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
+	console.log("task 1", task);
 	return (
 		<View
 			style={{
@@ -594,8 +651,13 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					tasks[taskId].startTime += 50;
+					// setScrollOffset(50);
+					flatListRef.current.scrollToOffset({
+						animated: true,
+						offset: 50
+					})
 					setTasks   (tasks);
-					setReplan(true);
+					setReplan  (true);
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -610,24 +672,40 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 						onChange={(e) => {
 							tasks[taskId].startTime = e.target.value;
 							setTasks   (tasks);
-							setModified(true);
-							setReplan(true);
+							setReplan  (true);
 						}}
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					tasks[taskId].startTime += -50;
+					
+					flatListRef.current.scrollToOffset({
+						animated: true,
+						offset: -50
+					})
+					// setScrollOffset(-50);
+					
+					// this.theFlatList.scrollToOffset({
+					// 	offset: -50,
+					// 	animated: false
+					// })
+					// this.theFlatList.current.scrollToOffset({
+					// 	offset: -50,
+					// 	animated: false
+					// })
 					setTasks   (tasks);
-					setReplan(true);
+					// setModified(true);
+					setReplan  (true);
 				}}>
 					<Text style={styles.counterText}>
 						-
 					</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
+					// console.log("duration tasks: ", taskId, tasks[taskId]);
 					tasks[taskId].duration += 50;
 					setTasks   (tasks);
-					setReplan(true);
+					setReplan  (true);
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -643,14 +721,14 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 							tasks[taskId].duration = e.target.value;
 							setTasks   (tasks);
 							setModified(true);
-							setReplan(true);
+							setReplan  (true);
 						}}
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					tasks[taskId].duration += -50;
 					setTasks   (tasks);
-					setReplan(true);
+					setReplan  (true);
 				}}>
 					<Text style={styles.counterText}>
 						-
