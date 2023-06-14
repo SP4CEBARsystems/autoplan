@@ -182,11 +182,11 @@ const ToDoScreen = ({ navigation }) => {
 					renderItem={({item, index}) => 
 						<ToDoListItem9
 						// <ToDoListItemSelector
-							tasks=           {tasks}
+							tasks=           {planning}
 							taskId=          {index}
 							task=            {item}
 							setModified=     {setModified}
-							setTasks=        {setTasks}
+							setTasks=        {setPlanning}
 							setReload=       {setReload}
 							setGaps=         {setGaps}
 							setReplan=       {setReplan}
@@ -697,7 +697,10 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
 	console.log("taskID: ", taskId);
-	console.log("task 1", task);
+	console.log("task 1: ", task);
+	console.log("tasks: ", tasks);
+	console.log("tasks task: ", tasks[taskId]);
+
 	if (task.type == "agenda"){
 		// ToDoListItem9 (tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef);
 		// return
@@ -912,37 +915,36 @@ const dateAndTimeItem = (task) => {
 			backgroundColor  : "#CCC",
 			borderColor      : "#AAA",
 			borderWidth: 5,
+			// zIndex: 10
 		}}>
 			<View style={styles.scrollBlock}>
-				<View style={styles.scrollItem2}>
-					<Text style={styles.scrollText}>
-						{task.name}<br/>
-						00:00<br/>
-						01:00<br/>
-						02:00<br/>
-						03:00<br/>
-						04:00<br/>
-						05:00<br/>
-						06:00<br/>
-						07:00<br/>
-						08:00<br/>
-						09:00<br/>
-						10:00<br/>
-						11:00<br/>
-						12:00<br/>
-						13:00<br/>
-						14:00<br/>
-						15:00<br/>
-						16:00<br/>
-						17:00<br/>
-						18:00<br/>
-						19:00<br/>
-						20:00<br/>
-						21:00<br/>
-						22:00<br/>
-						23:00
-					</Text>
-				</View>
+				<Text style={styles.scrollText}>
+					{task.name}<br/>
+					00:00<br/>
+					01:00<br/>
+					02:00<br/>
+					03:00<br/>
+					04:00<br/>
+					05:00<br/>
+					06:00<br/>
+					07:00<br/>
+					08:00<br/>
+					09:00<br/>
+					10:00<br/>
+					11:00<br/>
+					12:00<br/>
+					13:00<br/>
+					14:00<br/>
+					15:00<br/>
+					16:00<br/>
+					17:00<br/>
+					18:00<br/>
+					19:00<br/>
+					20:00<br/>
+					21:00<br/>
+					22:00<br/>
+					23:00
+				</Text>
 			</View>
 		</View>
 	);
@@ -1169,6 +1171,7 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		console.log("A5", planning);
 		planning.sort((a, b) => a.startTime - b.startTime);
 		console.log("A6", planning);
+		planning.unshift({ name: "TestDay", type: "date" });
 		setPlanning(planning);
 		actuallySaveTheData( tasks      , doc( firestore, "Agenda"     , "TestDay" ));
 		actuallySaveTheData( gaps       , doc( firestore, "Gaps"       , "TestDay" ));
