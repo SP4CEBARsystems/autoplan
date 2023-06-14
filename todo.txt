@@ -18,6 +18,7 @@ make the agenda scroll through days and display dates
     memory usage: keep one array for "today" for the live planner, have another array for browsing through the agenda
 
     add break data types and break components
+    press enter to apply the typed numbers, or maybe not
 
 planning algorithm
     add breaks
