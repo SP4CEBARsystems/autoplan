@@ -198,7 +198,9 @@ const ToDoScreen = ({ navigation }) => {
 							// scrollOffsetY=   {scrollOffsetY}
 						/> 
 					}
-					keyExtractor={item => item.id}
+					// keyExtractor={item => item.id}
+					keyExtractor={(item, index) => index}
+					// keyExtractor={(item, index) => item.key}
 					// keyExtractor={{item,index} => index}
 					onScroll={(event) => {
 						scrollOffsetY=event.nativeEvent.contentOffset.y; 
@@ -917,9 +919,15 @@ const dateAndTimeItem = (task) => {
 			borderWidth: 5,
 			// zIndex: 10
 		}}>
-			<View style={styles.scrollBlock}>
-				<Text style={styles.scrollText}>
+			<View style={styles.timeIndicatorBlock}>
+				<Text style={styles.dateIndicatorText}>
+					<br/>
+					<br/>
+					<br/>
+					<br/>
 					{task.name}<br/>
+				</Text>
+				<Text style={styles.timeIndicatorText}>
 					00:00<br/>
 					01:00<br/>
 					02:00<br/>
@@ -1281,6 +1289,24 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		color: "#fff",
 		textAlign: "center",
+	},
+	timeIndicatorBlock: {
+		height: 50,
+		backgroundColor: "#888",
+		marginTop: 10,
+		flexDirection:"column"
+	},
+	timeIndicatorText: {
+		fontSize: 20,
+		color: "#fff",
+		textAlign: "center",
+		lineHeight: 300,
+	},
+	dateIndicatorText: {
+		fontSize: 20,
+		color: "#fff",
+		textAlign: "center",
+		lineHeight: 30,
 	},
 	menuButtons: {
 		height: 100,
