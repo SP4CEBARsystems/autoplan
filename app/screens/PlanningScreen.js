@@ -698,9 +698,9 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
-	console.log("taskID: ", taskId);
-	console.log("task 1: ", task);
-	console.log("tasks: ", tasks);
+	console.log("taskID: "    , taskId);
+	console.log("task 1: "    , task);
+	console.log("tasks: "     , tasks);
 	console.log("tasks task: ", tasks[taskId]);
 
 	if (task.type == "agenda"){
@@ -732,6 +732,7 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 				backgroundColor  : "#22f",
 				borderColor      : "#222",
 				borderWidth: 5,
+				zIndex: 1
 			}}
 		>
 			<View style={styles.scrollBlock}>
