@@ -5,7 +5,8 @@ make the agenda scroll through days and display dates
     V make the keys unique: either make a key generator or use indexes
     make one database planning document per day
     make the flatlist fetch for more contents when the end is reached and add the day displays to the array (just prepend it)
-    add a day display bar at the top of the screen
+    V add a day display bar at the top of the screen
+    calibrate the day display bar
 
     fix the time line spacing
     
