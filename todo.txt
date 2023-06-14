@@ -12,6 +12,7 @@ make the agenda scroll through days and display dates
 
 planning algorithm
     add breaks
+    look ahead
 
 reliability (when used):
     lock the agenda page when it's loading (confirm if the to do page is still locked)

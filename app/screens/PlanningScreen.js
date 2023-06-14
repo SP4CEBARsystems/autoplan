@@ -77,6 +77,20 @@ const ToDoScreen = ({ navigation }) => {
 			id            : 0
 		}
 	]);
+	const [planning      , setPlanning      ] = useState([
+		{
+			name          : "loading",
+			duration      : 0,
+			startTime     : 0,
+			source        : "",
+			type          : "agenda",
+			repeatTimespan: "loading",
+			repeatInterval: 0,
+			repeatOffset  : 0,
+			repeatOffsets : [],
+			id            : 0
+		}
+	]);
 
 	if (reload) {console.log("reloading"); setReload(false);}
 	// console.log("tasks", todo_tasks);
@@ -85,6 +99,7 @@ const ToDoScreen = ({ navigation }) => {
 	
 	// fetchData (setAgenda, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
 	fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
+	fetchData (setPlanning   , setSync, doc(firestore, "Planning"   , "TestDay"));
 	fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
 	// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
 	fetchData (setGaps       , setSync, doc(firestore, "Gaps"       , "TestDay"));
@@ -133,7 +148,7 @@ const ToDoScreen = ({ navigation }) => {
 					// ref={(ref) => { this._flatList = ref; }}
 					// ref={(ref) => { this.theFlatList = ref; }}
 					// ref={(ref) => { theFlatList = ref; }}
-					data={tasks}
+					data={planning}
 					renderItem={({item, index}) => 
 					<ToDoListItem9
 					// <ToDoListItemSelector
@@ -650,6 +665,9 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
 
+	
+	console.log("taskID: ", taskId);
+	console.log("task 1", task);
 	if (task.type == "agenda"){
 		// ToDoListItem9 (tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef);
 	} else if (task.type == "generated"){
@@ -660,8 +678,6 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 		return ToDoListItem2 (task);
 	}
 
-	console.log("taskID: ", taskId);
-	console.log("task 1", task);
 	return (
 		<View
 			style={{
@@ -791,7 +807,8 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 	);
 }
 
-const ToDoListItem2 = ({task}) => {
+const ToDoListItem2 = (task) => {
+	console.log("task 2", task);
 	let duration  = task.duration;
 	let startTime = task.startTime;
 	return (
