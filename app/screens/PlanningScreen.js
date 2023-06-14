@@ -48,6 +48,29 @@ function fetchData (setTasks, setSync, ref) {
 	},[]);
 }
 
+function fetchData3 (setTasks, setSync, ref) {
+	useEffect(() => {
+		// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
+		//don't add a semicolon ";" after "getDoc()", Don't do that
+		getDoc(ref).then((doc) => {
+			var planning = doc.data().tasks;
+			planning.unshift({
+				name: "TestDay",
+				type: "date"
+			});
+			setTasks(planning);
+			setSync(true);
+		}).catch((e) => {
+			console.log(e);
+			//throw e;
+			//alert(error.message);
+		});
+
+	},[]);
+}
+
+	
+
 
 var scrollOffsetY = 0;
 
@@ -99,15 +122,22 @@ const ToDoScreen = ({ navigation }) => {
 	
 	// fetchData (setAgenda, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
 	fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
-	fetchData (setPlanning   , setSync, doc(firestore, "Planning"   , "TestDay"));
+	fetchData3 (setPlanning   , setSync, doc(firestore, "Planning"   , "TestDay"));
+
 	fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
 	// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
 	fetchData (setGaps       , setSync, doc(firestore, "Gaps"       , "TestDay"));
 	// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
 	// updateData(modified , setModified, sync, tasks);
-	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps);
+	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning);
 	// console.log(tasks);
 	// console.log(sync);
+
+
+	// console.log("pre dayIndicator: ", planning)
+
+	console.log("dayIndicator: ", planning)
+
 	sync2  = sync;
 	tasks2 = tasks;
 	console.log("new: "         , tasks2      );
@@ -150,24 +180,26 @@ const ToDoScreen = ({ navigation }) => {
 					// ref={(ref) => { theFlatList = ref; }}
 					data={planning}
 					renderItem={({item, index}) => 
-					<ToDoListItem9
-					// <ToDoListItemSelector
-						tasks=           {tasks}
-						taskId=          {index}
-						task=            {item}
-						setModified=     {setModified}
-						setTasks=        {setTasks}
-						setReload=       {setReload}
-						setGaps=         {setGaps}
-						setReplan=       {setReplan}
-						setPlannedGaps=  {setPlannedGaps}
-						setUnlockScroll= {setUnlockScroll}
-						sync=            {sync}
-						setScrollOffset= {setScrollOffset}
-						flatListRef=     {flatListRef}
-						// scrollOffsetY=   {scrollOffsetY}
-					/> }
+						<ToDoListItem9
+						// <ToDoListItemSelector
+							tasks=           {tasks}
+							taskId=          {index}
+							task=            {item}
+							setModified=     {setModified}
+							setTasks=        {setTasks}
+							setReload=       {setReload}
+							setGaps=         {setGaps}
+							setReplan=       {setReplan}
+							setPlannedGaps=  {setPlannedGaps}
+							setUnlockScroll= {setUnlockScroll}
+							sync=            {sync}
+							setScrollOffset= {setScrollOffset}
+							flatListRef=     {flatListRef}
+							// scrollOffsetY=   {scrollOffsetY}
+						/> 
+					}
 					keyExtractor={item => item.id}
+					// keyExtractor={{item,index} => index}
 					onScroll={(event) => {
 						scrollOffsetY=event.nativeEvent.contentOffset.y; 
 						// console.log("event: ", event.nativeEvent.contentOffset.y);
@@ -664,17 +696,23 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
-
-	
 	console.log("taskID: ", taskId);
 	console.log("task 1", task);
 	if (task.type == "agenda"){
 		// ToDoListItem9 (tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef);
+		// return
 	} else if (task.type == "generated"){
+		// return
 		return ToDoListItem2 (task);
+	} else if (task.type == "break"){
+		return breakItem (task);
+	} else if (task.type == "date"){
+		return dateAndTimeItem (task);
 	} else if (task.type == ""){
+		console.log("undefined type");
 		return ToDoListItem2 (task);
 	} else {
+		console.log("unsupported type");
 		return ToDoListItem2 (task);
 	}
 
@@ -685,7 +723,7 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 				height: task.duration,
 				top: task.startTime, 
 				bottom: 0,
-				left: 0, right: 0, 
+				left: 100, right: 0, 
 				backgroundColor  : "#22f",
 				borderColor      : "#222",
 				borderWidth: 5,
@@ -817,7 +855,7 @@ const ToDoListItem2 = (task) => {
 			height: duration,
 			top: startTime, 
 			bottom: 0,
-			left: 0, right: 0, 
+			left: 100, right: 0, 
 			backgroundColor  : "#111",
 			borderColor      : "#222",
 			borderWidth: 5,
@@ -826,6 +864,83 @@ const ToDoListItem2 = (task) => {
 				<View style={styles.scrollItem2}>
 					<Text style={styles.scrollText}>
 						{task.name}
+					</Text>
+				</View>
+			</View>
+		</View>
+	);
+}
+
+const breakItem = (task) => {
+	console.log("task 2", task);
+	let duration  = task.duration;
+	let startTime = task.startTime;
+	return (
+		<View style={{
+			position: 'absolute',
+			height: duration,
+			top: startTime, 
+			bottom: 0,
+			left: 100, right: 0, 
+			backgroundColor  : "#070",
+			borderColor      : "#050",
+			borderWidth: 5,
+		}}>
+			<View style={styles.scrollBlock}>
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollText}>
+						{task.name}
+					</Text>
+				</View>
+			</View>
+		</View>
+	);
+}
+
+const dateAndTimeItem = (task) => {
+	console.log("task 2", task);
+	let duration  = task.duration;
+	let startTime = task.startTime;
+	return (
+		<View style={{
+			position: 'absolute',
+			height: duration,
+			top: startTime, 
+			bottom: 0,
+			left: 0, right: 0, 
+			width: 100,
+			backgroundColor  : "#CCC",
+			borderColor      : "#AAA",
+			borderWidth: 5,
+		}}>
+			<View style={styles.scrollBlock}>
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollText}>
+						{task.name}<br/>
+						00:00<br/>
+						01:00<br/>
+						02:00<br/>
+						03:00<br/>
+						04:00<br/>
+						05:00<br/>
+						06:00<br/>
+						07:00<br/>
+						08:00<br/>
+						09:00<br/>
+						10:00<br/>
+						11:00<br/>
+						12:00<br/>
+						13:00<br/>
+						14:00<br/>
+						15:00<br/>
+						16:00<br/>
+						17:00<br/>
+						18:00<br/>
+						19:00<br/>
+						20:00<br/>
+						21:00<br/>
+						22:00<br/>
+						23:00
 					</Text>
 				</View>
 			</View>
@@ -952,13 +1067,25 @@ function PlanOut(gaps, tasks){
 			if (task.maxLength > timeLeft){
 				console.log(task);
 				// let duration = task.maxLength;
-				plannedGaps[ID]= {name : task.name, duration : timeLeft, startTime : time, type : "generated"};
+				plannedGaps[ID]= {
+					name      : task.name, 
+					duration  : timeLeft, 
+					startTime : time, 
+					type      : "generated", 
+					id        : -plannedGaps.length
+				};
 				ID++;
 				// time = gapEnd;
 				break;
 			} else {
 				// let duration = gapEnd;
-				plannedGaps[ID]= {name : task.name, duration : task.maxLength, startTime : time, type : "generated"};
+				plannedGaps[ID]= {
+					name      : task.name, 
+					duration  : task.maxLength, 
+					startTime : time, 
+					type      : "generated",
+					id        : -plannedGaps.length
+				};
 				ID++;
 				time += task.maxLength;
 			}
@@ -996,13 +1123,13 @@ function PlanOut(gaps, tasks){
 //if there are no gap borders detected then it's just 0
 
 
-function saveAgendaTimes(duration, startTime, taskId, setTasks, setGaps, setReload, setPlannedGaps){
+function saveAgendaTimes(duration, startTime, taskId, setTasks, setGaps, setReload, setPlannedGaps, setPlanning){
 	console.log("dur: ", duration)
 	console.log("tas: ", tasks2, taskId)
 	console.log("is: ", tasks2[taskId])
 	tasks2[taskId].duration  = duration;
 	tasks2[taskId].startTime = startTime;
-	saveData2(tasks2, sync2, setTasks, setGaps, setReload, setPlannedGaps);
+	saveData2(tasks2, sync2, setTasks, setGaps, setReload, setPlannedGaps, setPlanning);
 	console.log("dur2: ", duration)
 }
 
@@ -1022,7 +1149,7 @@ function saveData(tasks, sync){
 	}
 }
 
-function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps){
+function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning){
 // function saveData(tasks){
 	// console.log("ready to write");
 	// console.log("sync  check 2: ",sync);
@@ -1042,10 +1169,11 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps){
 		console.log("A5", planning);
 		planning.sort((a, b) => a.startTime - b.startTime);
 		console.log("A6", planning);
-		actuallySaveTheData(tasks      , doc(firestore, "Agenda"     , "TestDay"));
-		actuallySaveTheData(gaps       , doc(firestore, "Gaps"       , "TestDay"));
-		actuallySaveTheData(plannedGaps, doc(firestore, "PlannedGaps", "TestDay"));
-		actuallySaveTheData(planning   , doc(firestore, "Planning"   , "TestDay"));
+		setPlanning(planning);
+		actuallySaveTheData( tasks      , doc( firestore, "Agenda"     , "TestDay" ));
+		actuallySaveTheData( gaps       , doc( firestore, "Gaps"       , "TestDay" ));
+		actuallySaveTheData( plannedGaps, doc( firestore, "PlannedGaps", "TestDay" ));
+		actuallySaveTheData( planning   , doc( firestore, "Planning"   , "TestDay" ));
 		setTasks      (tasks      );
 		setGaps       (gaps       );
 		setPlannedGaps(plannedGaps);
@@ -1064,10 +1192,10 @@ function actuallySaveTheData(tasks, ref){
 	});
 }
 
-function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps) {
+function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning) {
 	if (replan){
 		setReplan(false);
-		saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps)
+		saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning)
 	} else if(modified){
 		setModified(false);
 		saveData(tasks, sync);
