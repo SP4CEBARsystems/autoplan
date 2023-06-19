@@ -34,45 +34,135 @@ function fetchData2 (setTasks, setSync) {
 
 //doc(firestore, "Planning", "TestDay")
 function fetchData (setTasks, setSync, ref) {
-	useEffect(() => {
-		// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
-		//don't add a semicolon ";" after "getDoc()", Don't do that
-		getDoc(ref).then((doc) => {
-			setTasks(doc.data().tasks);
-			setSync(true);
-		}).catch((e) => {
-			console.log(e);
-			//throw e;
-			//alert(error.message);
-		});
-	},[]);
+	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
+	//don't add a semicolon ";" after "getDoc()", Don't do that
+	getDoc(ref).then((doc) => {
+		setTasks(doc.data().tasks);
+		setSync(true);
+	}).catch((e) => {
+		console.log(e);
+		//throw e;
+		//alert(error.message);
+	});
 }
 
-function fetchData3 (setTasks, setSync, ref) {
-	useEffect(() => {
-		// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
-		//don't add a semicolon ";" after "getDoc()", Don't do that
-		getDoc(ref).then((doc) => {
-			var planning = doc.data().tasks;
-			planning.unshift({
-				name: "TestDay",
-				type: "date"
-			});
-			setTasks(planning);
-			setSync(true);
-		}).catch((e) => {
-			console.log(e);
-			//throw e;
-			//alert(error.message);
+function fetchData3 (dayOffset, planning, setTasks, setSync, ref) {
+	console.log("fetchdata3");
+	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
+	//don't add a semicolon ";" after "getDoc()", Don't do that
+	getDoc(ref).then((doc) => {
+		console.log("doc");
+		var data = doc.data();
+		var newPlanning = data ? data.tasks : [];
+		newPlanning.unshift({
+			name: "TestDay",
+			type: "date",
+			startTime: 7500 * dayOffset
 		});
+		console.log("planning pre:", planning)
+		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+		planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		
+		console.log("planning post:", planning)
+		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		
+		// var newPlanning = data ? data.tasks : [];
+		// newPlanning.unshift({
+		// 	name: "TestDay",
+		// 	type: "date",
+		// 	startTime: 7500 * (dayOffset+1)
+		// });
+		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		
+		console.log("newplan,", planning);
+		// setTasks(newPlanning);
+		setTasks(planning);
+		setSync(true);
+	}).catch((e) => {
+		console.log("firebase error:", e);
+		//throw e;
+		//alert(error.message);
+	});
+}
 
-	},[]);
+function fetchData4 (dayOffset, planning, setTasks, setSync, ref) {
+	console.log("fetchdata3");
+	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
+	//don't add a semicolon ";" after "getDoc()", Don't do that
+	getDoc(ref).then((doc) => {
+		console.log("doc");
+		var data = doc.data();
+		var newPlanning = data ? data.tasks : [];
+		console.log("planning pre:", planning)
+		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+		planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		
+		console.log("planning post:", planning)
+		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		
+		// var newPlanning = data ? data.tasks : [];
+		// newPlanning.unshift({
+		// 	name: "TestDay",
+		// 	type: "date",
+		// 	startTime: 7500 * (dayOffset+1)
+		// });
+		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		
+		console.log("newplan,", planning);
+		// setTasks(newPlanning);
+		setTasks(planning);
+		setSync(true);
+	}).catch((e) => {
+		console.log("firebase error:", e);
+		//throw e;
+		//alert(error.message);
+	});
+}
+
+var loadedDays = [];
+var loadedDay = "Loading"
+
+const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, setSync, firestore) => {
+	console.log("fetchMore");
+	//get js date in milliseconds
+	//multiply it by 1/86400000
+	//add the offset (we're scrolling into the future)
+	//use the resulting number to differentiate the names of the files
+	//if no file was found: create a new file
+	//use a copy of the variable in a js date formatter to display the date as a string
+	
+	const millisecondsToDay = 1/86400000;
+	var dayOffset = Math.floor((scrollOffsetY) / 6068.7998046874);
+	var milliSeconds = Date.now();
+	var day = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
+	var documentName = "Day" + day.toString();
+	fetchData3 (dayOffset, planning, setPlanning   , setSync, doc(firestore, "Planning"   , documentName));
+
+	fetchData4 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
+	fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
+	fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
+	
+	loadedDays = loadedDays.push(documentName);
+	loadedDay  = documentName;
+
+	// fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
+	// fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
+	// fetchData (setGaps       , setSync, doc(firestore, "Gaps"       , "TestDay"));
+
+	// fetchData3 (dayOffset+1, planning, setPlanning, setSync, doc(firestore, "Planning"   , "TestDay2"));
+	// fetchData3 (dayOffset+1, planning, setPlanning, setSync, doc(firestore, "Planning"   , "Day" + day.toString()));
+	scrollOffsetYLoaded += 6068.7998046874;
+	//-6068.7998046874
+	// fetchData3 (setPlanning, setSync, doc(firestore, "Planning"   , "TestDay"));
 }
 
 	
 
 
 var scrollOffsetY = 0;
+var scrollOffsetYLoaded = 0;
 
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
@@ -86,6 +176,7 @@ const ToDoScreen = ({ navigation }) => {
 	const [agenda        , setAgenda        ] = useState([]);
 	const [plannedGaps   , setPlannedGaps   ] = useState([]);
 	const [scrollOffset  , setScrollOffset  ] = useState(0);
+	const [pendingFetch  , setPendingFetch  ] = useState(false);
 	const [tasks         , setTasks         ] = useState([
 		{
 			name          : "loading",
@@ -115,20 +206,33 @@ const ToDoScreen = ({ navigation }) => {
 		}
 	]);
 
-	if (reload) {console.log("reloading"); setReload(false);}
+	if (reload) {
+		console.log("reloading"); 
+		setReload(false);
+	}
 	// console.log("tasks", todo_tasks);
 
 	// fetchData2(setTasks, setSync);
 	
-	// fetchData (setAgenda, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
-	fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
-	fetchData3 (setPlanning   , setSync, doc(firestore, "Planning"   , "TestDay"));
+	useEffect(() => {
+		// fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
+		// fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
+		// fetchData (setGaps       , setSync, doc(firestore, "Gaps"       , "TestDay"));
 
-	fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
-	// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
-	fetchData (setGaps       , setSync, doc(firestore, "Gaps"       , "TestDay"));
-	// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
-	// updateData(modified , setModified, sync, tasks);
+		// fetchData (setAgenda, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
+		// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
+		// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
+		// updateData(modified , setModified, sync, tasks);
+		fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, setSync, firestore);
+
+		if (pendingFetch) {
+			// fetchMore (planning, setPlanning, setSync, firestore);
+			setPendingFetch(false);
+		}
+	},[]);
+
+	// fetchMore (planning, setPlanning, setSync, firestore);
+	// fetchData3 (setPlanning   , setSync, doc(firestore, "Planning"   , "TestDay"));
 	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning);
 	// console.log(tasks);
 	// console.log(sync);
@@ -174,7 +278,7 @@ const ToDoScreen = ({ navigation }) => {
 			<SafeAreaView style={styles.container}>
 				<View style={styles.fixedDateDisplay}>
 					<Text style={styles.fixedDateDisplayText}>
-						Testday
+						{loadedDay}
 					</Text>
 				</View>
 				<FlatList
@@ -209,8 +313,21 @@ const ToDoScreen = ({ navigation }) => {
 					// keyExtractor={{item,index} => index}
 					onScroll={(event) => {
 						scrollOffsetY=event.nativeEvent.contentOffset.y; 
-						// console.log("event: ", event.nativeEvent.contentOffset.y);
+						console.log("scrollOffset:", event.nativeEvent.contentOffset.y);
+						// if (scrollOffsetY > scrollOffsetYLoaded) {
+						// 	setPendingFetch(true);
+						// }
 					}}
+					
+					// onEndReachedThreshold={1}
+
+					onEndReached={(info) => {
+						console.log("EndReached", info.distanceFromEnd);
+						fetchMore(planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, setSync, firestore);
+					}}
+
+					// onEndReached={fetchMore(planning, setPlanning, setSync, firestore)}
+
 					// onPress={() => {
 					// 	scrollOffsetY = 0;
 					// 	console.log("PRESSED");
@@ -311,17 +428,17 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 		// return
 	} else if (task.type == "generated"){
 		// return
-		return ToDoListItem2 (task);
+		return ToDoListItem2   (task);
 	} else if (task.type == "break"){
-		return breakItem (task);
+		return breakItem       (task);
 	} else if (task.type == "date"){
 		return dateAndTimeItem (task);
 	} else if (task.type == ""){
 		console.log("undefined type");
-		return ToDoListItem2 (task);
+		return ToDoListItem2   (task);
 	} else {
 		console.log("unsupported type");
-		return ToDoListItem2 (task);
+		return ToDoListItem2   (task);
 	}
 
 	return (
@@ -525,36 +642,36 @@ const dateAndTimeItem = (task) => {
 		}}>
 			<View style={styles.timeIndicatorBlock}>
 				<Text style={styles.dateIndicatorText}>
-					<br/>
-					<br/>
-					<br/>
-					<br/>
-					{task.name}<br/>
+					{"\n"}
+					{"\n"}
+					{"\n"}
+					{"\n"}
+					{task.name}{"\n"}
 				</Text>
 				<Text style={styles.timeIndicatorText}>
-					00:00<br/>
-					01:00<br/>
-					02:00<br/>
-					03:00<br/>
-					04:00<br/>
-					05:00<br/>
-					06:00<br/>
-					07:00<br/>
-					08:00<br/>
-					09:00<br/>
-					10:00<br/>
-					11:00<br/>
-					12:00<br/>
-					13:00<br/>
-					14:00<br/>
-					15:00<br/>
-					16:00<br/>
-					17:00<br/>
-					18:00<br/>
-					19:00<br/>
-					20:00<br/>
-					21:00<br/>
-					22:00<br/>
+					00:00{"\n"}
+					01:00{"\n"}
+					02:00{"\n"}
+					03:00{"\n"}
+					04:00{"\n"}
+					05:00{"\n"}
+					06:00{"\n"}
+					07:00{"\n"}
+					08:00{"\n"}
+					09:00{"\n"}
+					10:00{"\n"}
+					11:00{"\n"}
+					12:00{"\n"}
+					13:00{"\n"}
+					14:00{"\n"}
+					15:00{"\n"}
+					16:00{"\n"}
+					17:00{"\n"}
+					18:00{"\n"}
+					19:00{"\n"}
+					20:00{"\n"}
+					21:00{"\n"}
+					22:00{"\n"}
 					23:00
 				</Text>
 			</View>
@@ -785,10 +902,12 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		console.log("A6", planning);
 		planning.unshift({ name: "TestDay", type: "date" });
 		setPlanning(planning);
-		actuallySaveTheData( tasks      , doc( firestore, "Agenda"     , "TestDay" ));
-		actuallySaveTheData( gaps       , doc( firestore, "Gaps"       , "TestDay" ));
-		actuallySaveTheData( plannedGaps, doc( firestore, "PlannedGaps", "TestDay" ));
-		actuallySaveTheData( planning   , doc( firestore, "Planning"   , "TestDay" ));
+		//loadedDay
+		//"TestDay"
+		actuallySaveTheData( tasks      , doc( firestore, "Agenda"     , loadedDay ));
+		actuallySaveTheData( gaps       , doc( firestore, "Gaps"       , loadedDay ));
+		actuallySaveTheData( plannedGaps, doc( firestore, "PlannedGaps", loadedDay ));
+		actuallySaveTheData( planning   , doc( firestore, "Planning"   , loadedDay ));
 		setTasks      (tasks      );
 		setGaps       (gaps       );
 		setPlannedGaps(plannedGaps);

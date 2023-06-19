@@ -49,6 +49,18 @@ todo page
 production
     remove console logs
     update database rules
+    make firebase api keys secure
+    switch to a local database (but keep the firebase code)
+
+database changes
+    local database is the default option for everyone
+    use firebase for premium customers so they can sync data across devices
+    and use firebase for shared data
+    anyone can create an account but it isn't mandatory
+    anyone who pays can store data on firebase, they will have to create an account first
+    anyone who is invited to get access to a certain database by someone who paid will get access, they too will have to create an account first
+    people who paid (called organizers here) can add users by their email
+    people who are invited can turn this request on or off (rejected requests are then also hidden) 
 
 done 
     X conflicting touch events (resize conflicts with text select or scroll)
