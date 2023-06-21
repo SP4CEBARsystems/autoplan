@@ -938,22 +938,40 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 	
 	if(sync){
 		// console.log("written");
+
+		//temporary
+		let gaps        = [];
+		let plannedGaps = [];
+
 		console.log("A1");
 		tasks.sort((a, b) => a.startTime - b.startTime);
 		console.log("A2", tasks);
-		let gaps        = findGaps(tasks);
+		//disable this for testing purposes \V/
+		// let gaps        = findGaps(tasks);
 		console.log("A3", gaps);
-		let plannedGaps = PlanOut(gaps, todo_tasks);
+
+		//disable this for testing purposes \V/
+		// let plannedGaps = PlanOut(gaps, todo_tasks);
 		console.log("A4", plannedGaps);
+
 		let planning    = tasks;
-		planning = planning.concat(plannedGaps);
+		//disable this for testing purposes \V/
+		// planning = planning.concat(plannedGaps);
 		console.log("A5", planning);
 		planning.sort((a, b) => a.startTime - b.startTime);
 		console.log("A6", planning);
 		planning.unshift({ name: "TestDay", type: "date" });
 		setPlanning(planning);
+
+		// /^\ doesn't include day indicators
+		//add a display array that is separated from the database syncing arrays
+		//find a better way to add day indicators just once to this display array
+
 		//loadedDay
 		//"TestDay"
+
+
+		//"figure out" as an app name for something
 		
 	// indexTableTasks       = [];
 	// indexTableGaps        = [];
