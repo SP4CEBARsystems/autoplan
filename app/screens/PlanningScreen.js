@@ -52,8 +52,8 @@ function fetchData3 (dayOffset, planning, setTasks, setSync, ref) {
 	//don't add a semicolon ";" after "getDoc()", Don't do that
 	getDoc(ref).then((doc) => {
 		console.log("doc");
-		var data = doc.data();
-		var newPlanning = data ? data.tasks : [];
+		let data = doc.data();
+		let newPlanning = data ? data.tasks : [];
 		newPlanning.unshift({
 			name: "TestDay",
 			type: "date",
@@ -67,7 +67,7 @@ function fetchData3 (dayOffset, planning, setTasks, setSync, ref) {
 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
 		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
 		
-		// var newPlanning = data ? data.tasks : [];
+		// let newPlanning = data ? data.tasks : [];
 		// newPlanning.unshift({
 		// 	name: "TestDay",
 		// 	type: "date",
@@ -92,8 +92,8 @@ function fetchData4 (dayOffset, planning, setTasks, setSync, ref) {
 	//don't add a semicolon ";" after "getDoc()", Don't do that
 	getDoc(ref).then((doc) => {
 		console.log("doc");
-		var data = doc.data();
-		var newPlanning = data ? data.tasks : [];
+		let data = doc.data();
+		let newPlanning = data ? data.tasks : [];
 		console.log("planning pre:", planning)
 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
 		planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
@@ -102,7 +102,7 @@ function fetchData4 (dayOffset, planning, setTasks, setSync, ref) {
 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
 		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
 		
-		// var newPlanning = data ? data.tasks : [];
+		// let newPlanning = data ? data.tasks : [];
 		// newPlanning.unshift({
 		// 	name: "TestDay",
 		// 	type: "date",
@@ -121,16 +121,16 @@ function fetchData4 (dayOffset, planning, setTasks, setSync, ref) {
 	});
 }
 
-var dayLengthPixels       = 6068.7998046874;
-var deltaDayLengthPixels  = dayLengthPixels ^(-1);
+let dayLengthPixels       = 6068.7998046874;
+let deltaDayLengthPixels  = 1/dayLengthPixels;
 
-var loadedDays            = [];
-var loadedDay             = "Loading"
-var indexTableTasks       = [];
-var indexTableGaps        = [];
-var indexTablePlannedGaps = [];
-var indexTablePlanning    = [];
-var amountOfDaysLoaded    = 0;
+let loadedDays            = [];
+let loadedDay             = "Loading"
+let indexTableTasks       = [];
+let indexTableGaps        = [];
+let indexTablePlannedGaps = [];
+let indexTablePlanning    = [];
+let amountOfDaysLoaded    = 0;
 
 const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, setSync, firestore) => {
 	console.log("fetchMore");
@@ -142,26 +142,26 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	//use a copy of the variable in a js date formatter to display the date as a string
 	
 	const millisecondsToDay = 1/86400000;
-	var dayOffset = Math.floor((scrollOffsetY) * deltaDayLengthPixels);
-	var milliSeconds = Date.now();
-	var day = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
-	var documentName = "Day" + day.toString();
-	fetchData3 (dayOffset, planning, setPlanning   , setSync, doc(firestore, "Planning"   , documentName));
-
+	let dayOffset = Math.floor(scrollOffsetY * deltaDayLengthPixels);
+	console.log("dayOffset:", dayOffset, scrollOffsetY, deltaDayLengthPixels);
+	let milliSeconds = Date.now();
+	let day = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
+	let documentName = "Day" + day.toString();
+	fetchData3 (dayOffset, planning   , setPlanning   , setSync, doc(firestore, "Planning"   , documentName));
 	fetchData4 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
 	fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
 	fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
 	
 	//generate a table array which holds the day number and the array index number gor each of the arrays
-	indexTableTasks       = indexTable.push( tasks.length       );
-	indexTablePlannedGaps = indexTable.push( plannedGaps.length );
-	indexTableGaps        = indexTable.push( gaps.length        );
+	indexTableTasks.push      ( tasks.length       );
+	indexTablePlannedGaps.push( plannedGaps.length );
+	indexTableGaps.push       ( gaps.length        );
 	amountOfDaysLoaded++;
 
 	//is "planning" with the day indicators used to generate plannings? that would be bad
 	
-	loadedDays = loadedDays.push(documentName);
-	loadedDay  = documentName;
+	loadedDays.push(documentName);
+	loadedDay  = day;
 
 	// fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
 	// fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
@@ -177,8 +177,8 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	
 
 
-var scrollOffsetY = 0;
-var scrollOffsetYLoaded = 0;
+let scrollOffsetY = 0;
+let scrollOffsetYLoaded = 0;
 
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
@@ -294,7 +294,7 @@ const ToDoScreen = ({ navigation }) => {
 			<SafeAreaView style={styles.container}>
 				<View style={styles.fixedDateDisplay}>
 					<Text style={styles.fixedDateDisplayText}>
-						{loadedDay}
+						{"Day" + loadedDay.toString()}
 					</Text>
 				</View>
 				<FlatList
@@ -439,13 +439,13 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 	console.log("tasks: "     , tasks);
 	console.log("tasks task: ", tasks[taskId]);
 
-	if (task.type == "agenda"){
+	if (task.type == "agenda" || task.type == "break" ){
 		// ToDoListItem9 (tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef);
 		// return
 	} else if (task.type == "generated"){
 		// return
 		return ToDoListItem2   (task);
-	} else if (task.type == "break"){
+	} else if (task.type == "generated break"){
 		return breakItem       (task);
 	} else if (task.type == "date"){
 		return dateAndTimeItem (task);
@@ -456,6 +456,7 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 		console.log("unsupported type");
 		return ToDoListItem2   (task);
 	}
+	let taskType = tasks[taskId].type;
 
 	return (
 		<View
@@ -465,8 +466,9 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 				top: task.startTime, 
 				bottom: 0,
 				left: 100, right: 0, 
-				backgroundColor  : "#22f",
+				backgroundColor  : task.type == "break" ? "#2f2" : "#22f",
 				borderColor      : "#222",
+				opacity: .5,
 				borderWidth: 5,
 				zIndex: 1
 			}}
@@ -576,6 +578,15 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 						-
 					</Text>
 				</TouchableOpacity>
+				<TouchableOpacity style={styles.counterButton} onPress={() => {
+					tasks[taskId].type = (taskType=="break") ? "agenda": "break";
+					setTasks   (tasks);
+					setReplan  (true);
+				}}>
+					<Text style={styles.counterText}>
+						{taskType}
+					</Text>
+				</TouchableOpacity>
 				<TouchableOpacity style={styles.delete} onPress={() => {
 					tasks.splice(taskId, 1);
 					setTasks   (tasks);
@@ -600,6 +611,7 @@ const ToDoListItem2 = (task) => {
 			left: 100, right: 0, 
 			backgroundColor  : "#111",
 			borderColor      : "#222",
+			opacity: .5,
 			borderWidth: 5,
 		}}>
 			<View style={styles.scrollBlock}>
@@ -711,10 +723,10 @@ function findGaps(tasks){
 	// let nextTaskEnd;
 	// let gapStart = 0;
 	let prevTaskEnd = 0;
-	let maxEnd      = 2000;
+	let maxEnd      = 20000;
 	let gaps = [];
-	var dayOfTask     = 0;
-	var prevDayOfTask = 0;
+	let dayOfTask     = 0;
+	let prevDayOfTask = 0;
 	indexTableGaps = [];
 	console.log("tt: ", tasks)
 	for (let i=0; i<tasks.length; i++) {
@@ -725,7 +737,7 @@ function findGaps(tasks){
 		}
 		prevTaskEnd = tasks[i].duration + taskStart
 		
-		dayOfTask     = floor(taskStart * deltaDayLengthPixels);
+		dayOfTask = Math.floor (taskStart * deltaDayLengthPixels);
 		if( dayOfTask != prevDayOfTask ){
 			indexTableGaps.push(i);
 		}
@@ -800,8 +812,9 @@ function findGaps(tasks){
 //figure out if firebase has a modified flag so that I can refetch the data from the database
 
 function PlanOut(gaps, tasks){
-	let plannedGaps = [];
-	let ID = 0;
+	let plannedGaps   = [];
+	let dayOfTask     = 0;
+	let prevDayOfTask = 0;
 	for(let i=0; i<gaps.length; i++){
 		let gap    = gaps[i];
 		let time   = gap.startTime;
@@ -818,33 +831,43 @@ function PlanOut(gaps, tasks){
 			console.log("time: ", i, taskID, time, timeLeft, task.maxLength);
 			// if (time + task.minlength > timeLeft){
 			// 	// //continue;
-			// 	// plannedGaps[ID]= {name : task.name, duration : timeLeft, startTime : time};
-			// 	// ID++;
+			// 	// plannedGaps.push ({name : task.name, duration : timeLeft, startTime : time});
 			// 	// break;
 			// } else 
 			if (task.maxLength > timeLeft){
 				console.log(task);
 				// let duration = task.maxLength;
-				plannedGaps[ID]= {
+				plannedGaps.push ({
 					name      : task.name, 
 					duration  : timeLeft, 
 					startTime : time, 
 					type      : "generated", 
 					id        : -plannedGaps.length
-				};
-				ID++;
+				});
+		
+				dayOfTask = Math.floor (time * deltaDayLengthPixels);
+				if( dayOfTask != prevDayOfTask ){
+					indexTablePlannedGaps.push(i);
+				}
+				prevDayOfTask = dayOfTask;
 				// time = gapEnd;
 				break;
 			} else {
 				// let duration = gapEnd;
-				plannedGaps[ID]= {
+				plannedGaps.push ({
 					name      : task.name, 
 					duration  : task.maxLength, 
 					startTime : time, 
 					type      : "generated",
 					id        : -plannedGaps.length
-				};
-				ID++;
+				});
+		
+				dayOfTask = Math.floor (time * deltaDayLengthPixels);
+				if( dayOfTask != prevDayOfTask ){
+					indexTablePlannedGaps.push(i);
+				}
+				prevDayOfTask = dayOfTask;
+
 				time += task.maxLength;
 			}
 			taskID++;
@@ -940,11 +963,13 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		// indexTableTasks       
 		// indexTablePlannedGaps 
 		// indexTableGaps        
-		for(var i=0; i<amountOfDaysLoaded; i++){
-			actuallySaveTheData( tasks.slice      (0, indexTableTasks      [i]), doc( firestore, "Agenda"     , loadedDay ));
-			actuallySaveTheData( gaps.slice       (0, indexTableGaps       [i]), doc( firestore, "Gaps"       , loadedDay ));
-			actuallySaveTheData( plannedGaps.slice(0, indexTablePlannedGaps[i]), doc( firestore, "PlannedGaps", loadedDay ));
-			actuallySaveTheData( planning.slice   (0, indexTablePlanning   [i]), doc( firestore, "Planning"   , loadedDay ));
+		for(let i=0; i<amountOfDaysLoaded; i++){
+			let day     = loadedDay + i;
+			let docName = "Day" + day.toString();
+			actuallySaveTheData( tasks.slice      (0, indexTableTasks      [i]), doc( firestore, "Agenda"     , docName ));
+			actuallySaveTheData( gaps.slice       (0, indexTableGaps       [i]), doc( firestore, "Gaps"       , docName ));
+			actuallySaveTheData( plannedGaps.slice(0, indexTablePlannedGaps[i]), doc( firestore, "PlannedGaps", docName ));
+			actuallySaveTheData( planning.slice   (0, indexTablePlanning   [i]), doc( firestore, "Planning"   , docName ));
 		}
 		setTasks      (tasks      );
 		setGaps       (gaps       );
@@ -956,7 +981,8 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 }
 
 function actuallySaveTheData(tasks, ref){
-	updateDoc(ref, {tasks: tasks})
+	//updateDoc
+	setDoc(ref, {tasks: tasks})
 	.catch((e) => {
 		console.log(e)
 		//throw e;
@@ -1028,7 +1054,8 @@ const styles = StyleSheet.create({
 		height: 50,
 		backgroundColor: "#888",
 		marginTop: 10,
-		flexDirection:"row"
+		flexDirection:"row",
+		opacity: .5,
 	},
 	scrollItem: {
 		flex: 1,
@@ -1037,6 +1064,7 @@ const styles = StyleSheet.create({
 		marginRight : 1,
 		marginTop   : 4,
 		marginBottom: 4,
+		opacity: .5,
 	},
 	scrollItem2: {
 		flex: 1,
@@ -1045,6 +1073,7 @@ const styles = StyleSheet.create({
 		marginRight : 1,
 		marginTop   : 4,
 		marginBottom: 4,
+		opacity: .5,
 	},
 	scrollText: {
 		fontSize: 20,
