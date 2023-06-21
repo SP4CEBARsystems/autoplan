@@ -121,8 +121,16 @@ function fetchData4 (dayOffset, planning, setTasks, setSync, ref) {
 	});
 }
 
-var loadedDays = [];
-var loadedDay = "Loading"
+var dayLengthPixels       = 6068.7998046874;
+var deltaDayLengthPixels  = dayLengthPixels ^(-1);
+
+var loadedDays            = [];
+var loadedDay             = "Loading"
+var indexTableTasks       = [];
+var indexTableGaps        = [];
+var indexTablePlannedGaps = [];
+var indexTablePlanning    = [];
+var amountOfDaysLoaded    = 0;
 
 const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, setSync, firestore) => {
 	console.log("fetchMore");
@@ -134,7 +142,7 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	//use a copy of the variable in a js date formatter to display the date as a string
 	
 	const millisecondsToDay = 1/86400000;
-	var dayOffset = Math.floor((scrollOffsetY) / 6068.7998046874);
+	var dayOffset = Math.floor((scrollOffsetY) * deltaDayLengthPixels);
 	var milliSeconds = Date.now();
 	var day = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 	var documentName = "Day" + day.toString();
@@ -143,6 +151,14 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	fetchData4 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
 	fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
 	fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
+	
+	//generate a table array which holds the day number and the array index number gor each of the arrays
+	indexTableTasks       = indexTable.push( tasks.length       );
+	indexTablePlannedGaps = indexTable.push( plannedGaps.length );
+	indexTableGaps        = indexTable.push( gaps.length        );
+	amountOfDaysLoaded++;
+
+	//is "planning" with the day indicators used to generate plannings? that would be bad
 	
 	loadedDays = loadedDays.push(documentName);
 	loadedDay  = documentName;
@@ -153,8 +169,8 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 
 	// fetchData3 (dayOffset+1, planning, setPlanning, setSync, doc(firestore, "Planning"   , "TestDay2"));
 	// fetchData3 (dayOffset+1, planning, setPlanning, setSync, doc(firestore, "Planning"   , "Day" + day.toString()));
-	scrollOffsetYLoaded += 6068.7998046874;
-	//-6068.7998046874
+	scrollOffsetYLoaded += dayLengthPixels;
+	//-dayLengthPixels
 	// fetchData3 (setPlanning, setSync, doc(firestore, "Planning"   , "TestDay"));
 }
 
@@ -697,6 +713,9 @@ function findGaps(tasks){
 	let prevTaskEnd = 0;
 	let maxEnd      = 2000;
 	let gaps = [];
+	var dayOfTask     = 0;
+	var prevDayOfTask = 0;
+	indexTableGaps = [];
 	console.log("tt: ", tasks)
 	for (let i=0; i<tasks.length; i++) {
 		taskStart   = tasks[i].startTime
@@ -705,6 +724,14 @@ function findGaps(tasks){
 			gaps.push({name: "gap", startTime: prevTaskEnd, duration: taskStart-prevTaskEnd});
 		}
 		prevTaskEnd = tasks[i].duration + taskStart
+		
+		dayOfTask     = floor(taskStart * deltaDayLengthPixels);
+		if( dayOfTask != prevDayOfTask ){
+			indexTableGaps.push(i);
+		}
+		prevDayOfTask = dayOfTask;
+		
+
 		// taskEnd       = tasks[i  ].duration + start
 		// nextTaskStart = tasks[i+1].startTime
 		// nextTaskEnd   = tasks[i+1].duration + nextTaskStart
@@ -904,10 +931,21 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		setPlanning(planning);
 		//loadedDay
 		//"TestDay"
-		actuallySaveTheData( tasks      , doc( firestore, "Agenda"     , loadedDay ));
-		actuallySaveTheData( gaps       , doc( firestore, "Gaps"       , loadedDay ));
-		actuallySaveTheData( plannedGaps, doc( firestore, "PlannedGaps", loadedDay ));
-		actuallySaveTheData( planning   , doc( firestore, "Planning"   , loadedDay ));
+		
+	// indexTableTasks       = [];
+	// indexTableGaps        = [];
+	// indexTablePlannedGaps = [];
+	// indexTablePlanning    = [];
+
+		// indexTableTasks       
+		// indexTablePlannedGaps 
+		// indexTableGaps        
+		for(var i=0; i<amountOfDaysLoaded; i++){
+			actuallySaveTheData( tasks.slice      (0, indexTableTasks      [i]), doc( firestore, "Agenda"     , loadedDay ));
+			actuallySaveTheData( gaps.slice       (0, indexTableGaps       [i]), doc( firestore, "Gaps"       , loadedDay ));
+			actuallySaveTheData( plannedGaps.slice(0, indexTablePlannedGaps[i]), doc( firestore, "PlannedGaps", loadedDay ));
+			actuallySaveTheData( planning.slice   (0, indexTablePlanning   [i]), doc( firestore, "Planning"   , loadedDay ));
+		}
 		setTasks      (tasks      );
 		setGaps       (gaps       );
 		setPlannedGaps(plannedGaps);
