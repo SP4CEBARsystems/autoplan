@@ -46,7 +46,7 @@ function fetchData (setTasks, setSync, ref) {
 	});
 }
 
-function fetchData3 (dayOffset, planning, setTasks, setSync, ref) {
+function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, setSync, ref) {
 	console.log("fetchdata3");
 	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
 	//don't add a semicolon ";" after "getDoc()", Don't do that
@@ -73,6 +73,7 @@ function fetchData3 (dayOffset, planning, setTasks, setSync, ref) {
 		console.log("newplan,", planning);
 		// setTasks(newPlanning);
 		setTasks(planning);
+
 		planning.unshift({
 			name: "TestDay",
 			type: "date",
@@ -81,8 +82,8 @@ function fetchData3 (dayOffset, planning, setTasks, setSync, ref) {
 		setDisplayed(planning);
 		setSync(true);
 	}).catch((e) => {
-		console.log("firebase error:", e);
-		//throw e;
+		// console.log("firebase error:", e);
+		throw e;
 		//alert(error.message);
 	});
 }
@@ -148,7 +149,7 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	let milliSeconds = Date.now();
 	let day = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 	let documentName = "Day" + day.toString();
-	fetchData3 (dayOffset, planning   , setPlanning   , setSync, doc(firestore, "Planning"   , documentName));
+	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, setSync, doc(firestore, "Planning"   , documentName));
 	fetchData4 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
 	fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
 	fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
@@ -162,7 +163,7 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	//is "planning" with the day indicators used to generate plannings? that would be bad
 	
 	loadedDays.push(documentName);
-	loadedDay  = day;
+	loadedDay = day;
 
 	// fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
 	// fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
@@ -264,7 +265,7 @@ const ToDoScreen = ({ navigation }) => {
 
 	// fetchMore (planning, setPlanning, setSync, firestore);
 	// fetchData3 (setPlanning   , setSync, doc(firestore, "Planning"   , "TestDay"));
-	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning);
+	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed);
 	// console.log(tasks);
 	// console.log(sync);
 
@@ -919,13 +920,13 @@ function PlanOut(gaps, tasks){
 //if there are no gap borders detected then it's just 0
 
 
-function saveAgendaTimes(duration, startTime, taskId, setTasks, setGaps, setReload, setPlannedGaps, setPlanning){
+function saveAgendaTimes(duration, startTime, taskId, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed){
 	console.log("dur: ", duration)
 	console.log("tas: ", tasks2, taskId)
 	console.log("is: ", tasks2[taskId])
 	tasks2[taskId].duration  = duration;
 	tasks2[taskId].startTime = startTime;
-	saveData2(tasks2, sync2, setTasks, setGaps, setReload, setPlannedGaps, setPlanning);
+	saveData2(tasks2, sync2, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed);
 	console.log("dur2: ", duration)
 }
 
@@ -945,7 +946,7 @@ function saveData(tasks, sync){
 	}
 }
 
-function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning){
+function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed){
 // function saveData(tasks){
 	// console.log("ready to write");
 	// console.log("sync  check 2: ",sync);
@@ -975,8 +976,9 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		console.log("A5", planning);
 		planning.sort((a, b) => a.startTime - b.startTime);
 		console.log("A6", planning);
-		planning.unshift({ name: "TestDay", type: "date" });
-		setPlanning(planning);
+		// planning.unshift({ name: "TestDay", type: "date" });
+		setPlanning (planning);
+		setDisplayed(planning);
 
 		// /^\ doesn't include day indicators
 		//add a display array that is separated from the database syncing arrays
@@ -1023,10 +1025,10 @@ function actuallySaveTheData(tasks, ref){
 	});
 }
 
-function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning) {
+function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed) {
 	if (replan){
 		setReplan(false);
-		saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning)
+		saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed)
 	} else if(modified){
 		setModified(false);
 		saveData(tasks, sync);
