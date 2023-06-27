@@ -74,6 +74,8 @@ function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, set
 		// setTasks(newPlanning);
 		setTasks(planning);
 
+		//use an array for just the day indicators and add it to it whenever the planning algorithm is done
+
 		planning.unshift({
 			name: "TestDay",
 			type: "date",
@@ -134,7 +136,7 @@ let indexTablePlannedGaps = [];
 let indexTablePlanning    = [];
 let amountOfDaysLoaded    = 0;
 
-const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, setSync, firestore) => {
+const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore) => {
 	console.log("fetchMore");
 	//get js date in milliseconds
 	//multiply it by 1/86400000
@@ -149,6 +151,13 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	let milliSeconds = Date.now();
 	let day = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 	let documentName = "Day" + day.toString();
+
+	setDayIndicators(dayIndicators.unshift({
+		name: "TestDay",
+		type: "date",
+		startTime: 7500 * dayOffset
+	}));
+
 	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, setSync, doc(firestore, "Planning"   , documentName));
 	fetchData4 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
 	fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
@@ -195,6 +204,7 @@ const ToDoScreen = ({ navigation }) => {
 	const [plannedGaps   , setPlannedGaps   ] = useState([]);
 	const [scrollOffset  , setScrollOffset  ] = useState(0);
 	const [pendingFetch  , setPendingFetch  ] = useState(false);
+	const [dayIndicators , setDayIndicators ] = useState([]);
 	const [tasks         , setTasks         ] = useState([
 		{
 			name          : "loading",
@@ -255,7 +265,7 @@ const ToDoScreen = ({ navigation }) => {
 		// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
 		// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
 		// updateData(modified , setModified, sync, tasks);
-		fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, setSync, firestore);
+		fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
 
 		if (pendingFetch) {
 			// fetchMore (planning, setPlanning, setSync, firestore);
@@ -265,7 +275,7 @@ const ToDoScreen = ({ navigation }) => {
 
 	// fetchMore (planning, setPlanning, setSync, firestore);
 	// fetchData3 (setPlanning   , setSync, doc(firestore, "Planning"   , "TestDay"));
-	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed);
+	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators);
 	// console.log(tasks);
 	// console.log(sync);
 
@@ -355,7 +365,7 @@ const ToDoScreen = ({ navigation }) => {
 
 					onEndReached={(info) => {
 						console.log("EndReached", info.distanceFromEnd);
-						fetchMore(planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, setSync, firestore);
+						fetchMore(planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
 					}}
 
 					// onEndReached={fetchMore(planning, setPlanning, setSync, firestore)}
@@ -920,13 +930,13 @@ function PlanOut(gaps, tasks){
 //if there are no gap borders detected then it's just 0
 
 
-function saveAgendaTimes(duration, startTime, taskId, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed){
+function saveAgendaTimes(duration, startTime, taskId, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators){
 	console.log("dur: ", duration)
 	console.log("tas: ", tasks2, taskId)
 	console.log("is: ", tasks2[taskId])
 	tasks2[taskId].duration  = duration;
 	tasks2[taskId].startTime = startTime;
-	saveData2(tasks2, sync2, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed);
+	saveData2(tasks2, sync2, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators);
 	console.log("dur2: ", duration)
 }
 
@@ -946,7 +956,7 @@ function saveData(tasks, sync){
 	}
 }
 
-function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed){
+function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators){
 // function saveData(tasks){
 	// console.log("ready to write");
 	// console.log("sync  check 2: ",sync);
@@ -978,7 +988,7 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		console.log("A6", planning);
 		// planning.unshift({ name: "TestDay", type: "date" });
 		setPlanning (planning);
-		setDisplayed(planning);
+		setDisplayed(planning.concat(dayIndicators));
 
 		// /^\ doesn't include day indicators
 		//add a display array that is separated from the database syncing arrays
@@ -1025,10 +1035,10 @@ function actuallySaveTheData(tasks, ref){
 	});
 }
 
-function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed) {
+function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators) {
 	if (replan){
 		setReplan(false);
-		saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed)
+		saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 	} else if(modified){
 		setModified(false);
 		saveData(tasks, sync);
