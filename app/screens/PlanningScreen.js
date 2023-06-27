@@ -54,11 +54,6 @@ function fetchData3 (dayOffset, planning, setTasks, setSync, ref) {
 		console.log("doc");
 		let data = doc.data();
 		let newPlanning = data ? data.tasks : [];
-		newPlanning.unshift({
-			name: "TestDay",
-			type: "date",
-			startTime: 7500 * dayOffset
-		});
 		console.log("planning pre:", planning)
 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
 		planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
@@ -78,6 +73,12 @@ function fetchData3 (dayOffset, planning, setTasks, setSync, ref) {
 		console.log("newplan,", planning);
 		// setTasks(newPlanning);
 		setTasks(planning);
+		planning.unshift({
+			name: "TestDay",
+			type: "date",
+			startTime: 7500 * dayOffset
+		});
+		setDisplayed(planning);
 		setSync(true);
 	}).catch((e) => {
 		console.log("firebase error:", e);
@@ -132,7 +133,7 @@ let indexTablePlannedGaps = [];
 let indexTablePlanning    = [];
 let amountOfDaysLoaded    = 0;
 
-const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, setSync, firestore) => {
+const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, setSync, firestore) => {
 	console.log("fetchMore");
 	//get js date in milliseconds
 	//multiply it by 1/86400000
@@ -221,6 +222,20 @@ const ToDoScreen = ({ navigation }) => {
 			id            : 0
 		}
 	]);
+	const [displayed      , setDisplayed      ] = useState([
+		{
+			name          : "loading",
+			duration      : 0,
+			startTime     : 0,
+			source        : "",
+			type          : "agenda",
+			repeatTimespan: "loading",
+			repeatInterval: 0,
+			repeatOffset  : 0,
+			repeatOffsets : [],
+			id            : 0
+		}
+	]);
 
 	if (reload) {
 		console.log("reloading"); 
@@ -239,7 +254,7 @@ const ToDoScreen = ({ navigation }) => {
 		// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
 		// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
 		// updateData(modified , setModified, sync, tasks);
-		fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, setSync, firestore);
+		fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, setSync, firestore);
 
 		if (pendingFetch) {
 			// fetchMore (planning, setPlanning, setSync, firestore);
@@ -303,11 +318,11 @@ const ToDoScreen = ({ navigation }) => {
 					// ref={(ref) => { this._flatList = ref; }}
 					// ref={(ref) => { this.theFlatList = ref; }}
 					// ref={(ref) => { theFlatList = ref; }}
-					data={planning}
+					data={displayed}
 					renderItem={({item, index}) => 
 						<ToDoListItem9
 						// <ToDoListItemSelector
-							tasks=           {planning}
+							tasks=           {displayed}
 							taskId=          {index}
 							task=            {item}
 							setModified=     {setModified}
@@ -339,7 +354,7 @@ const ToDoScreen = ({ navigation }) => {
 
 					onEndReached={(info) => {
 						console.log("EndReached", info.distanceFromEnd);
-						fetchMore(planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, setSync, firestore);
+						fetchMore(planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, setSync, firestore);
 					}}
 
 					// onEndReached={fetchMore(planning, setPlanning, setSync, firestore)}
