@@ -216,7 +216,7 @@ const ToDoScreen = ({ navigation }) => {
 	const [reload        , setReload        ] = useState(false);
 	const [replan        , setReplan        ] = useState(false);
 	const [unlockScroll  , setUnlockScroll  ] = useState(true);
-	const [startScrolling, setStartScrolling] = useState(false);
+	// const [startScrolling, setStartScrolling] = useState(false);
 	const [gaps          , setGaps          ] = useState([]);
 	// const [agenda        , setAgenda        ] = useState([]);
 	const [plannedGaps   , setPlannedGaps   ] = useState([]);
@@ -339,6 +339,8 @@ const ToDoScreen = ({ navigation }) => {
 	// 	offset: scrollOffset
 	// })
 	
+	let loadedDate = new Date(loadedDay*86400000);
+	
 	return (
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
@@ -353,7 +355,11 @@ const ToDoScreen = ({ navigation }) => {
 						</Text>
 					</TouchableOpacity>
 					<Text style={styles.fixedDateDisplayText}>
-						{"Day" + loadedDay.toString()}
+						{
+							// "Day" + loadedDay.toString() 
+    						loadedDate.toDateString()
+							//loadedDate==today ? " (today)" : ""
+						}
 					</Text>
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
 						loadedDay++;
@@ -564,7 +570,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						placeholder= "task name"
 						onChange={(e) => {
 							tasks[taskId].name = e.target.value;
-							agenda[taskId-1].name = e.target.value;
+							// agenda[taskId-1].name = e.target.value;
 							// setAgenda  (agenda);
 							setTasks   (tasks);
 							setModified(true);
@@ -820,7 +826,7 @@ function findGaps(tasks){
 	// let nextTaskEnd;
 	// let gapStart = 0;
 	let prevTaskEnd = 0;
-	let maxEnd      = 20000;
+	let maxEnd      = 7500;
 	let gaps = [];
 	let dayOfTask     = 0;
 	let prevDayOfTask = 0;
@@ -1045,23 +1051,23 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		// console.log("written");
 
 		//temporary
-		let gaps        = [];
-		let plannedGaps = [];
+		// let gaps        = [];
+		// let plannedGaps = [];
 
 		console.log("A1");
 		tasks.sort((a, b) => a.startTime - b.startTime);
 		console.log("A2", tasks);
 		//disable this for testing purposes \V/
-		// let gaps        = findGaps(tasks);
+		let gaps        = findGaps(tasks);
 		console.log("A3", gaps);
 
 		//disable this for testing purposes \V/
-		// let plannedGaps = PlanOut(gaps, todo_tasks);
+		let plannedGaps = PlanOut(gaps, todo_tasks);
 		console.log("A4", plannedGaps);
 
 		let planning    = tasks;
 		//disable this for testing purposes \V/
-		// planning = planning.concat(plannedGaps);
+		planning = planning.concat(plannedGaps);
 		console.log("A5", planning);
 		planning.sort((a, b) => a.startTime - b.startTime);
 		console.log("A6", planning);
