@@ -218,7 +218,7 @@ const ToDoScreen = ({ navigation }) => {
 	const [unlockScroll  , setUnlockScroll  ] = useState(true);
 	const [startScrolling, setStartScrolling] = useState(false);
 	const [gaps          , setGaps          ] = useState([]);
-	const [agenda        , setAgenda        ] = useState([]);
+	// const [agenda        , setAgenda        ] = useState([]);
 	const [plannedGaps   , setPlannedGaps   ] = useState([]);
 	const [scrollOffset  , setScrollOffset  ] = useState(0);
 	const [pendingFetch  , setPendingFetch  ] = useState(false);
@@ -268,6 +268,8 @@ const ToDoScreen = ({ navigation }) => {
 			zIndex        : 0
 		}
 	]);
+
+	// setDisplayed
 
 	if (reload) {
 		console.log("reloading"); 
@@ -384,10 +386,10 @@ const ToDoScreen = ({ navigation }) => {
 						<ToDoListItem9
 						// <ToDoListItemSelector
 							tasks=           {displayed}
+							setTasks=        {setDisplayed}
 							taskId=          {index}
 							task=            {item}
 							setModified=     {setModified}
-							setTasks=        {setPlanning}
 							setReload=       {setReload}
 							setGaps=         {setGaps}
 							setReplan=       {setReplan}
@@ -509,7 +511,7 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda}) => {
+const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda}) => {
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
@@ -563,7 +565,7 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 						onChange={(e) => {
 							tasks[taskId].name = e.target.value;
 							agenda[taskId-1].name = e.target.value;
-							setAgenda  (agenda);
+							// setAgenda  (agenda);
 							setTasks   (tasks);
 							setModified(true);
 						}}
@@ -647,6 +649,7 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 						name="duration"
 						placeholder= "duration"
 						onChange={(e) => {
+							focused = taskId;
 							tasks[taskId].duration = e.target.value;
 							setTasks   (tasks);
 							setModified(true);
@@ -665,8 +668,11 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 					</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					tasks[taskId].type = (taskType=="break") ? "agenda": "break";
+					tasks[taskId   ].type = (taskType=="break") ? "agenda": "break";
+					// agenda[taskId-1].type = (taskType=="break") ? "agenda": "break";
+					focused = taskId;
 					setTasks   (tasks);
+					setAgenda  (agenda);
 					setReplan  (true);
 				}}>
 					<Text style={styles.counterText}>
