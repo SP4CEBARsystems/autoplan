@@ -370,6 +370,16 @@ const ToDoScreen = ({ navigation }) => {
 					// ref={(ref) => { this.theFlatList = ref; }}
 					// ref={(ref) => { theFlatList = ref; }}
 					data={displayed}
+					// data={
+					// 	planning.unshift({
+					// 		name: "TestDay",
+					// 		type: "date",
+					// 		startTime: 0
+					// 	})
+					// }
+
+					
+
 					renderItem={({item, index}) => 
 						<ToDoListItem9
 						// <ToDoListItemSelector
@@ -552,6 +562,8 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 						placeholder= "task name"
 						onChange={(e) => {
 							tasks[taskId].name = e.target.value;
+							agenda[taskId-1].name = e.target.value;
+							setAgenda  (agenda);
 							setTasks   (tasks);
 							setModified(true);
 						}}
@@ -1006,11 +1018,14 @@ function saveData(tasks, sync){
 		//
 		// actuallySaveTheData(planning, doc(firestore, "Planning", "TestDay"));
 		// actuallySaveTheData(tasks   , doc(firestore, "Agenda"  , "TestDay"));docName
-		for(let i=0; i<amountOfDaysLoaded; i++){
-			let day     = loadedDay + i;
-			let docName = "Day" + day.toString();
-			actuallySaveTheData(tasks   , doc(firestore, "Agenda"  , docName));
-		}
+		// for(let i=0; i<amountOfDaysLoaded; i++){
+		// 	let day     = loadedDay + i;
+		// 	let docName = "Day" + day.toString();
+		// 	actuallySaveTheData(tasks   , doc(firestore, "Agenda"  , docName));
+		// }
+		let day     = loadedDay;
+		let docName = "Day" + day.toString();
+		actuallySaveTheData(tasks   , doc(firestore, "Agenda"  , docName));
 	}
 }
 
@@ -1176,6 +1191,11 @@ function updateData (modified, setModified, replan, setReplan, sync, tasks, setT
 	} else if(modified){
 		setModified(false);
 		saveData(tasks, sync);
+		// planning.unshift({
+		// 	name: "TestDay",
+		// 	type: "date",
+		// 	startTime: 0
+		// });
 	}
 }
 
