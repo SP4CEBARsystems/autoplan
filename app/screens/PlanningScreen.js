@@ -56,7 +56,8 @@ function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, day
 		let newPlanning = data ? data.tasks : [];
 		console.log("planning pre:", planning)
 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
-		planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		planning = newPlanning;
 		
 		console.log("planning post:", planning)
 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
@@ -79,8 +80,10 @@ function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, day
 		planning.unshift({
 			name: "TestDay",
 			type: "date",
-			startTime: 7500 * dayOffset
+			startTime: 0
 		});
+		// startTime: 7500 * dayOffset
+		
 		setDisplayed(planning);
 		// setDisplayed(planning.concat(dayIndicators));
 		setSync(true);
@@ -101,8 +104,9 @@ function fetchData4 (dayOffset, planning, setTasks, setSync, ref) {
 		let newPlanning = data ? data.tasks : [];
 		console.log("planning pre:", planning)
 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
-		planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
-		
+		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		planning = newPlanning;
+
 		console.log("planning post:", planning)
 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
 		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
@@ -136,6 +140,7 @@ let indexTableGaps        = [];
 let indexTablePlannedGaps = [];
 let indexTablePlanning    = [];
 let amountOfDaysLoaded    = 0;
+let dayOffset             = 0;
 
 const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore) => {
 	console.log("fetchMore");
@@ -147,18 +152,26 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	//use a copy of the variable in a js date formatter to display the date as a string
 	
 	const millisecondsToDay = 1/86400000;
-	let dayOffset = Math.floor(scrollOffsetY * deltaDayLengthPixels);
+	// let dayOffset = Math.floor(scrollOffsetY * deltaDayLengthPixels);
 	console.log("dayOffset:", dayOffset, scrollOffsetY, deltaDayLengthPixels);
 	let milliSeconds = Date.now();
 	let day = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
+	// let day = loadedDay;
 	let documentName = "Day" + day.toString();
 
-	console.log("dayIndicators 3", dayIndicators)
-	dayIndicators.unshift({
+	// console.log("dayIndicators 3", dayIndicators)
+	// dayIndicators.unshift({
+	// 	name: "TestDay",
+	// 	type: "date",
+	// 	startTime: 7500 * dayOffset
+	// })
+	dayIndicators = {
 		name: "TestDay",
 		type: "date",
-		startTime: 7500 * dayOffset
-	})
+		startTime: 0
+	};
+	
+
 	setDayIndicators(dayIndicators);
 	console.log("dayIndicators 4", dayIndicators);
 
@@ -328,9 +341,27 @@ const ToDoScreen = ({ navigation }) => {
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
 				<View style={styles.fixedDateDisplay}>
+					<TouchableOpacity style={styles.counterButton} onPress={() => {
+						loadedDay--;
+						dayOffset--;
+						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
+					}}>
+						<Text style={styles.counterText}>
+							previous
+						</Text>
+					</TouchableOpacity>
 					<Text style={styles.fixedDateDisplayText}>
 						{"Day" + loadedDay.toString()}
 					</Text>
+					<TouchableOpacity style={styles.counterButton} onPress={() => {
+						loadedDay++;
+						dayOffset++;
+						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
+					}}>
+						<Text style={styles.counterText}>
+							next
+						</Text>
+					</TouchableOpacity>
 				</View>
 				<FlatList
 					// ref={this.theFlatList}
@@ -355,6 +386,8 @@ const ToDoScreen = ({ navigation }) => {
 							sync=            {sync}
 							setScrollOffset= {setScrollOffset}
 							flatListRef=     {flatListRef}
+							agenda=          {tasks}
+							setAgenda=       {setTasks}
 							// scrollOffsetY=   {scrollOffsetY}
 						/> 
 					}
@@ -372,10 +405,10 @@ const ToDoScreen = ({ navigation }) => {
 					
 					// onEndReachedThreshold={1}
 
-					onEndReached={(info) => {
-						console.log("EndReached", info.distanceFromEnd);
-						fetchMore(planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
-					}}
+					// onEndReached={(info) => {
+					// 	console.log("EndReached", info.distanceFromEnd);
+					// 	fetchMore(planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
+					// }}
 
 					// onEndReached={fetchMore(planning, setPlanning, setSync, firestore)}
 
@@ -466,7 +499,7 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef}) => {
+const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda}) => {
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
@@ -629,8 +662,13 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 					</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.delete} onPress={() => {
+					console.log("delete1", tasks[0], tasks[1]);
 					tasks.splice(taskId, 1);
+					agenda.splice(taskId-1, 1);
+					console.log("delete2", tasks[0]);
 					setTasks   (tasks);
+					setAgenda  (agenda);
+					setModified(true);
 					setReplan(true);
 				}}/>
 			</View>
@@ -1034,24 +1072,41 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		let previousTablePlannedGaps = 0
 		let previousTablePlanning    = 0
 
+
+		let day     = loadedDay;
+		let docName = "Day" + day.toString();
+		
+		// console.log("savingData1", previousTableTasks      , indexTableTasks      [i])
+		actuallySaveTheData( tasks      , doc( firestore, "Agenda"     , docName ));
+		// console.log("savingData2", previousTableGaps       , indexTableGaps       [i])
+		actuallySaveTheData( gaps       , doc( firestore, "Gaps"       , docName ));
+		// console.log("savingData3", previousTablePlannedGaps, indexTablePlannedGaps[i])
+		actuallySaveTheData( plannedGaps, doc( firestore, "PlannedGaps", docName ));
+		// console.log("savingData4", previousTablePlanning   , indexTablePlanning   [i])
+		actuallySaveTheData( planning   , doc( firestore, "Planning"   , docName ));
+		// previousTableTasks       = indexTableTasks      [i]
+		// previousTableGaps        = indexTableGaps       [i]
+		// previousTablePlannedGaps = indexTablePlannedGaps[i]
+		// previousTablePlanning    = indexTablePlanning   [i]
+
 		//the efficient method
-		for(let i=0; i<amountOfDaysLoaded; i++){
-			let day     = loadedDay + i;
-			let docName = "Day" + day.toString();
-			
-			console.log("savingData1", previousTableTasks      , indexTableTasks      [i])
-			actuallySaveTheData( tasks.slice      (previousTableTasks      , indexTableTasks      [i]), doc( firestore, "Agenda"     , docName ));
-			console.log("savingData2", previousTableGaps       , indexTableGaps       [i])
-			actuallySaveTheData( gaps.slice       (previousTableGaps       , indexTableGaps       [i]), doc( firestore, "Gaps"       , docName ));
-			console.log("savingData3", previousTablePlannedGaps, indexTablePlannedGaps[i])
-			actuallySaveTheData( plannedGaps.slice(previousTablePlannedGaps, indexTablePlannedGaps[i]), doc( firestore, "PlannedGaps", docName ));
-			console.log("savingData4", previousTablePlanning   , indexTablePlanning   [i])
-			actuallySaveTheData( planning.slice   (previousTablePlanning   , indexTablePlanning   [i]), doc( firestore, "Planning"   , docName ));
-			previousTableTasks       = indexTableTasks      [i]
-			previousTableGaps        = indexTableGaps       [i]
-			previousTablePlannedGaps = indexTablePlannedGaps[i]
-			previousTablePlanning    = indexTablePlanning   [i]
-		}
+		// for(let i=0; i<amountOfDaysLoaded; i++){
+		// let day     = loadedDay;
+		// let docName = "Day" + day.toString();
+		
+		// console.log("savingData1", previousTableTasks      , indexTableTasks      [i])
+		// actuallySaveTheData( tasks.slice      (previousTableTasks      , indexTableTasks      [i]), doc( firestore, "Agenda"     , docName ));
+		// console.log("savingData2", previousTableGaps       , indexTableGaps       [i])
+		// actuallySaveTheData( gaps.slice       (previousTableGaps       , indexTableGaps       [i]), doc( firestore, "Gaps"       , docName ));
+		// console.log("savingData3", previousTablePlannedGaps, indexTablePlannedGaps[i])
+		// actuallySaveTheData( plannedGaps.slice(previousTablePlannedGaps, indexTablePlannedGaps[i]), doc( firestore, "PlannedGaps", docName ));
+		// console.log("savingData4", previousTablePlanning   , indexTablePlanning   [i])
+		// actuallySaveTheData( planning.slice   (previousTablePlanning   , indexTablePlanning   [i]), doc( firestore, "Planning"   , docName ));
+		// previousTableTasks       = indexTableTasks      [i]
+		// previousTableGaps        = indexTableGaps       [i]
+		// previousTablePlannedGaps = indexTablePlannedGaps[i]
+		// previousTablePlanning    = indexTablePlanning   [i]
+		// }
 
 		//the inefficient method
 		// tasks.forEach      ((element, index) => {
@@ -1301,7 +1356,8 @@ const styles = StyleSheet.create({
 	fixedDateDisplay: {
 		// height: 50,
 		backgroundColor: "#888",
-		flexDirection:"column"
+		flexDirection:"row",
+		width: "100%"
 	},
 	fixedDateDisplayText: {
 		fontSize: 40,
