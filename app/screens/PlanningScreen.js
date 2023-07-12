@@ -46,7 +46,7 @@ function fetchData (setTasks, setSync, ref) {
 	});
 }
 
-function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, setSync, ref) {
+function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, dayIndicators, setSync, ref) {
 	console.log("fetchdata3");
 	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
 	//don't add a semicolon ";" after "getDoc()", Don't do that
@@ -82,6 +82,7 @@ function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, set
 			startTime: 7500 * dayOffset
 		});
 		setDisplayed(planning);
+		// setDisplayed(planning.concat(dayIndicators));
 		setSync(true);
 	}).catch((e) => {
 		// console.log("firebase error:", e);
@@ -152,13 +153,16 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	let day = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 	let documentName = "Day" + day.toString();
 
-	setDayIndicators(dayIndicators.unshift({
+	console.log("dayIndicators 3", dayIndicators)
+	dayIndicators.unshift({
 		name: "TestDay",
 		type: "date",
 		startTime: 7500 * dayOffset
-	}));
+	})
+	setDayIndicators(dayIndicators);
+	console.log("dayIndicators 4", dayIndicators);
 
-	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, setSync, doc(firestore, "Planning"   , documentName));
+	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, dayIndicators, setSync, doc(firestore, "Planning"   , documentName));
 	fetchData4 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
 	fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
 	fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
@@ -190,6 +194,7 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 
 let scrollOffsetY = 0;
 let scrollOffsetYLoaded = 0;
+let focused = 0;
 
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
@@ -216,7 +221,8 @@ const ToDoScreen = ({ navigation }) => {
 			repeatInterval: 0,
 			repeatOffset  : 0,
 			repeatOffsets : [],
-			id            : 0
+			id            : 0,
+			zIndex        : 0
 		}
 	]);
 	const [planning      , setPlanning      ] = useState([
@@ -230,7 +236,8 @@ const ToDoScreen = ({ navigation }) => {
 			repeatInterval: 0,
 			repeatOffset  : 0,
 			repeatOffsets : [],
-			id            : 0
+			id            : 0,
+			zIndex        : 0
 		}
 	]);
 	const [displayed      , setDisplayed      ] = useState([
@@ -244,7 +251,8 @@ const ToDoScreen = ({ navigation }) => {
 			repeatInterval: 0,
 			repeatOffset  : 0,
 			repeatOffsets : [],
-			id            : 0
+			id            : 0,
+			zIndex        : 0
 		}
 	]);
 
@@ -283,6 +291,7 @@ const ToDoScreen = ({ navigation }) => {
 	// console.log("pre dayIndicator: ", planning)
 
 	console.log("dayIndicator: ", planning)
+	console.log("dayIndicators 2", dayIndicators)
 
 	sync2  = sync;
 	tasks2 = tasks;
@@ -394,7 +403,8 @@ const ToDoScreen = ({ navigation }) => {
 							repeatInterval: 0,
 							repeatOffset  : 0,
 							repeatOffsets : [],
-							id            : tasks.length
+							id            : tasks.length,
+							zIndex        : 0
 						});
 						setTasks   (tasks);
 						setReplan(true);
@@ -491,12 +501,13 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 				height: task.duration,
 				top: task.startTime, 
 				bottom: 0,
-				left: 100, right: 0, 
+				left: 100, right: focused == taskId ? 50 : 0, 
 				backgroundColor  : task.type == "break" ? "#2f2" : "#22f",
 				borderColor      : "#222",
-				opacity: .5,
-				borderWidth: 5,
-				zIndex: 1
+				// opacity: .5,
+				borderWidth: focused == taskId ? 10 : 5,
+				zIndex: focused == taskId ? 2 : 1
+				// zIndex: 1
 			}}
 		>
 			<View style={styles.scrollBlock}>
@@ -522,6 +533,7 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 						animated: false,
 						offset: scrollOffsetY
 					})
+					focused = taskId;
 					//it only works when the direction is changed: check unique values, and cumulating values (I need these)
 					setTasks   (tasks);
 					setModified(true);
@@ -553,6 +565,7 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 						animated: false,
 						offset: scrollOffsetY
 					})
+					focused = taskId;
 					// setScrollOffset(-50);
 					
 					// this.theFlatList.scrollToOffset({
@@ -574,6 +587,7 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					// console.log("duration tasks: ", taskId, tasks[taskId]);
 					tasks[taskId].duration += 50;
+					focused = taskId;
 					setTasks   (tasks);
 					setReplan  (true);
 				}}>
@@ -597,6 +611,7 @@ const ToDoListItem9 = ({tasks, taskId, task, setTasks, setModified, setReload, s
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					tasks[taskId].duration += -50;
+					focused = taskId;
 					setTasks   (tasks);
 					setReplan  (true);
 				}}>
@@ -952,7 +967,12 @@ function saveData(tasks, sync){
 		// planning = tasks;
 		//
 		// actuallySaveTheData(planning, doc(firestore, "Planning", "TestDay"));
-		actuallySaveTheData(tasks   , doc(firestore, "Agenda"  , "TestDay"));
+		// actuallySaveTheData(tasks   , doc(firestore, "Agenda"  , "TestDay"));docName
+		for(let i=0; i<amountOfDaysLoaded; i++){
+			let day     = loadedDay + i;
+			let docName = "Day" + day.toString();
+			actuallySaveTheData(tasks   , doc(firestore, "Agenda"  , docName));
+		}
 	}
 }
 
@@ -989,6 +1009,7 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		// planning.unshift({ name: "TestDay", type: "date" });
 		setPlanning (planning);
 		setDisplayed(planning.concat(dayIndicators));
+		console.log("dayIndicators 5", dayIndicators)
 
 		// /^\ doesn't include day indicators
 		//add a display array that is separated from the database syncing arrays
@@ -1008,14 +1029,70 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		// indexTableTasks       
 		// indexTablePlannedGaps 
 		// indexTableGaps        
+		let previousTableTasks       = 0
+		let previousTableGaps        = 0
+		let previousTablePlannedGaps = 0
+		let previousTablePlanning    = 0
+
+		//the efficient method
 		for(let i=0; i<amountOfDaysLoaded; i++){
 			let day     = loadedDay + i;
 			let docName = "Day" + day.toString();
-			actuallySaveTheData( tasks.slice      (0, indexTableTasks      [i]), doc( firestore, "Agenda"     , docName ));
-			actuallySaveTheData( gaps.slice       (0, indexTableGaps       [i]), doc( firestore, "Gaps"       , docName ));
-			actuallySaveTheData( plannedGaps.slice(0, indexTablePlannedGaps[i]), doc( firestore, "PlannedGaps", docName ));
-			actuallySaveTheData( planning.slice   (0, indexTablePlanning   [i]), doc( firestore, "Planning"   , docName ));
+			
+			console.log("savingData1", previousTableTasks      , indexTableTasks      [i])
+			actuallySaveTheData( tasks.slice      (previousTableTasks      , indexTableTasks      [i]), doc( firestore, "Agenda"     , docName ));
+			console.log("savingData2", previousTableGaps       , indexTableGaps       [i])
+			actuallySaveTheData( gaps.slice       (previousTableGaps       , indexTableGaps       [i]), doc( firestore, "Gaps"       , docName ));
+			console.log("savingData3", previousTablePlannedGaps, indexTablePlannedGaps[i])
+			actuallySaveTheData( plannedGaps.slice(previousTablePlannedGaps, indexTablePlannedGaps[i]), doc( firestore, "PlannedGaps", docName ));
+			console.log("savingData4", previousTablePlanning   , indexTablePlanning   [i])
+			actuallySaveTheData( planning.slice   (previousTablePlanning   , indexTablePlanning   [i]), doc( firestore, "Planning"   , docName ));
+			previousTableTasks       = indexTableTasks      [i]
+			previousTableGaps        = indexTableGaps       [i]
+			previousTablePlannedGaps = indexTablePlannedGaps[i]
+			previousTablePlanning    = indexTablePlanning   [i]
 		}
+
+		//the inefficient method
+		// tasks.forEach      ((element, index) => {
+		// 	let day     = element.startTime/1000;
+		// 	let docName = "Day" + day.toString();
+		// 	console.log(element)
+		// });
+		// gaps.forEach       ((element, index) => {
+		// 	let day     = loadedDay + index;
+		// 	let docName = "Day" + day.toString();
+		// 	console.log(element)
+		// });
+		// plannedGaps.forEach((element, index) => {
+		// 	let day     = loadedDay + index;
+		// 	let docName = "Day" + day.toString();
+		// 	console.log(element)
+		// });
+		// planning.forEach   ((element, index) => {
+		// 	let day     = loadedDay + index;
+		// 	let docName = "Day" + day.toString();
+		// 	console.log(element)
+		// });
+
+		// for(let i=0; i<amountOfDaysLoaded; i++){
+		// 	let day     = loadedDay + i;
+		// 	let docName = "Day" + day.toString();
+			
+		// 	console.log("savingData1", previousTableTasks      , indexTableTasks      [i])
+		// 	actuallySaveTheData( tasks.slice      (previousTableTasks      , indexTableTasks      [i]), doc( firestore, "Agenda"     , docName ));
+		// 	console.log("savingData2", previousTableGaps       , indexTableGaps       [i])
+		// 	actuallySaveTheData( gaps.slice       (previousTableGaps       , indexTableGaps       [i]), doc( firestore, "Gaps"       , docName ));
+		// 	console.log("savingData3", previousTablePlannedGaps, indexTablePlannedGaps[i])
+		// 	actuallySaveTheData( plannedGaps.slice(previousTablePlannedGaps, indexTablePlannedGaps[i]), doc( firestore, "PlannedGaps", docName ));
+		// 	console.log("savingData4", previousTablePlanning   , indexTablePlanning   [i])
+		// 	actuallySaveTheData( planning.slice   (previousTablePlanning   , indexTablePlanning   [i]), doc( firestore, "Planning"   , docName ));
+		// 	previousTableTasks       = indexTableTasks      [i]
+		// 	previousTableGaps        = indexTableGaps       [i]
+		// 	previousTablePlannedGaps = indexTablePlannedGaps[i]
+		// 	previousTablePlanning    = indexTablePlanning   [i]
+		// }
+
 		setTasks      (tasks      );
 		setGaps       (gaps       );
 		setPlannedGaps(plannedGaps);
@@ -1027,6 +1104,8 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 
 function actuallySaveTheData(tasks, ref){
 	//updateDoc
+	
+	console.log("savingData", tasks)
 	setDoc(ref, {tasks: tasks})
 	.catch((e) => {
 		console.log(e)
