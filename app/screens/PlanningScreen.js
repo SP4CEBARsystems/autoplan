@@ -77,11 +77,11 @@ function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, day
 
 		//use an array for just the day indicators and add it to it whenever the planning algorithm is done
 
-		planning.unshift({
-			name: "TestDay",
-			type: "date",
-			startTime: 0
-		});
+		// planning.unshift({
+		// 	name: "TestDay",
+		// 	type: "date",
+		// 	startTime: 0
+		// });
 		// startTime: 7500 * dayOffset
 		
 		setDisplayed(planning);
@@ -489,6 +489,13 @@ const ToDoScreen = ({ navigation }) => {
 					// 		startTime: 0
 					// 	})
 					// }
+
+					//wait... I can add a header bar
+					ListHeaderComponent={() => <dateAndTimeItem task={{
+						name: "TestDay",
+						type: "date",
+						startTime: 0
+					}} />}
 
 					
 
