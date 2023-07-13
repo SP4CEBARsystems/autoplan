@@ -242,10 +242,60 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 
 	
 let agendaId = 0
-let globalAgenda = [];
 let scrollOffsetY = 0;
 let scrollOffsetYLoaded = 0;
 let focused = 0;
+
+let globalAgenda = [
+	{
+		name          : "loading",
+		duration      : 0,
+		startTime     : 0,
+		source        : "",
+		type          : "agenda",
+		repeatTimespan: "loading",
+		repeatInterval: 0,
+		repeatOffset  : 0,
+		repeatOffsets : [],
+		id            : 0,
+		zIndex        : 0
+	}
+];
+
+let globalPlanning = [
+	{
+		name          : "loading",
+		duration      : 0,
+		startTime     : 0,
+		source        : "",
+		type          : "agenda",
+		repeatTimespan: "loading",
+		repeatInterval: 0,
+		repeatOffset  : 0,
+		repeatOffsets : [],
+		id            : 0,
+		zIndex        : 0
+	}
+];
+
+let globalGaps = []
+let globalPlannedGaps = []
+
+const setTasks = (agenda) => {
+	globalAgenda = agenda
+}
+
+const setPlanning = (planning) => {
+	globalPlanning = planning
+}
+
+const setGaps = (gaps) => {
+	globalGaps = gaps
+}
+
+const setPlannedGaps = (plannedGaps) => {
+	globalPlannedGaps = plannedGaps
+}
 
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
@@ -255,42 +305,46 @@ const ToDoScreen = ({ navigation }) => {
 	const [replan        , setReplan        ] = useState(false);
 	const [unlockScroll  , setUnlockScroll  ] = useState(true);
 	// const [startScrolling, setStartScrolling] = useState(false);
-	const [gaps          , setGaps          ] = useState([]);
 	// const [agenda        , setAgenda        ] = useState([]);
-	const [plannedGaps   , setPlannedGaps   ] = useState([]);
+	// const [gaps          , setGaps          ] = useState([]);
+	// const [plannedGaps   , setPlannedGaps   ] = useState([]);
 	const [scrollOffset  , setScrollOffset  ] = useState(0);
 	const [pendingFetch  , setPendingFetch  ] = useState(false);
 	const [dayIndicators , setDayIndicators ] = useState([]);
-	const [tasks         , setTasks         ] = useState([
-		{
-			name          : "loading",
-			duration      : 0,
-			startTime     : 0,
-			source        : "",
-			type          : "agenda",
-			repeatTimespan: "loading",
-			repeatInterval: 0,
-			repeatOffset  : 0,
-			repeatOffsets : [],
-			id            : 0,
-			zIndex        : 0
-		}
-	]);
-	const [planning      , setPlanning      ] = useState([
-		{
-			name          : "loading",
-			duration      : 0,
-			startTime     : 0,
-			source        : "",
-			type          : "agenda",
-			repeatTimespan: "loading",
-			repeatInterval: 0,
-			repeatOffset  : 0,
-			repeatOffsets : [],
-			id            : 0,
-			zIndex        : 0
-		}
-	]);
+	let tasks       = globalAgenda
+	let planning    = globalPlanning
+	let gaps        = globalGaps
+	let plannedGaps = globalPlannedGaps
+	// const [tasks         , setTasks         ] = useState([
+	// 	{
+	// 		name          : "loading",
+	// 		duration      : 0,
+	// 		startTime     : 0,
+	// 		source        : "",
+	// 		type          : "agenda",
+	// 		repeatTimespan: "loading",
+	// 		repeatInterval: 0,
+	// 		repeatOffset  : 0,
+	// 		repeatOffsets : [],
+	// 		id            : 0,
+	// 		zIndex        : 0
+	// 	}
+	// ]);
+	// const [planning      , setPlanning      ] = useState([
+	// 	{
+	// 		name          : "loading",
+	// 		duration      : 0,
+	// 		startTime     : 0,
+	// 		source        : "",
+	// 		type          : "agenda",
+	// 		repeatTimespan: "loading",
+	// 		repeatInterval: 0,
+	// 		repeatOffset  : 0,
+	// 		repeatOffsets : [],
+	// 		id            : 0,
+	// 		zIndex        : 0
+	// 	}
+	// ]);
 	const [displayed      , setDisplayed      ] = useState([
 		{
 			name          : "loading",
@@ -624,17 +678,16 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						placeholder= "task name"
 						onChange={(e) => {
 							tasks       [taskId  ].name = e.target.value;
-							// globalAgenda[agendaId].name = e.target.value;
 							// agenda[taskId-1].name = e.target.value;
 							// setAgenda  (agenda);
 							setTasks   (tasks);
 							setModified(true);
+							globalAgenda[agendaId].name = e.target.value;
 						}}
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					tasks       [taskId  ].startTime += 50;
-					// globalAgenda[agendaId].startTime += 50;
 					scrollOffsetY += 50;
 					// setScrollOffset(50);
 					// console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
@@ -647,6 +700,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					setTasks   (tasks);
 					// setModified(true);
 					setReplan  (true);
+					globalAgenda[agendaId].startTime += 50;
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -660,15 +714,14 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						placeholder= "start time"
 						onChange={(e) => {
 							tasks       [taskId  ].startTime = e.target.value;
-							// globalAgenda[agendaId].startTime = e.target.value;
 							setTasks   (tasks);
 							setReplan  (true);
+							globalAgenda[agendaId].startTime = e.target.value;
 						}}
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					tasks       [taskId  ].startTime -= 50;
-					// globalAgenda[agendaId].startTime -= 50;
 					scrollOffsetY -= 50;
 					console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
 					
@@ -690,6 +743,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					setTasks   (tasks);
 					// setModified(true);
 					setReplan  (true);
+					globalAgenda[agendaId].startTime -= 50;
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -698,10 +752,10 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					// console.log("duration tasks: ", taskId, tasks[taskId]);
 					tasks       [taskId  ].duration += 50;
-					// globalAgenda[agendaId].duration += 50;
 					focused = taskId;
 					setTasks   (tasks);
 					setReplan  (true);
+					globalAgenda[agendaId].duration += 50;
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -716,19 +770,19 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						onChange={(e) => {
 							focused = taskId;
 							tasks       [taskId  ].duration = e.target.value;
-							// globalAgenda[agendaId].duration = e.target.value;
 							setTasks   (tasks);
 							// setModified(true);
 							setReplan  (true);
+							globalAgenda[agendaId].duration = e.target.value;
 						}}
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					tasks       [taskId  ].duration -= 50;
-					// globalAgenda[agendaId].duration -= 50;
 					focused = taskId;
 					setTasks   (tasks);
 					setReplan  (true);
+					globalAgenda[agendaId].duration -= 50;
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -737,12 +791,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					taskType = (taskType=="break") ? "agenda": "break";
 					tasks       [taskId  ].type = taskType;
-					// globalAgenda[agendaId].type = taskType;
 					// agenda[taskId-1].type = (taskType=="break") ? "agenda": "break";
 					focused = taskId;
 					setTasks   (tasks);
 					// setAgenda  (agenda);
 					setReplan  (true);
+					globalAgenda[agendaId].type = taskType;
 				}}>
 					<Text style={styles.counterText}>
 						{taskType}
@@ -751,13 +805,13 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 				<TouchableOpacity style={styles.delete} onPress={() => {
 					console.log("delete1", tasks[0], tasks[1]);
 					tasks.splice       (taskId  , 1);
-					// globalAgenda.splice(agendaId, 1);
 					// agenda.splice(taskId-1, 1);
 					console.log("delete2", tasks[0]);
 					setTasks   (tasks);
 					// setAgenda  (agenda);
 					// setModified(true);
 					setReplan(true);
+					globalAgenda.splice(agendaId, 1);
 				}}/>
 			</View>
 		</View>
