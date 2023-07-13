@@ -77,11 +77,11 @@ function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, day
 
 		//use an array for just the day indicators and add it to it whenever the planning algorithm is done
 
-		planning.unshift({
-			name: "TestDay",
-			type: "date",
-			startTime: 0
-		});
+		// planning.unshift({
+		// 	name: "TestDay",
+		// 	type: "date",
+		// 	startTime: 0
+		// });
 		// startTime: 7500 * dayOffset
 		
 		setDisplayed(planning);
@@ -437,6 +437,13 @@ const ToDoScreen = ({ navigation }) => {
 	
 	let loadedDate = new Date(loadedDay*86400000);
 	
+	let actuallyDisplayed = displayed
+	actuallyDisplayed.unshift({
+		name: "TestDay",
+		type: "date",
+		startTime: 0
+	});
+	
 	return (
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
@@ -473,7 +480,7 @@ const ToDoScreen = ({ navigation }) => {
 					// ref={(ref) => { this._flatList = ref; }}
 					// ref={(ref) => { this.theFlatList = ref; }}
 					// ref={(ref) => { theFlatList = ref; }}
-					data={displayed}
+					data={actuallyDisplayed}
 					// data={
 					// 	planning.unshift({
 					// 		name: "TestDay",
@@ -489,7 +496,7 @@ const ToDoScreen = ({ navigation }) => {
 						// <ToDoListItemSelector
 							tasks=           {displayed}
 							setTasks=        {setDisplayed}
-							taskId=          {index}
+							taskId2=         {index}
 							task=            {item}
 							setModified=     {setModified}
 							setReload=       {setReload}
@@ -569,7 +576,8 @@ const ToDoScreen = ({ navigation }) => {
 						// setTasks   (tasks);
 						setDisplayed   (tasks);
 						setReplan(true);
-						globalAgenda.push({
+						// globalAgenda.push({
+						tasks.push({
 							name          : "new Event",
 							duration      : 500,
 							startTime     : 0,
@@ -582,6 +590,7 @@ const ToDoScreen = ({ navigation }) => {
 							id            : tasks.length,
 							zIndex        : 0
 						});
+						saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 					}}>
 						<Text style={styles.plusText}>
 							+
@@ -640,10 +649,12 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda, setPlanning, dayIndicators}) => {
+const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda, setPlanning, dayIndicators}) => {
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
+	let taskId = taskId2-1;
+	
 	console.log("taskID: "    , taskId);
 	console.log("task 1: "    , task);
 	console.log("tasks: "     , tasks);
@@ -669,7 +680,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 		console.log("unsupported type");
 		return ToDoListItem2   (task);
 	}
-	let taskType = tasks[taskId].type;
+	let taskType = task.type;
 
 	// saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 	// saveData(tasks, sync);
@@ -706,7 +717,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 							tasks       [taskId  ].name = e.target.value;
 							// agenda[taskId-1].name = e.target.value;
 							// setAgenda  (agenda);
-							setTasks   (tasks);
+							setDisplayed   (tasks);
 							setModified(true);
 							// globalAgenda[agendaId].name = e.target.value;
 							agenda[agendaId].name = e.target.value;
@@ -726,12 +737,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					})
 					focused = taskId;
 					//it only works when the direction is changed: check unique values, and cumulating values (I need these)
-					setTasks   (tasks);
+					setDisplayed   (tasks);
 					// setModified(true);
 					setReplan  (true);
 					// globalAgenda[agendaId].startTime += 50;
 					agenda[agendaId].startTime = newValue;
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -745,11 +756,11 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						placeholder= "start time"
 						onChange={(e) => {
 							tasks       [taskId  ].startTime = e.target.value;
-							setTasks   (tasks);
+							setDisplayed   (tasks);
 							setReplan  (true);
 							// globalAgenda[agendaId].startTime = e.target.value;
 							agenda[agendaId].startTime = e.target.value;
-							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 						}}
 					/>
 				</View>
@@ -774,12 +785,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// 	offset: -50,
 					// 	animated: false
 					// })
-					setTasks   (tasks);
+					setDisplayed   (tasks);
 					// setModified(true);
 					setReplan  (true);
 					// globalAgenda[agendaId].startTime -= 50;
 					agenda[agendaId].startTime = newValue;
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -790,11 +801,11 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					let newValue = task.duration + 50;
 					tasks       [taskId  ].duration = newValue;
 					focused = taskId;
-					setTasks   (tasks);
+					setDisplayed   (tasks);
 					setReplan  (true);
 					// globalAgenda[agendaId].duration += 50;
 					agenda[agendaId].duration = newValue;
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -809,12 +820,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						onChange={(e) => {
 							focused = taskId;
 							tasks       [taskId  ].duration = e.target.value;
-							setTasks   (tasks);
+							setDisplayed   (tasks);
 							// setModified(true);
 							setReplan  (true);
 							// globalAgenda[agendaId].duration = e.target.value;
 							agenda[agendaId].duration = e.target.value;
-							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 						}}
 					/>
 				</View>
@@ -822,11 +833,11 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					let newValue = task.duration - 50;
 					tasks       [taskId  ].duration = newValue;
 					focused = taskId;
-					setTasks   (tasks);
+					setDisplayed   (tasks);
 					setReplan  (true);
 					// globalAgenda[agendaId].duration -= 50;
 					agenda[agendaId].duration = newValue;
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -837,12 +848,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					tasks       [taskId  ].type = taskType;
 					// agenda[taskId-1].type = (taskType=="break") ? "agenda": "break";
 					focused = taskId;
-					setTasks   (tasks);
+					setDisplayed   (tasks);
 					// setAgenda  (agenda);
 					setReplan  (true);
 					// globalAgenda[agendaId].type = taskType;
 					agenda[agendaId].type = taskType;
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						{taskType}
@@ -854,12 +865,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// agenda.splice(taskId-1, 1);
 					// console.log("delete2", tasks[taskId]);
 					// setAgenda  (agenda);
-					setTasks   (tasks);
+					setDisplayed   (tasks);
 					// setModified(true);
 					setReplan(true);
 					// globalAgenda.splice(agendaId, 1);
 					agenda.splice(agendaId, 1);
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}/>
 			</View>
 		</View>
