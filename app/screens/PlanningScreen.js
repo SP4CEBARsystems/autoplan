@@ -637,7 +637,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// globalAgenda[agendaId].startTime += 50;
 					scrollOffsetY += 50;
 					// setScrollOffset(50);
-					console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
+					// console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
 					flatListRef.current.scrollToOffset({
 						animated: false,
 						offset: scrollOffsetY
@@ -645,7 +645,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					focused = taskId;
 					//it only works when the direction is changed: check unique values, and cumulating values (I need these)
 					setTasks   (tasks);
-					setModified(true);
+					// setModified(true);
 					setReplan  (true);
 				}}>
 					<Text style={styles.counterText}>
@@ -688,7 +688,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// 	animated: false
 					// })
 					setTasks   (tasks);
-					setModified(true);
+					// setModified(true);
 					setReplan  (true);
 				}}>
 					<Text style={styles.counterText}>
@@ -718,7 +718,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 							tasks       [taskId  ].duration = e.target.value;
 							// globalAgenda[agendaId].duration = e.target.value;
 							setTasks   (tasks);
-							setModified(true);
+							// setModified(true);
 							setReplan  (true);
 						}}
 					/>
@@ -741,7 +741,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// agenda[taskId-1].type = (taskType=="break") ? "agenda": "break";
 					focused = taskId;
 					setTasks   (tasks);
-					setAgenda  (agenda);
+					// setAgenda  (agenda);
 					setReplan  (true);
 				}}>
 					<Text style={styles.counterText}>
@@ -756,7 +756,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					console.log("delete2", tasks[0]);
 					setTasks   (tasks);
 					// setAgenda  (agenda);
-					setModified(true);
+					// setModified(true);
 					setReplan(true);
 				}}/>
 			</View>
