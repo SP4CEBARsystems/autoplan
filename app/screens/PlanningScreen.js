@@ -122,6 +122,44 @@ function fetchData4 (dayOffset, planning, setTasks, setSync, ref) {
 		console.log("newplan,", planning);
 		// setTasks(newPlanning);
 		setTasks(planning);
+		//globalAgenda = planning
+		setSync(true);
+	}).catch((e) => {
+		console.log("firebase error:", e);
+		//throw e;
+		//alert(error.message);
+	});
+}
+
+function fetchData5 (dayOffset, planning, setTasks, setSync, ref) {
+	console.log("fetchdata3");
+	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
+	//don't add a semicolon ";" after "getDoc()", Don't do that
+	getDoc(ref).then((doc) => {
+		console.log("doc");
+		let data = doc.data();
+		let newPlanning = data ? data.tasks : [];
+		console.log("planning pre:", planning)
+		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		planning = newPlanning;
+
+		console.log("planning post:", planning)
+		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		
+		// let newPlanning = data ? data.tasks : [];
+		// newPlanning.unshift({
+		// 	name: "TestDay",
+		// 	type: "date",
+		// 	startTime: 7500 * (dayOffset+1)
+		// });
+		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+		
+		console.log("newplan,", planning);
+		// setTasks(newPlanning);
+		setTasks(planning);
+		globalAgenda = planning
 		setSync(true);
 	}).catch((e) => {
 		console.log("firebase error:", e);
@@ -176,7 +214,7 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	console.log("dayIndicators 4", dayIndicators);
 
 	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, dayIndicators, setSync, doc(firestore, "Planning"   , documentName));
-	fetchData4 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
+	fetchData5 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
 	fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
 	fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
 	
@@ -203,8 +241,8 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 }
 
 	
-
-
+let agendaId = 0
+let globalAgenda = [];
 let scrollOffsetY = 0;
 let scrollOffsetYLoaded = 0;
 let focused = 0;
@@ -457,6 +495,19 @@ const ToDoScreen = ({ navigation }) => {
 							id            : tasks.length,
 							zIndex        : 0
 						});
+						globalAgenda.push({
+							name          : "new Event",
+							duration      : 500,
+							startTime     : 0,
+							source        : "",
+							type          : "agenda",
+							repeatTimespan: "days",
+							repeatInterval: 0,
+							repeatOffset  : 0,
+							repeatOffsets : [],
+							id            : tasks.length,
+							zIndex        : 0
+						});
 						setTasks   (tasks);
 						setReplan(true);
 					}}>
@@ -526,9 +577,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 	console.log("tasks: "     , tasks);
 	console.log("tasks task: ", tasks[taskId]);
 
+	if(taskId==0){agendaId=0;}
+
 	if (task.type == "agenda" || task.type == "break" ){
 		// ToDoListItem9 (tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef);
 		// return
+		agendaId++
 	} else if (task.type == "generated"){
 		// return
 		return ToDoListItem2   (task);
@@ -569,7 +623,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						name="name"
 						placeholder= "task name"
 						onChange={(e) => {
-							tasks[taskId].name = e.target.value;
+							tasks       [taskId  ].name = e.target.value;
+							// globalAgenda[agendaId].name = e.target.value;
 							// agenda[taskId-1].name = e.target.value;
 							// setAgenda  (agenda);
 							setTasks   (tasks);
@@ -578,7 +633,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					tasks[taskId].startTime += 50;
+					tasks       [taskId  ].startTime += 50;
+					// globalAgenda[agendaId].startTime += 50;
 					scrollOffsetY += 50;
 					// setScrollOffset(50);
 					console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
@@ -603,15 +659,17 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						name="startTime"
 						placeholder= "start time"
 						onChange={(e) => {
-							tasks[taskId].startTime = e.target.value;
+							tasks       [taskId  ].startTime = e.target.value;
+							// globalAgenda[agendaId].startTime = e.target.value;
 							setTasks   (tasks);
 							setReplan  (true);
 						}}
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					tasks[taskId].startTime += -50;
-					scrollOffsetY += -50;
+					tasks       [taskId  ].startTime -= 50;
+					// globalAgenda[agendaId].startTime -= 50;
+					scrollOffsetY -= 50;
 					console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
 					
 					flatListRef.current.scrollToOffset({
@@ -639,7 +697,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					// console.log("duration tasks: ", taskId, tasks[taskId]);
-					tasks[taskId].duration += 50;
+					tasks       [taskId  ].duration += 50;
+					// globalAgenda[agendaId].duration += 50;
 					focused = taskId;
 					setTasks   (tasks);
 					setReplan  (true);
@@ -656,7 +715,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						placeholder= "duration"
 						onChange={(e) => {
 							focused = taskId;
-							tasks[taskId].duration = e.target.value;
+							tasks       [taskId  ].duration = e.target.value;
+							// globalAgenda[agendaId].duration = e.target.value;
 							setTasks   (tasks);
 							setModified(true);
 							setReplan  (true);
@@ -664,7 +724,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					tasks[taskId].duration += -50;
+					tasks       [taskId  ].duration -= 50;
+					// globalAgenda[agendaId].duration -= 50;
 					focused = taskId;
 					setTasks   (tasks);
 					setReplan  (true);
@@ -674,7 +735,9 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					tasks[taskId   ].type = (taskType=="break") ? "agenda": "break";
+					taskType = (taskType=="break") ? "agenda": "break";
+					tasks       [taskId  ].type = taskType;
+					// globalAgenda[agendaId].type = taskType;
 					// agenda[taskId-1].type = (taskType=="break") ? "agenda": "break";
 					focused = taskId;
 					setTasks   (tasks);
@@ -687,11 +750,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.delete} onPress={() => {
 					console.log("delete1", tasks[0], tasks[1]);
-					tasks.splice(taskId, 1);
-					agenda.splice(taskId-1, 1);
+					tasks.splice       (taskId  , 1);
+					// globalAgenda.splice(agendaId, 1);
+					// agenda.splice(taskId-1, 1);
 					console.log("delete2", tasks[0]);
 					setTasks   (tasks);
-					setAgenda  (agenda);
+					// setAgenda  (agenda);
 					setModified(true);
 					setReplan(true);
 				}}/>
