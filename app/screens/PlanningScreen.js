@@ -704,8 +704,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 							tasks       [taskId  ].name = e.target.value;
 							// agenda[taskId-1].name = e.target.value;
 							// setAgenda  (agenda);
-							// setTasks   (tasks);
-							// setModified(true);
+							setTasks   (tasks);
+							setModified(true);
 							// globalAgenda[agendaId].name = e.target.value;
 							agenda[agendaId].name = e.target.value;
 							saveData(agenda, sync);
@@ -723,9 +723,9 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					})
 					focused = taskId;
 					//it only works when the direction is changed: check unique values, and cumulating values (I need these)
-					// setTasks   (tasks);
+					setTasks   (tasks);
 					// setModified(true);
-					// setReplan  (true);
+					setReplan  (true);
 					// globalAgenda[agendaId].startTime += 50;
 					agenda[agendaId].startTime += 50;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
@@ -742,8 +742,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						placeholder= "start time"
 						onChange={(e) => {
 							tasks       [taskId  ].startTime = e.target.value;
-							// setTasks   (tasks);
-							// setReplan  (true);
+							setTasks   (tasks);
+							setReplan  (true);
 							// globalAgenda[agendaId].startTime = e.target.value;
 							agenda[agendaId].startTime = e.target.value;
 							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
@@ -770,9 +770,9 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// 	offset: -50,
 					// 	animated: false
 					// })
-					// setTasks   (tasks);
+					setTasks   (tasks);
 					// setModified(true);
-					// setReplan  (true);
+					setReplan  (true);
 					// globalAgenda[agendaId].startTime -= 50;
 					agenda[agendaId].startTime -= 50;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
@@ -785,8 +785,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// console.log("duration tasks: ", taskId, tasks[taskId]);
 					tasks       [taskId  ].duration += 50;
 					focused = taskId;
-					// setTasks   (tasks);
-					// setReplan  (true);
+					setTasks   (tasks);
+					setReplan  (true);
 					// globalAgenda[agendaId].duration += 50;
 					agenda[agendaId].duration += 50;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
@@ -804,9 +804,9 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						onChange={(e) => {
 							focused = taskId;
 							tasks       [taskId  ].duration = e.target.value;
-							// setTasks   (tasks);
+							setTasks   (tasks);
 							// setModified(true);
-							// setReplan  (true);
+							setReplan  (true);
 							// globalAgenda[agendaId].duration = e.target.value;
 							agenda[agendaId].duration = e.target.value;
 							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
@@ -816,8 +816,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					tasks       [taskId  ].duration -= 50;
 					focused = taskId;
-					// setTasks   (tasks);
-					// setReplan  (true);
+					setTasks   (tasks);
+					setReplan  (true);
 					// globalAgenda[agendaId].duration -= 50;
 					agenda[agendaId].duration -= 50;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
@@ -831,9 +831,9 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					tasks       [taskId  ].type = taskType;
 					// agenda[taskId-1].type = (taskType=="break") ? "agenda": "break";
 					focused = taskId;
-					// setTasks   (tasks);
+					setTasks   (tasks);
 					// setAgenda  (agenda);
-					// setReplan  (true);
+					setReplan  (true);
 					// globalAgenda[agendaId].type = taskType;
 					agenda[agendaId].type = taskType;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
@@ -848,9 +848,9 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// agenda.splice(taskId-1, 1);
 					// console.log("delete2", tasks[taskId]);
 					// setAgenda  (agenda);
-					// setTasks   (tasks);
+					setTasks   (tasks);
 					// setModified(true);
-					// setReplan(true);
+					setReplan(true);
 					// globalAgenda.splice(agendaId, 1);
 					agenda.splice(agendaId, 1);
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
@@ -1365,10 +1365,10 @@ function actuallySaveTheData(tasks, ref){
 function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators) {
 	if (replan){
 		setReplan(false);
-		saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators);
+		// saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators);
 	} else if(modified){
 		setModified(false);
-		saveData(tasks, sync);
+		// saveData(tasks, sync);
 
 		// planning.unshift({
 		// 	name: "TestDay",
