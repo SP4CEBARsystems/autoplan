@@ -631,7 +631,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 	console.log("tasks: "     , tasks);
 	console.log("tasks task: ", tasks[taskId]);
 
-	if(taskId==0){agendaId=0;}
+	if(taskId==0){agendaId=-1;}
 
 	if (task.type == "agenda" || task.type == "break" ){
 		// ToDoListItem9 (tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef);
@@ -803,13 +803,13 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.delete} onPress={() => {
-					console.log("delete1", tasks[0], tasks[1]);
+					// console.log("delete1", tasks[taskId]);
 					tasks.splice       (taskId  , 1);
 					// agenda.splice(taskId-1, 1);
-					console.log("delete2", tasks[0]);
-					setTasks   (tasks);
+					// console.log("delete2", tasks[taskId]);
 					// setAgenda  (agenda);
-					// setModified(true);
+					setTasks   (tasks);
+					setModified(true);
 					setReplan(true);
 					globalAgenda.splice(agendaId, 1);
 				}}/>
