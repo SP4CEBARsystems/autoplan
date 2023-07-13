@@ -677,6 +677,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 	// saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 	// saveData(agenda, sync);
 
+	//still, everything value change is done twice: both somehow find their way to the displayed variable
+
 	return (
 		<View
 			style={{
@@ -713,7 +715,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					tasks       [taskId  ].startTime += 50;
+					let newValue = task.startTime + 50;
+					tasks       [taskId  ].startTime = newValue;
 					scrollOffsetY += 50;
 					// setScrollOffset(50);
 					// console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
@@ -727,7 +730,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// setModified(true);
 					setReplan  (true);
 					// globalAgenda[agendaId].startTime += 50;
-					agenda[agendaId].startTime += 50;
+					agenda[agendaId].startTime = newValue;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
@@ -751,7 +754,8 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					tasks       [taskId  ].startTime -= 50;
+					let newValue = task.startTime - 50;
+					tasks       [taskId  ].startTime = newValue;
 					scrollOffsetY -= 50;
 					console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
 					
@@ -774,7 +778,7 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// setModified(true);
 					setReplan  (true);
 					// globalAgenda[agendaId].startTime -= 50;
-					agenda[agendaId].startTime -= 50;
+					agenda[agendaId].startTime = newValue;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
@@ -783,12 +787,13 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					// console.log("duration tasks: ", taskId, tasks[taskId]);
-					tasks       [taskId  ].duration += 50;
+					let newValue = task.duration + 50;
+					tasks       [taskId  ].duration = newValue;
 					focused = taskId;
 					setTasks   (tasks);
 					setReplan  (true);
 					// globalAgenda[agendaId].duration += 50;
-					agenda[agendaId].duration += 50;
+					agenda[agendaId].duration = newValue;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
@@ -814,12 +819,13 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					tasks       [taskId  ].duration -= 50;
+					let newValue = task.duration - 50;
+					tasks       [taskId  ].duration = newValue;
 					focused = taskId;
 					setTasks   (tasks);
 					setReplan  (true);
 					// globalAgenda[agendaId].duration -= 50;
-					agenda[agendaId].duration -= 50;
+					agenda[agendaId].duration = newValue;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
