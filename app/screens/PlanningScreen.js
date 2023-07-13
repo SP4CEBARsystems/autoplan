@@ -388,9 +388,13 @@ const ToDoScreen = ({ navigation }) => {
 		}
 	},[]);
 
+	console.log("displayedd", displayed);
+
 	// fetchMore (planning, setPlanning, setSync, firestore);
 	// fetchData3 (setPlanning   , setSync, doc(firestore, "Planning"   , "TestDay"));
+	
 	updateData(modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators);
+	
 	// console.log(tasks);
 	// console.log(sync);
 
@@ -498,7 +502,19 @@ const ToDoScreen = ({ navigation }) => {
 							flatListRef=     {flatListRef}
 							agenda=          {tasks}
 							setAgenda=       {setTasks}
-							// scrollOffsetY=   {scrollOffsetY}
+							setPlanning=     {setPlanning}
+							dayIndicators=   {dayIndicators}
+							// tasks=           {tasks}C
+							// setTasks=        {setTasks}C
+							// setDisplayed=    {setDisplayed}C
+
+							// sync=            {sync}V
+							// setGaps=         {setGaps}V
+							// setReload=       {setReload}V
+							// setPlannedGaps=  {setPlannedGaps}V
+							// saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+							// saveData(agenda, sync);
+							// scrollOffsetY= {scrollOffsetY}
 						/> 
 					}
 					// keyExtractor={item => item.id}
@@ -536,7 +552,8 @@ const ToDoScreen = ({ navigation }) => {
 				/>
 				<View style={styles.plusParent}>
 					<TouchableOpacity style={styles.plus} onPress={() => {
-						tasks.push({
+						// tasks.push({
+						displayed.push({
 							name          : "new Event",
 							duration      : 500,
 							startTime     : 0,
@@ -549,6 +566,9 @@ const ToDoScreen = ({ navigation }) => {
 							id            : tasks.length,
 							zIndex        : 0
 						});
+						// setTasks   (tasks);
+						setDisplayed   (tasks);
+						setReplan(true);
 						globalAgenda.push({
 							name          : "new Event",
 							duration      : 500,
@@ -562,8 +582,6 @@ const ToDoScreen = ({ navigation }) => {
 							id            : tasks.length,
 							zIndex        : 0
 						});
-						setTasks   (tasks);
-						setReplan(true);
 					}}>
 						<Text style={styles.plusText}>
 							+
@@ -622,7 +640,7 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda}) => {
+const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda, setPlanning, dayIndicators}) => {
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
@@ -653,6 +671,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 	}
 	let taskType = tasks[taskId].type;
 
+	// saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+	// saveData(tasks, sync);
+
+	// saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+	// saveData(agenda, sync);
+
 	return (
 		<View
 			style={{
@@ -680,9 +704,11 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 							tasks       [taskId  ].name = e.target.value;
 							// agenda[taskId-1].name = e.target.value;
 							// setAgenda  (agenda);
-							setTasks   (tasks);
-							setModified(true);
-							globalAgenda[agendaId].name = e.target.value;
+							// setTasks   (tasks);
+							// setModified(true);
+							// globalAgenda[agendaId].name = e.target.value;
+							agenda[agendaId].name = e.target.value;
+							saveData(agenda, sync);
 						}}
 					/>
 				</View>
@@ -697,10 +723,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					})
 					focused = taskId;
 					//it only works when the direction is changed: check unique values, and cumulating values (I need these)
-					setTasks   (tasks);
+					// setTasks   (tasks);
 					// setModified(true);
-					setReplan  (true);
-					globalAgenda[agendaId].startTime += 50;
+					// setReplan  (true);
+					// globalAgenda[agendaId].startTime += 50;
+					agenda[agendaId].startTime += 50;
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -714,9 +742,11 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						placeholder= "start time"
 						onChange={(e) => {
 							tasks       [taskId  ].startTime = e.target.value;
-							setTasks   (tasks);
-							setReplan  (true);
-							globalAgenda[agendaId].startTime = e.target.value;
+							// setTasks   (tasks);
+							// setReplan  (true);
+							// globalAgenda[agendaId].startTime = e.target.value;
+							agenda[agendaId].startTime = e.target.value;
+							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 						}}
 					/>
 				</View>
@@ -740,10 +770,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// 	offset: -50,
 					// 	animated: false
 					// })
-					setTasks   (tasks);
+					// setTasks   (tasks);
 					// setModified(true);
-					setReplan  (true);
-					globalAgenda[agendaId].startTime -= 50;
+					// setReplan  (true);
+					// globalAgenda[agendaId].startTime -= 50;
+					agenda[agendaId].startTime -= 50;
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -753,9 +785,11 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// console.log("duration tasks: ", taskId, tasks[taskId]);
 					tasks       [taskId  ].duration += 50;
 					focused = taskId;
-					setTasks   (tasks);
-					setReplan  (true);
-					globalAgenda[agendaId].duration += 50;
+					// setTasks   (tasks);
+					// setReplan  (true);
+					// globalAgenda[agendaId].duration += 50;
+					agenda[agendaId].duration += 50;
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -770,19 +804,23 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 						onChange={(e) => {
 							focused = taskId;
 							tasks       [taskId  ].duration = e.target.value;
-							setTasks   (tasks);
+							// setTasks   (tasks);
 							// setModified(true);
-							setReplan  (true);
-							globalAgenda[agendaId].duration = e.target.value;
+							// setReplan  (true);
+							// globalAgenda[agendaId].duration = e.target.value;
+							agenda[agendaId].duration = e.target.value;
+							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 						}}
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					tasks       [taskId  ].duration -= 50;
 					focused = taskId;
-					setTasks   (tasks);
-					setReplan  (true);
-					globalAgenda[agendaId].duration -= 50;
+					// setTasks   (tasks);
+					// setReplan  (true);
+					// globalAgenda[agendaId].duration -= 50;
+					agenda[agendaId].duration -= 50;
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -793,10 +831,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					tasks       [taskId  ].type = taskType;
 					// agenda[taskId-1].type = (taskType=="break") ? "agenda": "break";
 					focused = taskId;
-					setTasks   (tasks);
+					// setTasks   (tasks);
 					// setAgenda  (agenda);
-					setReplan  (true);
-					globalAgenda[agendaId].type = taskType;
+					// setReplan  (true);
+					// globalAgenda[agendaId].type = taskType;
+					agenda[agendaId].type = taskType;
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						{taskType}
@@ -808,10 +848,12 @@ const ToDoListItem9 = ({tasks, setTasks, taskId, task, setModified, setReload, s
 					// agenda.splice(taskId-1, 1);
 					// console.log("delete2", tasks[taskId]);
 					// setAgenda  (agenda);
-					setTasks   (tasks);
-					setModified(true);
-					setReplan(true);
-					globalAgenda.splice(agendaId, 1);
+					// setTasks   (tasks);
+					// setModified(true);
+					// setReplan(true);
+					// globalAgenda.splice(agendaId, 1);
+					agenda.splice(agendaId, 1);
+					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 				}}/>
 			</View>
 		</View>
@@ -1191,8 +1233,21 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		console.log("A6", planning);
 		// planning.unshift({ name: "TestDay", type: "date" });
 		setPlanning (planning);
+
+		
+		//disable this for testing purposes \V/
 		setDisplayed(planning.concat(dayIndicators));
+		// setDisplayed([]);
+
+
 		console.log("dayIndicators 5", dayIndicators)
+
+		setTasks      (tasks      );
+		setGaps       (gaps       );
+		setPlannedGaps(plannedGaps);
+		// setPlannedGaps(plannedGaps);
+		// setPlanning   (planning   );
+		setReload     (true );
 
 		// /^\ doesn't include day indicators
 		//add a display array that is separated from the database syncing arrays
@@ -1212,10 +1267,10 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		// indexTableTasks       
 		// indexTablePlannedGaps 
 		// indexTableGaps        
-		let previousTableTasks       = 0
-		let previousTableGaps        = 0
-		let previousTablePlannedGaps = 0
-		let previousTablePlanning    = 0
+		// let previousTableTasks       = 0
+		// let previousTableGaps        = 0
+		// let previousTablePlannedGaps = 0
+		// let previousTablePlanning    = 0
 
 
 		let day     = loadedDay;
@@ -1292,13 +1347,6 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		// 	previousTablePlannedGaps = indexTablePlannedGaps[i]
 		// 	previousTablePlanning    = indexTablePlanning   [i]
 		// }
-
-		setTasks      (tasks      );
-		setGaps       (gaps       );
-		setPlannedGaps(plannedGaps);
-		// setPlannedGaps(plannedGaps);
-		// setPlanning   (planning   );
-		setReload     (true );
 	}
 }
 
@@ -1317,10 +1365,11 @@ function actuallySaveTheData(tasks, ref){
 function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators) {
 	if (replan){
 		setReplan(false);
-		saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+		saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators);
 	} else if(modified){
 		setModified(false);
 		saveData(tasks, sync);
+
 		// planning.unshift({
 		// 	name: "TestDay",
 		// 	type: "date",
