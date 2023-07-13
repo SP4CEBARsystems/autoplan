@@ -77,11 +77,11 @@ function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, day
 
 		//use an array for just the day indicators and add it to it whenever the planning algorithm is done
 
-		// planning.unshift({
-		// 	name: "TestDay",
-		// 	type: "date",
-		// 	startTime: 0
-		// });
+		planning.unshift({
+			name: "TestDay",
+			type: "date",
+			startTime: 0
+		});
 		// startTime: 7500 * dayOffset
 		
 		setDisplayed(planning);
@@ -436,13 +436,13 @@ const ToDoScreen = ({ navigation }) => {
 	// })
 	
 	let loadedDate = new Date(loadedDay*86400000);
-	
-	let actuallyDisplayed = displayed
-	actuallyDisplayed.unshift({
-		name: "TestDay",
-		type: "date",
-		startTime: 0
-	});
+
+	// let actuallyDisplayed = displayed
+	// actuallyDisplayed.unshift({
+	// 	name: "TestDay",
+	// 	type: "date",
+	// 	startTime: 0
+	// });
 	
 	return (
 		<View style={styles.background}>
@@ -480,7 +480,8 @@ const ToDoScreen = ({ navigation }) => {
 					// ref={(ref) => { this._flatList = ref; }}
 					// ref={(ref) => { this.theFlatList = ref; }}
 					// ref={(ref) => { theFlatList = ref; }}
-					data={actuallyDisplayed}
+					// data={actuallyDisplayed}
+					data={displayed}
 					// data={
 					// 	planning.unshift({
 					// 		name: "TestDay",
@@ -653,7 +654,8 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
-	let taskId = taskId2-1;
+	// let taskId = taskId2-1;
+	let taskId = taskId2;
 	
 	console.log("taskID: "    , taskId);
 	console.log("task 1: "    , task);
