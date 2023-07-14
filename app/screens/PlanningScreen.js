@@ -436,6 +436,7 @@ const ToDoScreen = ({ navigation }) => {
 	// })
 	
 	let loadedDate = new Date(loadedDay*86400000);
+	agendaId=-1;
 
 	// let actuallyDisplayed = displayed
 	// actuallyDisplayed.unshift({
@@ -491,10 +492,11 @@ const ToDoScreen = ({ navigation }) => {
 					// }
 
 					//wait... I can add a header bar
-					ListHeaderComponent={() => <dateAndTimeItem task={{
+					ListHeaderComponent={() => <DateAndTimeItem task={{
 						name: "TestDay",
 						type: "date",
-						startTime: 0
+						startTime: 0,
+						duration: 0
 					}} />}
 
 					
@@ -503,7 +505,7 @@ const ToDoScreen = ({ navigation }) => {
 						<ToDoListItem9
 						// <ToDoListItemSelector
 							tasks=           {displayed}
-							setTasks=        {setDisplayed}
+							setDisplayed=    {setDisplayed}
 							taskId2=         {index}
 							task=            {item}
 							setModified=     {setModified}
@@ -681,7 +683,9 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 	} else if (task.type == "generated break"){
 		return breakItem       (task);
 	} else if (task.type == "date"){
-		return dateAndTimeItem (task);
+		// return DateAndTimeItem (task);
+		console.log("IllegaldateAndTimeItem")
+		return <></>
 	} else if (task.type == ""){
 		console.log("undefined type");
 		return ToDoListItem2   (task);
@@ -690,6 +694,8 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 		return ToDoListItem2   (task);
 	}
 	let taskType = task.type;
+
+	console.log("agendaMonitor", agendaId, agenda.length)
 
 	// saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 	// saveData(tasks, sync);
@@ -735,7 +741,7 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					let newValue = task.startTime + 50;
+					let newValue = Number(task.startTime) + 50;
 					tasks       [taskId  ].startTime = newValue;
 					scrollOffsetY += 50;
 					// setScrollOffset(50);
@@ -774,7 +780,7 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					let newValue = task.startTime - 50;
+					let newValue = Number(task.startTime) - 50;
 					tasks       [taskId  ].startTime = newValue;
 					scrollOffsetY -= 50;
 					console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
@@ -807,7 +813,7 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					// console.log("duration tasks: ", taskId, tasks[taskId]);
-					let newValue = task.duration + 50;
+					let newValue = Number(task.duration) + 50;
 					tasks       [taskId  ].duration = newValue;
 					focused = taskId;
 					setDisplayed   (tasks);
@@ -839,7 +845,7 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					let newValue = task.duration - 50;
+					let newValue = Number(task.duration) - 50;
 					tasks       [taskId  ].duration = newValue;
 					focused = taskId;
 					setDisplayed   (tasks);
@@ -940,7 +946,7 @@ const breakItem = (task) => {
 	);
 }
 
-const dateAndTimeItem = (task) => {
+const DateAndTimeItem = (task) => {
 	console.log("task 2", task);
 	let duration  = task.duration;
 	let startTime = task.startTime;
