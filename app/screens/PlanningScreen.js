@@ -949,9 +949,14 @@ const breakItem = (task) => {
 }
 
 const DateAndTimeItem = (task) => {
+	const indicatorScale = 200 * timeScaleFactor;
 	console.log("task 2", task);
 	let duration  = task.duration;
 	let startTime = task.startTime;
+	const timeIndicators = [];
+	for (let i=0; i<=23; i++){
+		timeIndicators.push(i.toString()+":00");
+	}
 	return (
 		<View style={{
 			position: 'absolute',
@@ -966,7 +971,14 @@ const DateAndTimeItem = (task) => {
 			// zIndex: 10
 		}}>
 			<View style={styles.timeIndicatorBlock}>
-				<Text style={styles.dateIndicatorText}>
+				{timeIndicators.map( timeIndicator => 
+					<View style={{marginBottom: indicatorScale}}>
+						<Text style={styles.timeIndicatorText}>
+							{timeIndicator}
+						</Text>
+					</View>
+				)}
+				{/* <Text style={styles.dateIndicatorText}>
 					{"\n"}
 					{"\n"}
 					{"\n"}
@@ -998,7 +1010,7 @@ const DateAndTimeItem = (task) => {
 					21:00{"\n"}
 					22:00{"\n"}
 					23:00
-				</Text>
+				</Text> */}
 			</View>
 		</View>
 	);
