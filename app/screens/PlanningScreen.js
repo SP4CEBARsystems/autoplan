@@ -171,6 +171,8 @@ function fetchData5 (dayOffset, planning, setTasks, setSync, ref) {
 let dayLengthPixels       = 6068.7998046874;
 let deltaDayLengthPixels  = 1/dayLengthPixels;
 
+const timeScaleFactor = 5;
+
 let loadedDays            = [];
 let loadedDay             = "Loading"
 let indexTableTasks       = [];
@@ -709,8 +711,8 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 		<View
 			style={{
 				position: 'absolute',
-				height: task.duration,
-				top: task.startTime, 
+				height: task.duration * timeScaleFactor,
+				top: task.startTime * timeScaleFactor, 
 				bottom: 0,
 				left: 100, right: focused == taskId ? 50 : 0, 
 				backgroundColor  : task.type == "break" ? "#2f2" : "#22f",
@@ -741,10 +743,10 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					let newValue = Number(task.startTime) + 50;
+					let newValue = Number(task.startTime) + 30;
 					tasks       [taskId  ].startTime = newValue;
-					scrollOffsetY += 50;
-					// setScrollOffset(50);
+					scrollOffsetY += 30;
+					// setScrollOffset(30);
 					// console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
 					flatListRef.current.scrollToOffset({
 						animated: false,
@@ -755,7 +757,7 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					setDisplayed   (tasks);
 					// setModified(true);
 					setReplan  (true);
-					// globalAgenda[agendaId].startTime += 50;
+					// globalAgenda[agendaId].startTime += 30;
 					agenda[agendaId].startTime = newValue;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
@@ -780,9 +782,9 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					let newValue = Number(task.startTime) - 50;
+					let newValue = Number(task.startTime) - 30;
 					tasks       [taskId  ].startTime = newValue;
-					scrollOffsetY -= 50;
+					scrollOffsetY -= 30;
 					console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
 					
 					flatListRef.current.scrollToOffset({
@@ -790,20 +792,20 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 						offset: scrollOffsetY
 					})
 					focused = taskId;
-					// setScrollOffset(-50);
+					// setScrollOffset(-30);
 					
 					// this.theFlatList.scrollToOffset({
-					// 	offset: -50,
+					// 	offset: -30,
 					// 	animated: false
 					// })
 					// this.theFlatList.current.scrollToOffset({
-					// 	offset: -50,
+					// 	offset: -30,
 					// 	animated: false
 					// })
 					setDisplayed   (tasks);
 					// setModified(true);
 					setReplan  (true);
-					// globalAgenda[agendaId].startTime -= 50;
+					// globalAgenda[agendaId].startTime -= 30;
 					agenda[agendaId].startTime = newValue;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
@@ -813,12 +815,12 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					// console.log("duration tasks: ", taskId, tasks[taskId]);
-					let newValue = Number(task.duration) + 50;
+					let newValue = Number(task.duration) + 30;
 					tasks       [taskId  ].duration = newValue;
 					focused = taskId;
 					setDisplayed   (tasks);
 					setReplan  (true);
-					// globalAgenda[agendaId].duration += 50;
+					// globalAgenda[agendaId].duration += 30;
 					agenda[agendaId].duration = newValue;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
@@ -827,7 +829,7 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					</Text>
 				</TouchableOpacity>
 				<View style={styles.scrollItem}>
-					<TextInput style={styles.scrollText} 
+					<TextInput style={styles.scrollText}
 						value={task.duration}
 						type="number"
 						name="duration"
@@ -845,12 +847,12 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					/>
 				</View>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					let newValue = Number(task.duration) - 50;
+					let newValue = Number(task.duration) - 30;
 					tasks       [taskId  ].duration = newValue;
 					focused = taskId;
 					setDisplayed   (tasks);
 					setReplan  (true);
-					// globalAgenda[agendaId].duration -= 50;
+					// globalAgenda[agendaId].duration -= 30;
 					agenda[agendaId].duration = newValue;
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
@@ -900,8 +902,8 @@ const ToDoListItem2 = (task) => {
 	return (
 		<View style={{
 			position: 'absolute',
-			height: duration,
-			top: startTime, 
+			height: duration * timeScaleFactor,
+			top: startTime * timeScaleFactor, 
 			bottom: 0,
 			left: 100, right: 0, 
 			backgroundColor  : "#111",
@@ -927,8 +929,8 @@ const breakItem = (task) => {
 	return (
 		<View style={{
 			position: 'absolute',
-			height: duration,
-			top: startTime, 
+			height: duration * timeScaleFactor,
+			top: startTime * timeScaleFactor, 
 			bottom: 0,
 			left: 100, right: 0, 
 			backgroundColor  : "#070",
@@ -1172,6 +1174,25 @@ function PlanOut(gaps, tasks){
 	return plannedGaps;
 }
 
+function generateBreaks(plannedGaps) {
+	let generatedBreaks = [];
+	const breakLength = 5*timeScaleFactor;
+	const worklength  = 25*timeScaleFactor;
+	const cycleLength = worklength + breakLength;
+	plannedGaps.forEach(element => {
+		for(let i=worklength; i<element.duration; i+=cycleLength){
+			generatedBreaks.push ({
+				name      : "short break",
+				duration  : Math.min(breakLength, element.duration),
+				startTime : element.startTime + i, 
+				type      : "generated break",
+				id        : -generatedBreaks.length
+			});
+		}
+	});
+	return generatedBreaks;
+}
+
 //postpone for now:
 //a function to find a (new) gap's size after the task and to find if it's previous gap is merged with another gap
 //a promising method:
@@ -1216,6 +1237,7 @@ function saveData(tasks, sync){
 	// console.log("sync2 check 2: ",sync2);
 	
 	if(sync){
+		console.log("simplysave")
 		// console.log("written");
 		// TEMPORARY
 		// planning = tasks;
@@ -1257,9 +1279,11 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		let plannedGaps = PlanOut(gaps, todo_tasks);
 		console.log("A4", plannedGaps);
 
+		let generatedBreaks = generateBreaks(plannedGaps);
+
 		let planning    = tasks;
 		//disable this for testing purposes \V/
-		planning = planning.concat(plannedGaps);
+		planning = planning.concat(plannedGaps).concat(generatedBreaks);
 		console.log("A5", planning);
 		planning.sort((a, b) => a.startTime - b.startTime);
 		console.log("A6", planning);
