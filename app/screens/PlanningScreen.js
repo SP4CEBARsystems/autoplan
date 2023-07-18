@@ -171,7 +171,7 @@ function fetchData5 (dayOffset, planning, setTasks, setSync, ref) {
 let dayLengthPixels       = 6068.7998046874;
 let deltaDayLengthPixels  = 1/dayLengthPixels;
 
-const timeScaleFactor = 5;
+let timeScaleFactor = 5;
 
 let loadedDays            = [];
 let loadedDay             = "Loading"
@@ -474,6 +474,32 @@ const ToDoScreen = ({ navigation }) => {
 					}}>
 						<Text style={styles.counterText}>
 							next
+						</Text>
+					</TouchableOpacity>
+
+
+					<TouchableOpacity style={styles.counterButton} onPress={() => {
+						timeScaleFactor--;
+						if (timeScaleFactor<=0){
+							timeScaleFactor = 1;
+						}
+						setReload(true);
+					}}>
+						<Text style={styles.counterText}>
+							-
+						</Text>
+					</TouchableOpacity>
+
+					<Text style={styles.fixedDateDisplayText}>
+						{"zoom: " + timeScaleFactor.toString()}
+					</Text>
+
+					<TouchableOpacity style={styles.counterButton} onPress={() => {
+						timeScaleFactor++;
+						setReload(true);
+					}}>
+						<Text style={styles.counterText}>
+							+
 						</Text>
 					</TouchableOpacity>
 				</View>
