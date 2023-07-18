@@ -745,7 +745,7 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					let newValue = Number(task.startTime) + 30;
 					tasks       [taskId  ].startTime = newValue;
-					scrollOffsetY += 30;
+					scrollOffsetY += 30 * timeScaleFactor;
 					// setScrollOffset(30);
 					// console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
 					flatListRef.current.scrollToOffset({
@@ -784,7 +784,7 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
 					let newValue = Number(task.startTime) - 30;
 					tasks       [taskId  ].startTime = newValue;
-					scrollOffsetY -= 30;
+					scrollOffsetY -= 30 * timeScaleFactor;
 					console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
 					
 					flatListRef.current.scrollToOffset({
@@ -949,12 +949,13 @@ const breakItem = (task) => {
 }
 
 const DateAndTimeItem = (task) => {
-	const indicatorScale = 200 * timeScaleFactor;
+	//55 is the value I found that scales this close enough to the agenda bars 
+	const indicatorScale = 55 * timeScaleFactor;
 	console.log("task 2", task);
 	let duration  = task.duration;
 	let startTime = task.startTime;
 	const timeIndicators = [];
-	for (let i=0; i<=23; i++){
+	for (let i=0; i<=24; i++){
 		timeIndicators.push(i.toString()+":00");
 	}
 	return (
@@ -1536,13 +1537,13 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		color: "#fff",
 		textAlign: "center",
-		lineHeight: 300,
+		// lineHeight: 300,
 	},
 	dateIndicatorText: {
 		fontSize: 20,
 		color: "#fff",
 		textAlign: "center",
-		lineHeight: 30,
+		// lineHeight: 30,
 	},
 	menuButtons: {
 		height: 100,
