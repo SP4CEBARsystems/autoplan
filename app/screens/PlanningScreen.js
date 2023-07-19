@@ -495,11 +495,15 @@ const ToDoScreen = ({ navigation }) => {
 
 
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
-						timeScaleFactor--;
-						if (timeScaleFactor<=0){
-							timeScaleFactor = 1;
+						if (timeScaleFactor>1){
+							scrollOffsetY -= (scrollOffsetY+500) / timeScaleFactor
+							timeScaleFactor--;
+							flatListRef.current.scrollToOffset({
+								animated: false,
+								offset: scrollOffsetY
+							})
+							setReload(true);
 						}
-						setReload(true);
 					}}>
 						<Text style={styles.counterText}>
 							-
@@ -511,7 +515,12 @@ const ToDoScreen = ({ navigation }) => {
 					</Text>
 
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
+						scrollOffsetY += (scrollOffsetY+500) / timeScaleFactor
 						timeScaleFactor++;
+						flatListRef.current.scrollToOffset({
+							animated: false,
+							offset: scrollOffsetY
+						})
 						setReload(true);
 					}}>
 						<Text style={styles.counterText}>
@@ -827,7 +836,7 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					let newValue = Number(task.startTime) - 30;
 					tasks       [taskId  ].startTime = newValue;
 					scrollOffsetY -= 30 * timeScaleFactor;
-					console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
+					// console.log("EEEEEEEE scrolloffset: ", scrollOffsetY)
 					
 					flatListRef.current.scrollToOffset({
 						animated: false,
