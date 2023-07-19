@@ -390,6 +390,11 @@ const ToDoScreen = ({ navigation }) => {
 	// fetchData2(setTasks, setSync);
 	
 	useEffect(() => {
+		scrollOffsetY = minutesToday * timeScaleFactor
+		flatListRef.current.scrollToOffset({
+			animated: false,
+			offset: scrollOffsetY
+		})
 		// fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
 		// fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
 		// fetchData (setGaps       , setSync, doc(firestore, "Gaps"       , "TestDay"));
@@ -653,6 +658,11 @@ const ToDoScreen = ({ navigation }) => {
 							id            : tasks.length,
 							zIndex        : 0
 						});
+						scrollOffsetY = flooredMinutesToday * timeScaleFactor
+						flatListRef.current.scrollToOffset({
+							animated: false,
+							offset: scrollOffsetY
+						})
 						saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 					}}>
 						<Text style={styles.plusText}>
@@ -1022,18 +1032,6 @@ const DateAndTimeItem = (task) => {
 			borderWidth: 5,
 			// zIndex: 10
 		}}>
-			<View style={{
-				position: 'absolute',
-				height: 5,
-				top: minutesToday * timeScaleFactor, 
-				left: 0, right: 0, 
-				width: 100,
-				backgroundColor  : "#0F0",
-			}}>
-				<Text style={styles.timeDisplayText}>
-					{timeString}
-				</Text>
-			</View>
 			<View style={styles.timeIndicatorBlock}>
 				{timeIndicators.map( timeIndicator => 
 					<View style={{
@@ -1042,6 +1040,11 @@ const DateAndTimeItem = (task) => {
 						top: timeIndicator*60 * timeScaleFactor,
 						// marginBottom: indicatorScale
 					}}>
+						<View style={{
+							height: 5,
+							width: 100,
+							backgroundColor  : "#fff",
+						}}/>
 						<Text style={styles.timeIndicatorText}>
 							{timeIndicator.toString()+":00"}
 						</Text>
@@ -1080,6 +1083,24 @@ const DateAndTimeItem = (task) => {
 					22:00{"\n"}
 					23:00
 				</Text> */}
+			</View>
+			<View style={{
+				position: 'absolute',
+				height: 35,
+				top: minutesToday * timeScaleFactor, 
+				left: 0, right: 0, 
+				width: 100,
+				backgroundColor  : "#000",
+				opacity: 0.9
+			}}>
+				<View style={{
+					height: 5,
+					width: 100,
+					backgroundColor  : "#0F0",
+				}}/>
+				<Text style={styles.timeDisplayText}>
+					{timeString}
+				</Text>
 			</View>
 		</View>
 	);
