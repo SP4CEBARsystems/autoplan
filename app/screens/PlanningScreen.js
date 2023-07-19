@@ -631,7 +631,7 @@ const ToDoScreen = ({ navigation }) => {
 						displayed.push({
 							name          : "new Event",
 							duration      : 60,
-							startTime     : flooredMinutesToday,
+							startTime     : scrollOffsetY/timeScaleFactor,
 							source        : "",
 							type          : "agenda",
 							repeatTimespan: "days",
@@ -648,7 +648,8 @@ const ToDoScreen = ({ navigation }) => {
 						tasks.push({
 							name          : "new Event",
 							duration      : 60,
-							startTime     : flooredMinutesToday,
+							// startTime     : flooredMinutesToday,
+							startTime     : scrollOffsetY/timeScaleFactor,
 							source        : "",
 							type          : "agenda",
 							repeatTimespan: "days",
@@ -658,11 +659,11 @@ const ToDoScreen = ({ navigation }) => {
 							id            : tasks.length,
 							zIndex        : 0
 						});
-						scrollOffsetY = flooredMinutesToday * timeScaleFactor
-						flatListRef.current.scrollToOffset({
-							animated: false,
-							offset: scrollOffsetY
-						})
+						// scrollOffsetY = flooredMinutesToday * timeScaleFactor
+						// flatListRef.current.scrollToOffset({
+						// 	animated: false,
+						// 	offset: scrollOffsetY
+						// })
 						saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 					}}>
 						<Text style={styles.plusText}>
