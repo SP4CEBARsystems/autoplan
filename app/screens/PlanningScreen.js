@@ -191,12 +191,10 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	//if no file was found: create a new file
 	//use a copy of the variable in a js date formatter to display the date as a string
 	
-	const millisecondsToDay = 1/86400000;
 	// let dayOffset = Math.floor(scrollOffsetY * deltaDayLengthPixels);
 	console.log("dayOffset:", dayOffset, scrollOffsetY, deltaDayLengthPixels);
-	let milliSeconds = Date.now();
-	let day = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 	// let day = loadedDay;
+	let day = currentDay;
 	let documentName = "Day" + day.toString();
 
 	// console.log("dayIndicators 3", dayIndicators)
@@ -210,7 +208,6 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 		type: "date",
 		startTime: 0
 	};
-	
 
 	setDayIndicators(dayIndicators);
 	console.log("dayIndicators 4", dayIndicators);
@@ -247,6 +244,25 @@ let agendaId = 0
 let scrollOffsetY = 0;
 let scrollOffsetYLoaded = 0;
 let focused = 0;
+
+const millisecondsInDay = 86400000;
+const millisecondsToDay = 1/millisecondsInDay;
+const millisecondsToMinutes = 1/60000;
+let milliSeconds = Date.now();
+let currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
+let milliSecondsToday = milliSeconds % millisecondsInDay;
+// let minutesToday = milliSecondsToday * millisecondsToMinutes;
+// let timeString   = milliSecondsToday.toString();
+// let timeString   = milliSeconds.toTimeString();
+let javascriptDate = new Date(milliSeconds);
+// let timeString   = javascriptDate.toLocaleTimeString()
+let timeString   = javascriptDate.getHours().toString() + ":" + javascriptDate.getMinutes().toString()
+let minutesToday = javascriptDate.getHours()*60 + javascriptDate.getMinutes()
+let flooredMinutesToday = javascriptDate.getHours()*60
+// console.log("minutesToday", javascriptDate.getHours());
+// console.log("minutesToday", javascriptDate.getMinutes()+javascriptDate.getHours()*60);
+// console.log("minutesToday", milliSecondsToday/3600000);
+// console.log("minutesToday", minutesToday/60);
 
 let globalAgenda = [
 	{
@@ -600,8 +616,8 @@ const ToDoScreen = ({ navigation }) => {
 						// tasks.push({
 						displayed.push({
 							name          : "new Event",
-							duration      : 500,
-							startTime     : 0,
+							duration      : 60,
+							startTime     : flooredMinutesToday,
 							source        : "",
 							type          : "agenda",
 							repeatTimespan: "days",
@@ -617,8 +633,8 @@ const ToDoScreen = ({ navigation }) => {
 						// globalAgenda.push({
 						tasks.push({
 							name          : "new Event",
-							duration      : 500,
-							startTime     : 0,
+							duration      : 60,
+							startTime     : flooredMinutesToday,
 							source        : "",
 							type          : "agenda",
 							repeatTimespan: "days",
@@ -976,19 +992,19 @@ const breakItem = (task) => {
 
 const DateAndTimeItem = (task) => {
 	//55 is the value I found that scales this close enough to the agenda bars 
-	const indicatorScale = 55 * timeScaleFactor;
+	// const indicatorScale = 55 * timeScaleFactor;
 	console.log("task 2", task);
 	let duration  = task.duration;
 	let startTime = task.startTime;
 	const timeIndicators = [];
 	for (let i=0; i<=24; i++){
-		timeIndicators.push(i.toString()+":00");
+		timeIndicators.push(i);
 	}
 	return (
 		<View style={{
 			position: 'absolute',
-			height: duration,
-			top: startTime, 
+			height: 0,
+			top: 0, 
 			bottom: 0,
 			left: 0, right: 0, 
 			width: 100,
@@ -997,11 +1013,28 @@ const DateAndTimeItem = (task) => {
 			borderWidth: 5,
 			// zIndex: 10
 		}}>
+			<View style={{
+				position: 'absolute',
+				height: 5,
+				top: minutesToday * timeScaleFactor, 
+				left: 0, right: 0, 
+				width: 100,
+				backgroundColor  : "#0F0",
+			}}>
+				<Text style={styles.timeDisplayText}>
+					{timeString}
+				</Text>
+			</View>
 			<View style={styles.timeIndicatorBlock}>
 				{timeIndicators.map( timeIndicator => 
-					<View style={{marginBottom: indicatorScale}}>
+					<View style={{
+						position: 'absolute',
+						// height: 5,
+						top: timeIndicator*60 * timeScaleFactor,
+						// marginBottom: indicatorScale
+					}}>
 						<Text style={styles.timeIndicatorText}>
-							{timeIndicator}
+							{timeIndicator.toString()+":00"}
 						</Text>
 					</View>
 				)}
@@ -1178,7 +1211,7 @@ function PlanOut(gaps, tasks){
 					duration  : timeLeft, 
 					startTime : time, 
 					type      : "generated", 
-					id        : -plannedGaps.length
+					id        : -plannedGaps.length*2
 				});
 		
 				dayOfTask = Math.floor (time * deltaDayLengthPixels);
@@ -1195,7 +1228,7 @@ function PlanOut(gaps, tasks){
 					duration  : task.maxLength, 
 					startTime : time, 
 					type      : "generated",
-					id        : -plannedGaps.length
+					id        : -plannedGaps.length*2
 				});
 		
 				dayOfTask = Math.floor (time * deltaDayLengthPixels);
@@ -1225,7 +1258,7 @@ function generateBreaks(plannedGaps) {
 				duration  : Math.min(breakLength, element.duration),
 				startTime : element.startTime + i, 
 				type      : "generated break",
-				id        : -generatedBreaks.length
+				id        : -generatedBreaks.length*2+1
 			});
 		}
 	});
@@ -1562,6 +1595,12 @@ const styles = StyleSheet.create({
 	timeIndicatorText: {
 		fontSize: 20,
 		color: "#fff",
+		textAlign: "center",
+		// lineHeight: 300,
+	},
+	timeDisplayText: {
+		fontSize: 20,
+		color: "#0f0",
 		textAlign: "center",
 		// lineHeight: 300,
 	},
