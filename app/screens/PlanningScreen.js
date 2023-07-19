@@ -1279,11 +1279,11 @@ function PlanOut(gaps, tasks){
 
 function generateBreaks(plannedGaps) {
 	let generatedBreaks = [];
-	const breakLength = 5*timeScaleFactor;
-	const worklength  = 25*timeScaleFactor;
-	const cycleLength = worklength + breakLength;
+	const breakLength = 5;
+	const workLength  = 25;
+	const cycleLength = workLength + breakLength;
 	plannedGaps.forEach(element => {
-		for(let i=worklength; i<element.duration; i+=cycleLength){
+		for(let i=workLength; i<element.duration; i+=cycleLength){
 			generatedBreaks.push ({
 				name      : "short break",
 				duration  : Math.min(breakLength, element.duration),
@@ -1441,6 +1441,7 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		actuallySaveTheData( gaps       , doc( firestore, "Gaps"       , docName ));
 		// console.log("savingData3", previousTablePlannedGaps, indexTablePlannedGaps[i])
 		actuallySaveTheData( plannedGaps, doc( firestore, "PlannedGaps", docName ));
+		actuallySaveTheData( generatedBreaks, doc( firestore, "GeneratedBreaks", docName ));
 		// console.log("savingData4", previousTablePlanning   , indexTablePlanning   [i])
 		actuallySaveTheData( planning   , doc( firestore, "Planning"   , docName ));
 		// previousTableTasks       = indexTableTasks      [i]
