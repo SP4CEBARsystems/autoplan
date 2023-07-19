@@ -1034,8 +1034,8 @@ const DateAndTimeItem = (task) => {
 			// zIndex: 10
 		}}>
 			<View style={styles.timeIndicatorBlock}>
-				{timeIndicators.map( timeIndicator => 
-					<View style={{
+				{timeIndicators.map( (timeIndicator, index) => 
+					<View key={index} style={{
 						position: 'absolute',
 						// height: 5,
 						top: timeIndicator*60 * timeScaleFactor,
