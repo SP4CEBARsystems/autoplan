@@ -1440,8 +1440,8 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		// console.log("savingData2", previousTableGaps       , indexTableGaps       [i])
 		actuallySaveTheData( gaps       , doc( firestore, "Gaps"       , docName ));
 		// console.log("savingData3", previousTablePlannedGaps, indexTablePlannedGaps[i])
-		actuallySaveTheData( plannedGaps, doc( firestore, "PlannedGaps", docName ));
-		actuallySaveTheData( generatedBreaks, doc( firestore, "GeneratedBreaks", docName ));
+		// actuallySaveTheData( plannedGaps, doc( firestore, "PlannedGaps", docName ));
+		// actuallySaveTheData( generatedBreaks, doc( firestore, "GeneratedBreaks", docName ));
 		// console.log("savingData4", previousTablePlanning   , indexTablePlanning   [i])
 		actuallySaveTheData( planning   , doc( firestore, "Planning"   , docName ));
 		// previousTableTasks       = indexTableTasks      [i]

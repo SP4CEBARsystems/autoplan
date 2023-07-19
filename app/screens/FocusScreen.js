@@ -12,6 +12,16 @@ import { auth, firestore } from "../../firebase";
 //import { firestore, auth } from "/config/firebase"
 
 
+//useEffect
+// load planning array
+
+// improve the timer code
+
+// generating timer value:
+// get current time
+// lookup this time in the planning array
+// loop backward to find the previous, then check the durations, then loop forward to find the next, non-breaks and breaks
+
 const FocusScreen = ({ navigation }) => {
 	const [str  , setStr  ] = useState("");
 	const [timeV, setTimeV] = useState(0 );
