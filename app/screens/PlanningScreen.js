@@ -1028,9 +1028,9 @@ const DateAndTimeItem = (task) => {
 			bottom: 0,
 			left: 0, right: 0, 
 			width: 100,
-			backgroundColor  : "#CCC",
-			borderColor      : "#AAA",
-			borderWidth: 5,
+			// backgroundColor  : "#CCC",
+			// borderColor      : "#AAA",
+			// borderWidth: 5,
 			// zIndex: 10
 		}}>
 			<View style={styles.timeIndicatorBlock}>
@@ -1618,9 +1618,9 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 	},
 	timeIndicatorBlock: {
-		height: 50,
-		backgroundColor: "#888",
-		marginTop: 10,
+		// height: 50,
+		// backgroundColor: "#888",
+		// marginTop: 10,
 		flexDirection:"column"
 	},
 	timeIndicatorText: {
