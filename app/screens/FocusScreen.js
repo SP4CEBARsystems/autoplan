@@ -22,12 +22,87 @@ import { auth, firestore } from "../../firebase";
 // lookup this time in the planning array
 // loop backward to find the previous, then check the durations, then loop forward to find the next, non-breaks and breaks
 
+function findCurrentEvent(tasks, timeMilliseconds, guess) {
+	//short arrays (like length=1) don't work properly (a stepSize of 0 causes it to end)
+	//does javascript have something like array.find()?
+
+	//lookup time in tasks[] using a binary searching algorithm
+	let timeMinutes = timeMilliseconds/60000
+	let stepSize = Math.floor(tasks.length * 0.5)
+	let searchIndex = guess == -1 ? stepSize : guess;
+	for (let i=0; timeMinutes =! tasks[searchIndex].startTime && stepSize > 0; i++) {
+		console.log ("finding current event...", i, stepSize, searchIndex, tasks[searchIndex].startTime)
+		searchIndex += timeMinutes < tasks[searchIndex].startTime ? -stepSize : stepSize
+		searchIndex = Math.floor(searchIndex)
+		stepSize *= 0.5
+		stepSize = Math.floor(stepSize)
+	}
+}
+
+function generateTimers(tasks, timeMilliseconds) {
+	findCurrentEvent(tasks, timeMilliseconds, -1)
+}
+
+
+
+
+function fetchData3 (setTasks, ref) {
+	console.log("fetchdata3");
+	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
+	//don't add a semicolon ";" after "getDoc()", Don't do that
+	getDoc(ref).then((doc) => {
+		console.log("doc");
+		let data = doc.data();
+		let planning = data ? data.tasks : [];
+		console.log("planning", planning)
+		setTasks(planning);
+	}).catch((e) => {
+		throw e;
+		// alert(error.message);
+	});
+}
+
+let clockInterval = 0;
+
 const FocusScreen = ({ navigation }) => {
 	const [str  , setStr  ] = useState("");
 	const [timeV, setTimeV] = useState(0 );
+	const [tasks   , setTasks   ] = useState([
+		{
+			name          : "loading",
+			duration      : 0,
+			startTime     : 0,
+			source        : "",
+			type          : "",
+			repeatTimespan: "loading",
+			repeatInterval: 0,
+			repeatOffset  : 0,
+			repeatOffsets : []
+		}
+	]);
+
+	useEffect(() => {
+		fetchData3 (setTasks, doc(firestore, "Planning", "TestDay"));
+	},[]);
 
 	let scrollValue = -(timeV - 34459300)*0.001;
 	console.log(scrollValue);
+
+	useEffect(() => {
+		const milliSecondsPerDay = 86400000;
+		clockInterval = setInterval(() => {
+			let milliseconds = Date.now();
+			let timeMilliseconds = milliseconds % milliSecondsPerDay
+			let jsDate = new Date(milliseconds);
+			setTimeV(Math.round(jsDate.getTime() % milliSecondsPerDay));
+			setStr(jsDate.getHours().toString()+":"+jsDate.getMinutes().toString()+":"+jsDate.getSeconds().toString());
+			
+			generateTimers(tasks, timeMilliseconds)
+		}, 1000);
+
+    	// return () => clearInterval(trigger);
+	}, []);
+
 	return (
 		<View style={styles.background}>
 			<View style={styles.topBar}>
@@ -38,11 +113,14 @@ const FocusScreen = ({ navigation }) => {
 				</View>
 				<TouchableOpacity 
 					style={styles.exitButton}
-					onPress={() => navigation.navigate('ToDo')}
+					onPress={() => {
+						clearInterval(clockInterval);
+						navigation.navigate('ToDo');
+					}}
 				/>
 			</View>
 			<View style={styles.taskBar}>
-				<ToDoScreen scrollValue={scrollValue} />
+				<ToDoScreen scrollValue={scrollValue} tasks={tasks} />
 			</View>
 			<View style={styles.bottomBar}>
 				<View style={styles.musicBar}>
@@ -51,24 +129,24 @@ const FocusScreen = ({ navigation }) => {
 					<View style={styles.musicButton}/>
 				</View>
 			</View>
-			<DispUpdate str={str} setStr={setStr} setTimeV={setTimeV} />
+			<DisplayUpdate str={str} setStr={setStr} setTimeV={setTimeV} />
 		</View>
 	);
 }
 
-const DispUpdate = ({str, setStr, setTimeV}) => {
-	useEffect(() => {
-		var ms=new Date(Date.now())
-		//Auto-correcting timer (A is the time to wait) - Designed in BASIC
-		var A=1500-(ms.getMilliseconds()+500)%1000
-		//console.log(A)
-		const trigger = setInterval(() => {
-			setTimeV(Math.round(ms.getTime() % 86400000));
-			setStr(ms.getHours().toString()+":"+ms.getMinutes().toString()+":"+ms.getSeconds().toString());
-		}, A);
+const DisplayUpdate = ({str, setStr, setTimeV}) => {
+	// useEffect(() => {
+	// 	var ms=new Date(Date.now())
+	// 	//Auto-correcting timer (A is the time to wait) - Designed in BASIC
+	// 	var A=1500-(ms.getMilliseconds()+500)%1000
+	// 	//console.log(A)
+	// 	const trigger = setInterval(() => {
+	// 		setTimeV(Math.round(ms.getTime() % 86400000));
+	// 		setStr(ms.getHours().toString()+":"+ms.getMinutes().toString()+":"+ms.getSeconds().toString());
+	// 	}, A);
 
-    	return () => clearInterval(trigger);
-	});
+    // 	return () => clearInterval(trigger);
+	// });
 	// },[]);
 
 	return (
@@ -90,70 +168,26 @@ const DispUpdate = ({str, setStr, setTimeV}) => {
 // let sync2 = false;
 // let tasks2 = [];
 
-const ToDoScreen = ({ navigation, scrollValue }) => {
+const ToDoScreen = ({ scrollValue, tasks }) => {
 	//process.on('unhandledRejection', r => console.log(r));
-	const [modified, setModified] = useState(false);
-	const [sync    , setSync    ] = useState(false);
-	const [tasks   , setTasks   ] = useState([
-		{
-			name          : "loading",
-			duration      : 0,
-			startTime     : 0,
-			source        : "",
-			type          : "",
-			repeatTimespan: "loading",
-			repeatInterval: 0,
-			repeatOffset  : 0,
-			repeatOffsets : []
-		}
-	]);
+	// const [modified, setModified] = useState(false);
+	// const [sync    , setSync    ] = useState(false);
+
+	// fetchData2 (setTasks, setSync);
+	// updateData(modified, setModified, sync, tasks);
 
 	return (
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
-				{/* <HeaderBar/> */}
-				{/* <Animated.View
-					style={{
-					transform: [{translateX: pan.x}, {translateY: pan.y}],
-					}}
-					{...panResponder.panHandlers}>
-				</Animated.View> */}
 				<View style={[styles.scrollingList,{left: scrollValue,}]}>
-					<ToDoListItems 
-						tasks       = {tasks      } 
-						setTasks    = {setTasks   } 
-						modified    = {modified   } 
-						setModified = {setModified} 
-						sync        = {sync       } 
-						setSync     = {setSync    } 
-					/>
+					{
+						tasks.map((e, i) =>
+							<View key={i}>
+								<ToDoListItem taskId={i} task={e} />
+							</View>
+						)
+					}
 				</View>
-				<View style={styles.plusParent}>
-					<TouchableOpacity style={styles.plus} onPress={() => {
-						tasks.push({
-							name          : "new Event",
-							duration      : 0,
-							startTime     : 0,
-							source        : "",
-							type          : "",
-							repeatTimespan: "days",
-							repeatInterval: 0,
-							repeatOffset  : 0,
-							repeatOffsets : []
-						});
-						setTasks   (tasks);
-						setModified(true);
-					}}>
-						<Text style={styles.plusText}>
-							+
-						</Text>
-					</TouchableOpacity>
-				</View>
-				{/* <View style={styles.menuButtons}>
-					<TouchableOpacity style={styles.menuButton1} onPress={() => {setSync(false); navigation.navigate("ToDo" );}}/>
-					<TouchableOpacity style={styles.menuButton2}/>
-					<TouchableOpacity style={styles.menuButton3} onPress={() => {setSync(false); navigation.navigate("Focus");}}/>
-				</View> */}
 			</SafeAreaView>
 		</View>
 	);
@@ -201,28 +235,6 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) => {
-	fetchData2 (setTasks, setSync);
-	updateData(modified, setModified, sync, tasks);
-	const n = tasks.length;
-	// console.log(tasks);
-	// console.log(sync);
-	// sync2 = sync;
-	// tasks2 = tasks;
-	return [...Array(n)].map((e, i) =>
-		<View key={i}>
-			<ToDoListItem 
-				tasks       = {tasks      }
-				taskId      = {i          }
-				task        = {tasks[i]   }
-				setModified = {setModified}
-				setTasks    = {setTasks   }
-				sync        = {sync       }
-			/>
-		</View>
-	);
-}
-
 
 
 
@@ -245,96 +257,30 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 //  if a repeated event is changed, it will prompt like google agenda does and create a new source task with updated data for that event and depending on the chosen action, all repeated occurrences after that
 
 
-const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, sync}) => {
+const ToDoListItem = ({taskId, task}) => {
 	let duration  = task.duration*10;
 	let startTime = task.startTime*10;
-	// console.log("active");
-
-	// const pan = useRef(new Animated.ValueXY()).current;
-	//if (pan.y==0) {pan.y = w;}
-	// Animated.add(pan.x, v)
-	// pan.setOffset(pan: {x: v; y: w});
-	// pan.setOffset({x: duration, y: startTime});
-
-	// console.log("sync  check 1: ",sync);
-	// console.log("sync2 check 1: ",sync2);
-
-	// const panResponder = useRef(
-	// 	PanResponder.create({
-	// 		onMoveShouldSetPanResponder: () => true,
-	// 		onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
-	// 		onPanResponderRelease: () => {
-	// 			pan.extractOffset();
-	// 			// console.log("hi");
-	// 			// console.log(pan.x._offset, pan.y._offset);
-	// 			//saveAgendaTimes(pan.x._offset, pan.y._offset);
-	// 			// tasks[taskId].duration  = pan.x._offset;
-	// 			// tasks[taskId].startTime = pan.y._offset;
-	// 			//console.log("written");
-	// 			// saveAgendaTimes(tasks, sync);
-	// 			saveAgendaTimes(pan.x._offset, pan.y._offset, taskId);
-	// 			//problem 1: when the page is visited the second time it won't load properly: all names are "loading" and it creates a new task, written in one write
-	// 			//problem 2: when there are two events, the second one gets its timings messed up
-	// 		},
-	// 	}),
-	// ).current;
-
-	// static add(a: Animated, b: Animated): AnimatedAddition;
-	//pan.x v
 
 	return (
-		<Animated.View
-		//[styles.animatedBox,
+		<View
 			style={{
-				// flex          : 0,
-				//position:'absolute',
 				position: 'absolute',
 				width: duration,
 				height: 100,
-				// height: 100%,
-				//height: v,
-				// paddingBottom : pan.x,
-				// top: w, 
-				//translateY    : w,
-				//marginTop: w,
 				left: startTime, 
-				// top:0,
 				bottom: 0,
-				// top: w, bottom: w+x,
 				top: 0, right: 0, 
-				//width: 100%,
-				//height: x,
-				//paddingTop    : x,
-				//paddingBottom : x,
-				// translateY    : offset - 2*x,
-				//translateY    : offset,
-				//translateY    : this.state.mapViewOffset.y
-				//padding          : x,0,
-				//backgroundColor  : "gray",
-				//backgroundColor  : 'grey',
 				backgroundColor  : "black",
 				borderWidth: 5,
 				borderColor: "green",
-				//paddingLeft: pan.x,
-				//top : pan.y,
-				//left: pan.x,
-				//paddingTop    : x,
-				//paddingBottom : x,
 			}}
-			// style={[styles.animatedBox,{
-			// 	paddingTop    : x,
-			// 	paddingBottom : y,
-			// 	// paddingLeft: pan.x,
-			// 	//top : pan.y,
-			// 	//left: pan.x,
-			// }]}{...panResponder.panHandlers}
 		>
 			<View style={styles.scrollBlock}>
 				<View style={styles.scrollItem}>
 					<Text style={styles.scrollText}>{task.name}</Text>
 				</View>
 			</View>
-		</Animated.View>
+		</View>
 	);
 }
 
