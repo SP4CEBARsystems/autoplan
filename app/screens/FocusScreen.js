@@ -24,30 +24,31 @@ import { auth, firestore } from "../../firebase";
 
 //format the clock digits to always have two digits: "03:04" or "3:04" instead of "3:4"
 
-function generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer) {
+function generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer, setEventName) {
 	let timeMinutes = timeMilliseconds/60000
 	let found = findCurrentEvent(tasks, timeMinutes, -1);
 	// console.log("found", found)
 	if (found === undefined) {return}
 	
-	//refactor this
-	let findBreak = -1;
-	let findEvent = -1;
-	console.log("found", found);
-	for (let i=found; (findBreak==-1 || findEvent==-1) && i>0; i--){
-		console.log("scanloop", i, tasks[i].type)
-		if (tasks[i].type == "generated break") {
-			if (findBreak==-1) {findBreak = i}
-		} else if (tasks[i].type == "agenda" || tasks[i].type == "generated") {
-			if (findEvent==-1) {findEvent = i}
-		}
-	}
-	//
+	let { findBreak, findEvent } = findBreakAndEvent(true);
 
 	console.log("found break and event", findBreak, findEvent)
 
 	let breakTimer = getEndTime (tasks, findBreak) - timeMinutes;
 	let eventTimer = getEndTime (tasks, findEvent) - timeMinutes;
+	
+	if (breakTimer<0 || eventTimer<0) {
+		let { findBreakF, findEventF } = findBreakAndEvent(false);
+		if (breakTimer<0) {
+			breakTimer = tasks[findBreakF].startTime - timeMinutes;
+			findBreak  = findBreakF;
+		}
+		if (eventTimer<0) {
+			eventTimer = tasks[findEventF].startTime - timeMinutes;
+			findEvent  = findEventF;
+		}
+	}
+
 	console.log("breakTimer and eventTimer", breakTimer*60, eventTimer*60)
 	let brakeJsTime = new Date(breakTimer*60000)
 	let eventJsTime = new Date(eventTimer*60000)
@@ -66,6 +67,22 @@ function generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer) {
 	console.log("eventString", eventString)
 	setBreakTimer(breakString)
 	setEventTimer(eventString)
+	setEventName(tasks[findEvent].name)
+
+	function findBreakAndEvent(backwards) {
+		let findBreak = -1;
+		let findEvent = -1;
+		console.log("found", found);
+		for (let i = found; (findBreak == -1 || findEvent == -1) && (backwards ? i > 0 : i<tasks.length) ; backwards ? i-- : i++) {
+			console.log("scanloop", i, tasks[i].type);
+			if (tasks[i].type == "generated break") {
+				if (findBreak == -1) { findBreak = i; }
+			} else if (tasks[i].type == "agenda" || tasks[i].type == "generated") {
+				if (findEvent == -1) { findEvent = i; }
+			}
+		}
+		return { findBreak, findEvent };
+	}
 }
 
 function getEndTime (tasks, index) {
@@ -96,7 +113,7 @@ function findCurrentEvent(tasks, timeMinutes, guess) {
 
 
 
-function fetchData3 (setTasks, ref, setTimeV, setStr, setBreakTimer, setEventTimer) {
+function fetchData3 (setTasks, ref, setTimeV, setStr, setBreakTimer, setEventTimer, setEventName) {
 	console.log("fetchdata3");
 	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
 	//don't add a semicolon ";" after "getDoc()", Don't do that
@@ -106,7 +123,7 @@ function fetchData3 (setTasks, ref, setTimeV, setStr, setBreakTimer, setEventTim
 		let planning = data ? data.tasks : [];
 		console.log("planning", planning)
 		setTasks(planning);
-		initInterval(planning, setTimeV, setStr, setBreakTimer, setEventTimer);
+		initInterval(planning, setTimeV, setStr, setBreakTimer, setEventTimer, setEventName);
 	}).catch((e) => {
 		throw e;
 		// alert(error.message);
@@ -117,7 +134,7 @@ let clockInterval = 0;
 let globalTasks = [];
 const milliSecondsPerDay = 86400000;
 
-function initInterval (tasks, setTimeV, setStr, setBreakTimer, setEventTimer) {
+function initInterval (tasks, setTimeV, setStr, setBreakTimer, setEventTimer, setEventName) {
 	clockInterval = setInterval(() => {
 		// console.log("globalTasks", tasks)
 		let milliseconds = Date.now();
@@ -125,7 +142,7 @@ function initInterval (tasks, setTimeV, setStr, setBreakTimer, setEventTimer) {
 		let jsDate = new Date(milliseconds);
 		setTimeV(Math.round(jsDate.getTime() % milliSecondsPerDay));
 		setStr(jsDate.getHours().toString()+":"+jsDate.getMinutes().toString()+":"+jsDate.getSeconds().toString());
-		generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer)
+		generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer, setEventName)
 	}, 1000);
 }
 
@@ -133,6 +150,7 @@ const FocusScreen = ({ navigation }) => {
 	const [str  , setStr  ] = useState("");
 	const [breakTimer  , setBreakTimer  ] = useState("");
 	const [eventTimer  , setEventTimer  ] = useState("");
+	const [eventName   , setEventName   ] = useState("");
 	const [timeV, setTimeV] = useState(0 );
 	const [tasks   , setTasks   ] = useState([
 		{
@@ -152,7 +170,7 @@ const FocusScreen = ({ navigation }) => {
 	let globalTasks = tasks;
 
 	useEffect(() => {
-		fetchData3 (setTasks, doc(firestore, "Planning", "Day"+Math.floor(Date.now()/milliSecondsPerDay)), setTimeV, setStr, setBreakTimer, setEventTimer);
+		fetchData3 (setTasks, doc(firestore, "Planning", "Day"+Math.floor(Date.now()/milliSecondsPerDay)), setTimeV, setStr, setBreakTimer, setEventTimer, setEventName);
 	}, []);
 
 	let scrollValue = -(timeV - 34459300)*0.001;
@@ -177,12 +195,6 @@ const FocusScreen = ({ navigation }) => {
 			<View style={styles.taskBar}>
 				<ToDoScreen scrollValue={scrollValue} tasks={tasks} />
 			</View>
-			<Text style={styles.textStyle2}>
-				{"Break: " + breakTimer}
-			</Text>
-			<Text style={styles.textStyle2}>
-				{"event: " + eventTimer}
-			</Text>
 			<View style={styles.bottomBar}>
 				<View style={styles.musicBar}>
 					<View style={styles.musicButton}/>
@@ -190,38 +202,53 @@ const FocusScreen = ({ navigation }) => {
 					<View style={styles.musicButton}/>
 				</View>
 			</View>
-			<DisplayUpdate str={str} setStr={setStr} setTimeV={setTimeV} />
+			<View style={styles.timerBar}>
+				<Text style={styles.textStyle1} >
+					{eventName}
+				</Text>
+				<Text style={styles.textStyle1} >
+					{str}
+				</Text>
+				<View style={styles.nowLine}/>
+				<Text style={styles.textStyle2}>
+					{"Break: " + breakTimer}
+				</Text>
+				<Text style={styles.textStyle2}>
+					{"event: " + eventTimer}
+				</Text>
+			</View>
+			{/* <DisplayUpdate str={str} setStr={setStr} setTimeV={setTimeV} /> */}
 		</View>
 	);
 }
 
-const DisplayUpdate = ({str, setStr, setTimeV}) => {
-	// useEffect(() => {
-	// 	var ms=new Date(Date.now())
-	// 	//Auto-correcting timer (A is the time to wait) - Designed in BASIC
-	// 	var A=1500-(ms.getMilliseconds()+500)%1000
-	// 	//console.log(A)
-	// 	const trigger = setInterval(() => {
-	// 		setTimeV(Math.round(ms.getTime() % 86400000));
-	// 		setStr(ms.getHours().toString()+":"+ms.getMinutes().toString()+":"+ms.getSeconds().toString());
-	// 	}, A);
+// const DisplayUpdate = ({str, setStr, setTimeV}) => {
+// 	// useEffect(() => {
+// 	// 	var ms=new Date(Date.now())
+// 	// 	//Auto-correcting timer (A is the time to wait) - Designed in BASIC
+// 	// 	var A=1500-(ms.getMilliseconds()+500)%1000
+// 	// 	//console.log(A)
+// 	// 	const trigger = setInterval(() => {
+// 	// 		setTimeV(Math.round(ms.getTime() % 86400000));
+// 	// 		setStr(ms.getHours().toString()+":"+ms.getMinutes().toString()+":"+ms.getSeconds().toString());
+// 	// 	}, A);
 
-    // 	return () => clearInterval(trigger);
-	// });
-	// },[]);
+//     // 	return () => clearInterval(trigger);
+// 	// });
+// 	// },[]);
 
-	return (
-		<View style={styles.timerBar}>
-			<Text style={styles.textStyle1} >
-				{str}
-			</Text>
-			<View style={styles.nowLine}/>
-			<Text style={styles.textStyle2} >
-				{str}
-			</Text>
-		</View>
-	);
-}
+// 	return (
+// 		<View style={styles.timerBar}>
+// 			<Text style={styles.textStyle1} >
+// 				{str}
+// 			</Text>
+// 			<View style={styles.nowLine}/>
+// 			<Text style={styles.textStyle2} >
+// 				{str}
+// 			</Text>
+// 		</View>
+// 	);
+// }
 
 //--
 
