@@ -3,26 +3,28 @@ make the agenda scroll through days and display dates
     V make the flatlist-display day indicator component
     v make the flatlist display time indicators: add them to the day indicator component and set the z index to be behind everything else
     V make the keys unique: either make a key generator or use indexes
-    make one database planning document per day
-    make the flatlist fetch for more contents when the end is reached and add the day displays to the array (just prepend it)
+    V make one database planning document per day
+    V make the flatlist fetch for more contents when the end is reached and add the day displays to the array (just prepend it)
     V add a day display bar at the top of the screen
-    calibrate the day display bar
+    V calibrate the day display bar
 
-    fix the time line spacing
+    V fix the time line spacing
     
     fix the z index problems with agenda events
-    add z index as a property in the database
+    V add z index as a property in the database
     fix z-index so that events can't be hidden behind generated planning elements
     set the Z-index to max for moving events so that they can pass other events
-    reduce the width of elements so that underlaying elements can be selected (then their z-index will put them in front of everything)
+    V reduce the width of elements so that underlaying elements can be selected (then their z-index will put them in front of everything)
 
     memory usage: keep one array for "today" for the live planner, have another array for browsing through the agenda
 
-    add break data types and break components
+    V add break data types and break components
     press enter to apply the typed numbers, or maybe not
 
+    integrate the pages to share loaded data
+
 planning algorithm
-    add breaks
+    v add breaks
     look ahead
 
 reliability (when used):
@@ -37,8 +39,8 @@ settings
     break patterns
 
 focus mode
-    fix focus mode (it needs to properly point to it on all screen widths)
-    add timers
+    fix focus mode (it needs to properly point to the right time on all screen widths)
+    v add timers
     add a mini-viewer
 
 todo page

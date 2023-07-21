@@ -147,12 +147,12 @@ function initInterval (tasks, setTimeV, setStr, setBreakTimer, setEventTimer, se
 }
 
 const FocusScreen = ({ navigation }) => {
-	const [str  , setStr  ] = useState("");
+	const [str         , setStr         ] = useState("");
 	const [breakTimer  , setBreakTimer  ] = useState("");
 	const [eventTimer  , setEventTimer  ] = useState("");
 	const [eventName   , setEventName   ] = useState("");
-	const [timeV, setTimeV] = useState(0 );
-	const [tasks   , setTasks   ] = useState([
+	const [timeV       , setTimeV       ] = useState(0 );
+	const [tasks       , setTasks       ] = useState([
 		{
 			name          : "loading",
 			duration      : 0,
@@ -167,7 +167,7 @@ const FocusScreen = ({ navigation }) => {
 	]);
 
 	console.log("newTimers", breakTimer, " and ", eventTimer)
-	let globalTasks = tasks;
+	// let globalTasks = tasks;
 
 	useEffect(() => {
 		fetchData3 (setTasks, doc(firestore, "Planning", "Day"+Math.floor(Date.now()/milliSecondsPerDay)), setTimeV, setStr, setBreakTimer, setEventTimer, setEventName);
@@ -281,51 +281,6 @@ const ToDoScreen = ({ scrollValue, tasks }) => {
 	);
 }
 
-const HeaderBar = () => {
-	return(
-		<View style={styles.headerBar}>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Name
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Time Required
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Deadline
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Priority
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Like
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Repeat Settings
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					delete
-				</Text>
-			</View>
-		</View>
-	);
-}
-
-
-
-
 //database
 //  agenda
 //    fixed meetings and events
@@ -346,8 +301,13 @@ const HeaderBar = () => {
 
 
 const ToDoListItem = ({taskId, task}) => {
-	let duration  = task.duration*10;
-	let startTime = task.startTime*10;
+	let timeScaleFactor2 = 10
+	let duration  = task.duration  * timeScaleFactor2;
+	let startTime = task.startTime * timeScaleFactor2;
+	// 1. align it so that the first task is at the left of the screen
+	// 2. offset it to the center (make it compatible with different screen sizes)
+	// 3. add an offset that ticks with time
+	// 4. add a scale factor and add zoom buttons
 
 	return (
 		<View
