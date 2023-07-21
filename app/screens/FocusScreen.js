@@ -22,31 +22,81 @@ import { auth, firestore } from "../../firebase";
 // lookup this time in the planning array
 // loop backward to find the previous, then check the durations, then loop forward to find the next, non-breaks and breaks
 
-function findCurrentEvent(tasks, timeMilliseconds, guess) {
+//format the clock digits to always have two digits: "03:04" or "3:04" instead of "3:4"
+
+function generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer) {
+	let timeMinutes = timeMilliseconds/60000
+	let found = findCurrentEvent(tasks, timeMinutes, -1);
+	// console.log("found", found)
+	if (found === undefined) {return}
+	
+	//refactor this
+	let findBreak = -1;
+	let findEvent = -1;
+	console.log("found", found);
+	for (let i=found; (findBreak==-1 || findEvent==-1) && i>0; i--){
+		console.log("scanloop", i, tasks[i].type)
+		if (tasks[i].type == "generated break") {
+			if (findBreak==-1) {findBreak = i}
+		} else if (tasks[i].type == "agenda" || tasks[i].type == "generated") {
+			if (findEvent==-1) {findEvent = i}
+		}
+	}
+	//
+
+	console.log("found break and event", findBreak, findEvent)
+
+	let breakTimer = getEndTime (tasks, findBreak) - timeMinutes;
+	let eventTimer = getEndTime (tasks, findEvent) - timeMinutes;
+	console.log("breakTimer and eventTimer", breakTimer*60, eventTimer*60)
+	let brakeJsTime = new Date(breakTimer*60000)
+	let eventJsTime = new Date(eventTimer*60000)
+	//the hours are wrong
+	let breakTimerH = brakeJsTime.getHours()
+	let breakTimerM = brakeJsTime.getMinutes()
+	let breakTimerS = brakeJsTime.getSeconds()
+	let eventTimerH = eventJsTime.getHours()
+	let eventTimerM = eventJsTime.getMinutes()
+	let eventTimerS = eventJsTime.getSeconds()
+	let breakString = breakTimerM.toString()+":"+breakTimerS.toString()
+	let eventString = eventTimerM.toString()+":"+eventTimerS.toString()
+	//breakTimerH.toString()+":"+
+	//eventTimerH.toString()+":"+
+	console.log("breakString", breakString)
+	console.log("eventString", eventString)
+	setBreakTimer(breakString)
+	setEventTimer(eventString)
+}
+
+function getEndTime (tasks, index) {
+	return tasks[index].startTime + tasks[index].duration
+}
+
+function findCurrentEvent(tasks, timeMinutes, guess) {
 	//short arrays (like length=1) don't work properly (a stepSize of 0 causes it to end)
 	//does javascript have something like array.find()?
+	// console.log("tasks", tasks[0].startTime, timeMinutes, tasks[tasks.length-1].startTime, tasks)
+	let found = tasks.find(element => element.startTime > timeMinutes);
+	return tasks.indexOf(found);
 
 	//lookup time in tasks[] using a binary searching algorithm
-	let timeMinutes = timeMilliseconds/60000
-	let stepSize = Math.floor(tasks.length * 0.5)
-	let searchIndex = guess == -1 ? stepSize : guess;
-	for (let i=0; timeMinutes =! tasks[searchIndex].startTime && stepSize > 0; i++) {
-		console.log ("finding current event...", i, stepSize, searchIndex, tasks[searchIndex].startTime)
-		searchIndex += timeMinutes < tasks[searchIndex].startTime ? -stepSize : stepSize
-		searchIndex = Math.floor(searchIndex)
-		stepSize *= 0.5
-		stepSize = Math.floor(stepSize)
-	}
-}
-
-function generateTimers(tasks, timeMilliseconds) {
-	findCurrentEvent(tasks, timeMilliseconds, -1)
+	// let timeMinutes = timeMilliseconds/60000
+	// let stepSize = Math.floor(tasks.length * 0.5)
+	// let searchIndex = guess == -1 ? stepSize : guess;
+	// console.log ("before finding current event...", stepSize, searchIndex, tasks.length, tasks[searchIndex].startTime, tasks)
+	// for (let i=0; timeMinutes =! tasks[searchIndex].startTime && stepSize > 0; i++) {
+	// 	console.log ("finding current event...", i, stepSize, searchIndex, tasks[searchIndex].startTime)
+	// 	searchIndex += timeMinutes < tasks[searchIndex].startTime ? -stepSize : stepSize
+	// 	searchIndex = Math.floor(searchIndex)
+	// 	stepSize *= 0.5
+	// 	stepSize = Math.floor(stepSize)
+	// }
 }
 
 
 
 
-function fetchData3 (setTasks, ref) {
+function fetchData3 (setTasks, ref, setTimeV, setStr, setBreakTimer, setEventTimer) {
 	console.log("fetchdata3");
 	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
 	//don't add a semicolon ";" after "getDoc()", Don't do that
@@ -56,6 +106,7 @@ function fetchData3 (setTasks, ref) {
 		let planning = data ? data.tasks : [];
 		console.log("planning", planning)
 		setTasks(planning);
+		initInterval(planning, setTimeV, setStr, setBreakTimer, setEventTimer);
 	}).catch((e) => {
 		throw e;
 		// alert(error.message);
@@ -63,9 +114,25 @@ function fetchData3 (setTasks, ref) {
 }
 
 let clockInterval = 0;
+let globalTasks = [];
+const milliSecondsPerDay = 86400000;
+
+function initInterval (tasks, setTimeV, setStr, setBreakTimer, setEventTimer) {
+	clockInterval = setInterval(() => {
+		// console.log("globalTasks", tasks)
+		let milliseconds = Date.now();
+		let timeMilliseconds = milliseconds % milliSecondsPerDay
+		let jsDate = new Date(milliseconds);
+		setTimeV(Math.round(jsDate.getTime() % milliSecondsPerDay));
+		setStr(jsDate.getHours().toString()+":"+jsDate.getMinutes().toString()+":"+jsDate.getSeconds().toString());
+		generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer)
+	}, 1000);
+}
 
 const FocusScreen = ({ navigation }) => {
 	const [str  , setStr  ] = useState("");
+	const [breakTimer  , setBreakTimer  ] = useState("");
+	const [eventTimer  , setEventTimer  ] = useState("");
 	const [timeV, setTimeV] = useState(0 );
 	const [tasks   , setTasks   ] = useState([
 		{
@@ -81,27 +148,15 @@ const FocusScreen = ({ navigation }) => {
 		}
 	]);
 
+	console.log("newTimers", breakTimer, " and ", eventTimer)
+	let globalTasks = tasks;
+
 	useEffect(() => {
-		fetchData3 (setTasks, doc(firestore, "Planning", "TestDay"));
-	},[]);
+		fetchData3 (setTasks, doc(firestore, "Planning", "Day"+Math.floor(Date.now()/milliSecondsPerDay)), setTimeV, setStr, setBreakTimer, setEventTimer);
+	}, []);
 
 	let scrollValue = -(timeV - 34459300)*0.001;
 	console.log(scrollValue);
-
-	useEffect(() => {
-		const milliSecondsPerDay = 86400000;
-		clockInterval = setInterval(() => {
-			let milliseconds = Date.now();
-			let timeMilliseconds = milliseconds % milliSecondsPerDay
-			let jsDate = new Date(milliseconds);
-			setTimeV(Math.round(jsDate.getTime() % milliSecondsPerDay));
-			setStr(jsDate.getHours().toString()+":"+jsDate.getMinutes().toString()+":"+jsDate.getSeconds().toString());
-			
-			generateTimers(tasks, timeMilliseconds)
-		}, 1000);
-
-    	// return () => clearInterval(trigger);
-	}, []);
 
 	return (
 		<View style={styles.background}>
@@ -122,6 +177,12 @@ const FocusScreen = ({ navigation }) => {
 			<View style={styles.taskBar}>
 				<ToDoScreen scrollValue={scrollValue} tasks={tasks} />
 			</View>
+			<Text style={styles.textStyle2}>
+				{"Break: " + breakTimer}
+			</Text>
+			<Text style={styles.textStyle2}>
+				{"event: " + eventTimer}
+			</Text>
 			<View style={styles.bottomBar}>
 				<View style={styles.musicBar}>
 					<View style={styles.musicButton}/>
