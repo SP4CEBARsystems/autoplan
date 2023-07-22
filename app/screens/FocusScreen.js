@@ -140,7 +140,7 @@ function fetchData3 (setTasks, ref, setTimeV, setStr, setBreakTimer, setEventTim
 let clockInterval = 0;
 let globalTasks = [];
 const milliSecondsPerDay = 86400000;
-let timeScaleFactor2 = 10;
+let timeScaleFactor2 = 40;
 
 function initInterval (tasks, setTimeV, setStr, setBreakTimer, setEventTimer, setEventName) {
 	clockInterval = setInterval(() => {
@@ -160,6 +160,7 @@ const FocusScreen = ({ navigation }) => {
 	const [eventTimer  , setEventTimer  ] = useState("");
 	const [eventName   , setEventName   ] = useState("");
 	const [timeV       , setTimeV       ] = useState(0 );
+	const [timeScaleFactor3, setTimeScaleFactor3] = useState(timeScaleFactor2);
 	const [tasks       , setTasks       ] = useState([
 		{
 			name          : "loading",
@@ -188,34 +189,39 @@ const FocusScreen = ({ navigation }) => {
 	return (
 		<View style={styles.background}>
 			<View style={styles.topBar}>
-				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					if (timeScaleFactor2>1){
-						timeScaleFactor2--;
+				<View style={styles.topBar2}>
+					<TouchableOpacity style={styles.counterButton} onPress={() => {
+						if (timeScaleFactor2>1){
+							timeScaleFactor2--;
+							setTimeScaleFactor3(timeScaleFactor2);
+							// setReload(true);
+						}
+					}}>
+						<Text style={styles.counterText}>
+							-
+						</Text>
+					</TouchableOpacity>
+
+					<Text style={styles.fixedDateDisplayText}>
+						{/* {"zoom: " + timeScaleFactor2.toString()} */}
+						{"zoom: " + timeScaleFactor3.toString()}
+					</Text>
+
+					<TouchableOpacity style={styles.counterButton} onPress={() => {
+						timeScaleFactor2++;
+						setTimeScaleFactor3(timeScaleFactor2);
 						// setReload(true);
-					}
-				}}>
-					<Text style={styles.counterText}>
-						-
-					</Text>
-				</TouchableOpacity>
-
-				<Text style={styles.fixedDateDisplayText}>
-					{"zoom: " + timeScaleFactor2.toString()}
-				</Text>
-
-				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					timeScaleFactor2++;
-					// setReload(true);
-				}}>
-					<Text style={styles.counterText}>
-						+
-					</Text>
-				</TouchableOpacity>
-				<View style={styles.noteBar}>
+					}}>
+						<Text style={styles.counterText}>
+							+
+						</Text>
+					</TouchableOpacity>
+				</View>
+				{/* <View style={styles.noteBar}>
 					<Text style={styles.noteText}>
 						note
 					</Text>
-				</View>
+				</View> */}
 				<TouchableOpacity 
 					style={styles.exitButton}
 					onPress={() => {
@@ -349,20 +355,22 @@ const ToDoListItem = ({taskId, task}) => {
 			style={{
 				position: 'absolute',
 				width: duration,
-				height: 100,
+				// height: 100,
 				left: startTime, 
 				bottom: 0,
 				top: 0, right: 0, 
-				backgroundColor  : "black",
-				borderWidth: 5,
-				borderColor: "green",
+				backgroundColor  : task.type=="break" || task.type=="generated break" ? "green" : "black",
+				borderWidth: 2,
+				borderColor: "white",
+				alignItems: "center",
+				justifyContent: "center"
 			}}
 		>
-			<View style={styles.scrollBlock}>
-				<View style={styles.scrollItem}>
+			{/* <View style={styles.scrollBlock}> */}
+				{/* <View style={styles.scrollItem}> */}
 					<Text style={styles.scrollText}>{task.name}</Text>
-				</View>
-			</View>
+				{/* </View> */}
+			{/* </View> */}
 		</View>
 	);
 }
@@ -457,10 +465,11 @@ const styles = StyleSheet.create({
 		color: "#fff",
 	},
 	nowLine:{
-		backgroundColor: "#222",
+		backgroundColor: "#FFF",
 		//flex: 1,
-		width: 10,
+		width: 5,
 		height: 200,
+		opacity: 0.8
 	},
 	topBar:{
 		//justifyContent:"flex-start",
@@ -469,9 +478,21 @@ const styles = StyleSheet.create({
 		//backgroundColor: "#777",
 		flex: 1,
 		//height: 1000,
+		flexDirection:"row",
+	},
+	topBar2:{
+		//justifyContent:"flex-start",
+		//alignItems:"center",
+		//position: "relative",
+		//backgroundColor: "#777",
+		flex: 1,
+		//height: 1000,
+		flexDirection:"row",
+		height: 75
 	},
 	bottomBar:{
 		//justifyContent:"flex-end",
+		justifyContent:"center",
 		//position: "relative",
 		//backgroundColor: "#777",
 		flex: 1,
@@ -617,6 +638,30 @@ const styles = StyleSheet.create({
 		width:  80,
 		backgroundColor: "#999",
 		borderRadius: 4,
+	},
+	counterButton: {
+		flex: 1,
+		backgroundColor: "#555",
+		borderRadius: 20,
+		// fontSize: 100,
+		// textAlign: "center",
+		marginLeft  : 1,
+		marginRight : 1,
+		marginTop   : 4,
+		marginBottom: 4,
+		maxWidth: 200
+	},
+	fixedDateDisplayText: {
+		fontSize: 40,
+		textAlign: "center",
+		textAlignVertical: "center",
+		color: "#FFF"
+	},
+	counterText: {
+		fontSize: 40,
+		textAlign: "center",
+		textAlignVertical: "center",
+		color: "#FFF"
 	},
 	plusParent: {
 		height: 0,
