@@ -3,9 +3,10 @@
 
 
 import React, { useState, useEffect, useRef, Component } from 'react';
-import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput, Animated, PanResponder } from 'react-native';
+import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput, Animated, PanResponder, Dimensions } from 'react-native';
 import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, firestore } from "../../firebase";
+// import {Dimensions} from 'react-native';
 
 //import { Box, FlatList, Center, NativeBaseProvider} from "native-base";
 // import { doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore"; 
@@ -31,6 +32,8 @@ function generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer, s
 	if (found === undefined) {return}
 	
 	let { findBreak, findEvent } = findBreakAndEvent(true);
+	// let findBreakB = findBreak;
+	// let findEventB = findEvent;
 
 	console.log("found break and event", findBreak, findEvent)
 
@@ -38,7 +41,10 @@ function generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer, s
 	let eventTimer = getEndTime (tasks, findEvent) - timeMinutes;
 	
 	if (breakTimer<0 || eventTimer<0) {
-		let { findBreakF, findEventF } = findBreakAndEvent(false);
+		let { findBreak, findEvent } = findBreakAndEvent(false);
+		let findBreakF = findBreak;
+		let findEventF = findEvent;
+		console.log("found break and event2", findBreakF, findEventF)
 		if (breakTimer<0) {
 			breakTimer = tasks[findBreakF].startTime - timeMinutes;
 			findBreak  = findBreakF;
@@ -74,13 +80,14 @@ function generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer, s
 		let findEvent = -1;
 		console.log("found", found);
 		for (let i = found; (findBreak == -1 || findEvent == -1) && (backwards ? i > 0 : i<tasks.length) ; backwards ? i-- : i++) {
-			console.log("scanloop", i, tasks[i].type);
+			console.log("scanloop", i, tasks[i].type, backwards);
 			if (tasks[i].type == "generated break") {
 				if (findBreak == -1) { findBreak = i; }
 			} else if (tasks[i].type == "agenda" || tasks[i].type == "generated") {
 				if (findEvent == -1) { findEvent = i; }
 			}
 		}
+		console.log("found results", findBreak, findEvent, backwards)
 		return { findBreak, findEvent };
 	}
 }
@@ -133,6 +140,7 @@ function fetchData3 (setTasks, ref, setTimeV, setStr, setBreakTimer, setEventTim
 let clockInterval = 0;
 let globalTasks = [];
 const milliSecondsPerDay = 86400000;
+let timeScaleFactor2 = 10;
 
 function initInterval (tasks, setTimeV, setStr, setBreakTimer, setEventTimer, setEventName) {
 	clockInterval = setInterval(() => {
@@ -173,12 +181,36 @@ const FocusScreen = ({ navigation }) => {
 		fetchData3 (setTasks, doc(firestore, "Planning", "Day"+Math.floor(Date.now()/milliSecondsPerDay)), setTimeV, setStr, setBreakTimer, setEventTimer, setEventName);
 	}, []);
 
-	let scrollValue = -(timeV - 34459300)*0.001;
+	// let scrollValue = -(timeV - 34459300)*0.001;
+	let scrollValue = -(timeV)*timeScaleFactor2/60000;
 	console.log(scrollValue);
 
 	return (
 		<View style={styles.background}>
 			<View style={styles.topBar}>
+				<TouchableOpacity style={styles.counterButton} onPress={() => {
+					if (timeScaleFactor2>1){
+						timeScaleFactor2--;
+						// setReload(true);
+					}
+				}}>
+					<Text style={styles.counterText}>
+						-
+					</Text>
+				</TouchableOpacity>
+
+				<Text style={styles.fixedDateDisplayText}>
+					{"zoom: " + timeScaleFactor2.toString()}
+				</Text>
+
+				<TouchableOpacity style={styles.counterButton} onPress={() => {
+					timeScaleFactor2++;
+					// setReload(true);
+				}}>
+					<Text style={styles.counterText}>
+						+
+					</Text>
+				</TouchableOpacity>
 				<View style={styles.noteBar}>
 					<Text style={styles.noteText}>
 						note
@@ -264,10 +296,14 @@ const ToDoScreen = ({ scrollValue, tasks }) => {
 	// fetchData2 (setTasks, setSync);
 	// updateData(modified, setModified, sync, tasks);
 
+	// scrollValue
+
+	const windowWidth = Dimensions.get('window').width;
+
 	return (
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
-				<View style={[styles.scrollingList,{left: scrollValue,}]}>
+				<View style={[styles.scrollingList,{left: windowWidth*0.5 + scrollValue,}]}>
 					{
 						tasks.map((e, i) =>
 							<View key={i}>
@@ -301,7 +337,6 @@ const ToDoScreen = ({ scrollValue, tasks }) => {
 
 
 const ToDoListItem = ({taskId, task}) => {
-	let timeScaleFactor2 = 10
 	let duration  = task.duration  * timeScaleFactor2;
 	let startTime = task.startTime * timeScaleFactor2;
 	// 1. align it so that the first task is at the left of the screen
