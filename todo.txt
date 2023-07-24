@@ -1,3 +1,6 @@
+
+		// 	position: 'absolute', is the culprit for mobile compatibility
+
 make the agenda scroll through days and display dates
     V make the agenda display "planning" instead of "agenda" (use the app to update the database in preparation for this change)
     V make the flatlist-display day indicator component
