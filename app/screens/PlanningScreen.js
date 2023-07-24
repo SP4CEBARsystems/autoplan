@@ -771,19 +771,24 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 
 	return (
 		<View
-			style={{
-				position: 'absolute',
-				height: task.duration * timeScaleFactor,
-				top: task.startTime * timeScaleFactor, 
-				bottom: 0,
-				left: 100, right: focused == taskId ? 50 : 0, 
-				backgroundColor  : task.type == "break" ? "#2f2" : "#22f",
-				borderColor      : "#222",
-				// opacity: .5,
-				borderWidth: focused == taskId ? 10 : 5,
-				zIndex: focused == taskId ? 2 : 1
-				// zIndex: 1
-			}}
+			style={[
+				{
+					position: 'absolute',
+					height: task.duration * timeScaleFactor,
+					// top: task.startTime * timeScaleFactor, 
+					top: 0, 
+					bottom: 0,
+					left: 100, right: focused == taskId ? 50 : 0, 
+					backgroundColor  : task.type == "break" ? "#2f2" : "#22f",
+					borderColor      : "#222",
+					// opacity: .5,
+					borderWidth: focused == taskId ? 10 : 5,
+					zIndex: focused == taskId ? 2 : 1
+					// zIndex: 1
+				}, {
+					transform: [{translateY: task.startTime * timeScaleFactor}]
+				}
+			]}
 		>
 			<View style={styles.scrollBlock}>
 				<View style={styles.scrollItem}>
