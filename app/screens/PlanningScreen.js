@@ -245,6 +245,7 @@ let scrollOffsetY = 0;
 let scrollOffsetYLoaded = 0;
 let focused = 0;
 
+const minutesADay = 1440;
 const millisecondsInDay = 86400000;
 const millisecondsToDay = 1/millisecondsInDay;
 const millisecondsToMinutes = 1/60000;
@@ -549,13 +550,25 @@ const ToDoScreen = ({ navigation }) => {
 					// 	})
 					// }
 
+					//terrible workaround for the unloading issues but it solves it at least (default is {10})
+					// maxToRenderPerBatch = {500}
+					//nvm a better workaround has been found
+					// windowSize = {26}
+					windowSize = {260}
+					// initialNumToRender = {100}
+
+
 					//wait... I can add a header bar
-					ListHeaderComponent={() => <DateAndTimeItem task={{
-						name: "TestDay",
-						type: "date",
-						startTime: 0,
-						duration: 0
-					}} />}
+                	// stickyHeaderIndices={[0]}
+					//ListFooterComponent
+					//ListHeaderComponent
+					ListFooterComponent={() => <DateAndTimeItem/>}
+					contentContainerStyle={{ 
+						minHeight: minutesADay * timeScaleFactor ,
+						flexGrow: 1, borderWidth: 1, borderColor: 'transparent'
+						//the border makes android render all, but the content makes it stop
+						//try to zoom out
+					}}
 
 					
 
@@ -967,17 +980,22 @@ const ToDoListItem2 = (task) => {
 	let duration  = task.duration;
 	let startTime = task.startTime;
 	return (
-		<View style={{
-			position: 'absolute',
-			height: duration * timeScaleFactor,
-			top: startTime * timeScaleFactor, 
-			bottom: 0,
-			left: 100, right: 0, 
-			backgroundColor  : "#111",
-			borderColor      : "#222",
-			opacity: .5,
-			borderWidth: 5,
-		}}>
+		<View style={[
+			{
+				position: 'absolute',
+				height: duration * timeScaleFactor,
+				// top: startTime * timeScaleFactor, 
+				top: 0,
+				bottom: 0,
+				left: 100, right: 0, 
+				backgroundColor  : "#111",
+				borderColor      : "#222",
+				opacity: .5,
+				borderWidth: 5,
+			}, {
+				transform: [{translateY: task.startTime * timeScaleFactor}]
+			}
+		]}>
 			<View style={styles.scrollBlock}>
 				<View style={styles.scrollItem2}>
 					<Text style={styles.scrollText}>
@@ -994,16 +1012,21 @@ const breakItem = (task) => {
 	let duration  = task.duration;
 	let startTime = task.startTime;
 	return (
-		<View style={{
-			position: 'absolute',
-			height: duration * timeScaleFactor,
-			top: startTime * timeScaleFactor, 
-			bottom: 0,
-			left: 100, right: 0, 
-			backgroundColor  : "#070",
-			borderColor      : "#050",
-			borderWidth: 5,
-		}}>
+		<View style={[
+			{
+				position: 'absolute',
+				height: duration * timeScaleFactor,
+				// top: startTime * timeScaleFactor, 
+				top: 0,
+				bottom: 0,
+				left: 100, right: 0, 
+				backgroundColor  : "#070",
+				borderColor      : "#050",
+				borderWidth: 5,
+			}, {
+				transform: [{translateY: task.startTime * timeScaleFactor}]
+			}
+		]}>
 			<View style={styles.scrollBlock}>
 				<View style={styles.scrollItem2}>
 					<Text style={styles.scrollText}>
@@ -1015,23 +1038,22 @@ const breakItem = (task) => {
 	);
 }
 
-const DateAndTimeItem = (task) => {
+const DateAndTimeItem = () => {
 	//55 is the value I found that scales this close enough to the agenda bars 
 	// const indicatorScale = 55 * timeScaleFactor;
-	console.log("task 2", task);
-	let duration  = task.duration;
-	let startTime = task.startTime;
+	// console.log("task 2", task);
 	const timeIndicators = [];
 	for (let i=0; i<=24; i++){
 		timeIndicators.push(i);
 	}
 	return (
 		<View style={{
-			position: 'absolute',
-			height: 0,
-			top: 0, 
-			bottom: 0,
-			left: 0, right: 0, 
+			flex: 0,
+			// position: 'absolute',
+			height: minutesADay * timeScaleFactor,
+			// top: 0, 
+			// bottom: 0,
+			// left: 0, right: 0, 
 			width: 100,
 			// backgroundColor  : "#CCC",
 			// borderColor      : "#AAA",
@@ -1727,7 +1749,8 @@ const styles = StyleSheet.create({
 		// height: 50,
 		backgroundColor: "#888",
 		flexDirection:"row",
-		width: "100%"
+		width: "100%",
+		height: "10%"
 	},
 	fixedDateDisplayText: {
 		fontSize: 40,
