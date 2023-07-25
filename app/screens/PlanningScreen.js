@@ -551,12 +551,11 @@ const ToDoScreen = ({ navigation }) => {
 					// }
 
 					//terrible workaround for the unloading issues but it solves it at least (default is {10})
-					// maxToRenderPerBatch = {500}
+					maxToRenderPerBatch = {500}
 					//nvm a better workaround has been found
 					// windowSize = {26}
 					windowSize = {260}
 					// initialNumToRender = {100}
-
 
 					//wait... I can add a header bar
                 	// stickyHeaderIndices={[0]}
@@ -564,11 +563,38 @@ const ToDoScreen = ({ navigation }) => {
 					//ListHeaderComponent
 					ListFooterComponent={() => <DateAndTimeItem/>}
 					contentContainerStyle={{ 
-						minHeight: minutesADay * timeScaleFactor ,
+						// minHeight: minutesADay * timeScaleFactor,
 						flexGrow: 1, borderWidth: 1, borderColor: 'transparent'
 						//the border makes android render all, but the content makes it stop
 						//try to zoom out
 					}}
+					// columnWrapperStyle={{
+					// 	// minHeight: minutesADay * timeScaleFactor,
+					// 	flexGrow: 1, borderWidth: 1, borderColor: 'transparent'
+					// 	//the border makes android render all, but the content makes it stop
+					// 	//try to zoom out
+					// }}
+					// contentContainerStyle={{ flexGrow: 1, borderWidth: 1, borderColor: 'transparent' }}
+					stickyHeaderIndices={[0]}
+					ListHeaderComponent={
+						1 && (
+							<View
+								style={{
+									position: "absolute",
+									backgroundColor: "transparent",
+									// backgroundColor: "#e0e0e0",
+
+									height: "100%",
+									width: "100%",
+								}}
+								// animate={{
+								// 	backgroundColor: "#e0e0e0",
+								// 	width: dimensions?.[index]?.width || 0,
+								// 	left: snaps?.[index] || 0,
+								// }}
+							/>
+						)
+					}
 
 					
 
@@ -788,6 +814,7 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 				{
 					position: 'absolute',
 					height: task.duration * timeScaleFactor,
+					width: "100%",
 					// top: task.startTime * timeScaleFactor, 
 					top: 0, 
 					bottom: 0,
@@ -984,6 +1011,7 @@ const ToDoListItem2 = (task) => {
 			{
 				position: 'absolute',
 				height: duration * timeScaleFactor,
+				width: "100%",
 				// top: startTime * timeScaleFactor, 
 				top: 0,
 				bottom: 0,
@@ -1016,6 +1044,7 @@ const breakItem = (task) => {
 			{
 				position: 'absolute',
 				height: duration * timeScaleFactor,
+				width: "100%",
 				// top: startTime * timeScaleFactor, 
 				top: 0,
 				bottom: 0,
