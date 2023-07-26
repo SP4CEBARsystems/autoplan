@@ -167,7 +167,6 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync, s
 //regular expression for dots
 const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, setSelected}) => {
 	let isSelected = (selected == taskId)
-	console.log("selected22", selected, taskId, isSelected)
 	return (
 		<View style={styles.scrollItem}>
 			<View style={styles.scrollBlock}>
@@ -210,11 +209,11 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 			</View>
 
 			{!isSelected ? null : (<>
-				<View style={styles.scrollItem}>
-					<Text style={styles.scrollText}>
-						Time Required
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollText2}>
+						Time Required:
 					</Text>
-					<TextInput style={styles.scrollText} 
+					<TextInput style={styles.scrollText2} 
 						value={task.requiredTime.toString()}
 						type="number"
 						name="requiredTime"
@@ -227,12 +226,15 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 							// setModified(true);
 						}}
 					/>
-				</View>
-				<View style={styles.scrollItem}>
-					<Text style={styles.scrollText}>
-						Deadline
+					<Text style={styles.scrollText2}>
+						Minutes
 					</Text>
-					<TextInput style={styles.scrollText} 
+				</View>
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollText2}>
+						Deadline:
+					</Text>
+					<TextInput style={styles.scrollText2} 
 						value={task.deadline.toString()}
 						type="number"
 						name="deadline"
@@ -245,12 +247,14 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 							// setModified(true);
 						}}
 					/>
-				</View>
-				<View style={styles.scrollItem}>
-					<Text style={styles.scrollText}>
-						Priority
+					<Text style={styles.scrollText2}>
 					</Text>
-					<TextInput style={styles.scrollText} 
+				</View>
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollText2}>
+						Priority:
+					</Text>
+					<TextInput style={styles.scrollText2} 
 						value={task.priority.toString()}
 						type="number"
 						name="priority"
@@ -263,6 +267,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 							// setModified(true);
 						}}
 					/>
+					<Text style={styles.scrollText2}>
+						%
+					</Text>
 				</View>
 			</>)}
 			{/* <View style={styles.scrollItem}>
@@ -392,7 +399,22 @@ const styles = StyleSheet.create({
 		marginTop: 4,
 		marginBottom: 4,
 	},
+	scrollItem2: {
+		flexDirection: "row",
+		flex: 1,
+		backgroundColor: "#444",
+		marginLeft: 1,
+		marginRight: 1,
+		marginTop: 4,
+		marginBottom: 4,
+	},
 	scrollText: {
+		fontSize: 20,
+		color: "#fff",
+		textAlign: "center",
+	},
+	scrollText2: {
+		flex: 1,
 		fontSize: 20,
 		color: "#fff",
 		textAlign: "center",
