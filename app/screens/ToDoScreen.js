@@ -122,11 +122,11 @@ const HeaderBar = () => {
 					Priority
 				</Text>
 			</View>
-			<View style={styles.headerBlock}>
+			{/* <View style={styles.headerBlock}>
 				<Text style={styles.headerText}>
 					Like
 				</Text>
-			</View>
+			</View> */}
 			<View style={styles.headerBlock}>
 				<Text style={styles.headerText}>
 					Repeat Settings
@@ -163,7 +163,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 		<View style={styles.scrollBlock}>
 			<View style={styles.scrollItem}>
 				<TextInput style={styles.scrollText} 
-					value={task.name}
+					value={task.name.toString()}
                     type="text"
                     name="name"
                     placeholder= "task name"
@@ -182,12 +182,13 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 			</View>
 			<View style={styles.scrollItem}>
 				<TextInput style={styles.scrollText} 
-					value={task.requiredTime}
+					value={task.requiredTime.toString()}
                     type="number"
                     name="requiredTime"
                     placeholder= "required time"
                     onChange={(e) => {
-						tasks[taskId].requiredTime = e.target.value.replace(/[^0-9||.]/g,"");
+						tasks[taskId].requiredTime = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+						//e.target.value.replace(/[^0-9||.]/g,"");
 						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						// setTasks   (tasks);
 						// setModified(true);
@@ -196,12 +197,13 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 			</View>
 			<View style={styles.scrollItem}>
 				<TextInput style={styles.scrollText} 
-					value={task.deadline}
+					value={task.deadline.toString()}
                     type="number"
                     name="deadline"
                     placeholder= "deadline"
                     onChange={(e) => {
-						tasks[taskId].deadline = e.target.value.replace(/[^0-9||.]/g,"");
+						tasks[taskId].deadline = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+						//e.target.value.replace(/[^0-9||.]/g,"");
 						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						// setTasks   (tasks);
 						// setModified(true);
@@ -210,32 +212,34 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 			</View>
 			<View style={styles.scrollItem}>
 				<TextInput style={styles.scrollText} 
-					value={task.priority}
+					value={task.priority.toString()}
                     type="number"
                     name="priority"
                     placeholder= "priority"
                     onChange={(e) => {
-						tasks[taskId].priority = e.target.value.replace(/[^0-9||.]/g,"");
+						tasks[taskId].priority = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+						//.replace(/[^0-9||.]/g,"")
 						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						// setTasks   (tasks);
 						// setModified(true);
 					}}
 				/>
 			</View>
-			<View style={styles.scrollItem}>
+			{/* <View style={styles.scrollItem}>
 				<TextInput style={styles.scrollText} 
-					value={task.like}
+					value={task.like.toString()}
                     type="number"
                     name="like"
                     placeholder= "number"
                     onChange={(e) => {
-						tasks[taskId].like = e.target.value.replace(/[^0-9||.]/g,"");
+						tasks[taskId].like = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+						//e.target.value.replace(/[^0-9||.]/g,"");
 						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						// setTasks   (tasks);
 						// setModified(true);
 					}}
 				/>
-			</View>
+			</View> */}
 			<View style={styles.scrollItem}>
 				<Text style={styles.scrollText}>
 					Λ

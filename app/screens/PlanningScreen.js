@@ -577,23 +577,21 @@ const ToDoScreen = ({ navigation }) => {
 					// contentContainerStyle={{ flexGrow: 1, borderWidth: 1, borderColor: 'transparent' }}
 					stickyHeaderIndices={[0]}
 					ListHeaderComponent={
-						1 && (
-							<View
-								style={{
-									position: "absolute",
-									backgroundColor: "transparent",
-									// backgroundColor: "#e0e0e0",
+						<View
+							style={{
+								position: "absolute",
+								backgroundColor: "transparent",
+								// backgroundColor: "#e0e0e0",
 
-									height: "100%",
-									width: "100%",
-								}}
-								// animate={{
-								// 	backgroundColor: "#e0e0e0",
-								// 	width: dimensions?.[index]?.width || 0,
-								// 	left: snaps?.[index] || 0,
-								// }}
-							/>
-						)
+								height: "100%",
+								width: "100%",
+							}}
+							// animate={{
+							// 	backgroundColor: "#e0e0e0",
+							// 	width: dimensions?.[index]?.width || 0,
+							// 	left: snaps?.[index] || 0,
+							// }}
+						/>
 					}
 
 					
