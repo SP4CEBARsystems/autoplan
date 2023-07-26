@@ -308,9 +308,9 @@ const reRenderTasks = (setTasks, tasks, setModified) => {
 }
 
 const calculateUrgency = (task) => {
-	// return -1;
-	const timePressure = task.deadline ? task.requiredTime / task.deadline : -1
-	const urgency = task.priority * timePressure
+	const timePressure = Math.min(task.deadline ? task.requiredTime / task.deadline : -1, 1)
+	// const timePressure = task.deadline ? task.requiredTime / task.deadline : -1
+	const urgency = task.priority*0.01 * timePressure
 	return urgency;
 }
 
