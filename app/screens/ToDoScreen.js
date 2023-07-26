@@ -8,8 +8,11 @@ import { auth, firestore } from "../../firebase";
 
 export let todo_tasks
 
+// let selected = -1
+
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
+	const [selected, setSelected] = useState(-1);
 	const [modified, setModified] = useState(false);
 	const [sync    , setSync    ] = useState(false);
 	const [tasks   , setTasks   ] = useState([
@@ -55,6 +58,8 @@ const ToDoScreen = ({ navigation }) => {
 						setModified = {setModified} 
 						sync        = {sync} 
 						setSync     = {setSync} 
+						selected    = {selected}
+						setSelected = {setSelected}
 					/>
 				</ScrollView>
 				<View style={styles.plusParent}>
@@ -141,7 +146,7 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) => {
+const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync, selected, setSelected}) => {
 	fetchData (setTasks, setSync);
 	updateData(modified, setModified, sync, tasks);
 	const n = tasks.length;
@@ -153,78 +158,104 @@ const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync}) 
 				task        = {tasks[i]   }
 				setModified = {setModified}
 				setTasks    = {setTasks   }
+				selected    = {selected}
+				setSelected = {setSelected}
 			/>
 		</View>
 	);
 }
 //regular expression for dots
-const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
+const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, setSelected}) => {
+	let isSelected = (selected == taskId)
+	console.log("selected22", selected, taskId, isSelected)
 	return (
-		<View style={styles.scrollBlock}>
-			<View style={styles.scrollItem}>
-				<TextInput style={styles.scrollText} 
-					value={task.name.toString()}
-                    type="text"
-                    name="name"
-                    placeholder= "task name"
-                    onChange={(e) => {
-						tasks[taskId].name = e.target.value;
-						reRenderTasks(setTasks, tasks, setModified);
-						// setTasks   (tasks);
-						// setModified(true);
-					}}
-				/>
+		<View style={styles.scrollItem}>
+			<View style={styles.scrollBlock}>
+				<View style={styles.scrollItem}>
+					<TextInput style={styles.scrollText} 
+						value={task.name.toString()}
+						type="text"
+						name="name"
+						placeholder= "task name"
+						onChange={(e) => {
+							tasks[taskId].name = e.target.value;
+							reRenderTasks(setTasks, tasks, setModified);
+							// setTasks   (tasks);
+							// setModified(true);
+						}}
+					/>
+				</View>
+				<View style={styles.scrollItem}>
+					<Text style={styles.scrollText}>
+						{task.urgency}
+					</Text>
+				</View>
+				<TouchableOpacity style={styles.scrollItem} onPress={() => {
+					// selected = selected != taskId ? taskId : -1
+					// selected = taskId
+					// setSelected(taskId);
+					setSelected(isSelected ? -1 : taskId);
+					// selected == taskId ? "V" : "Λ"
+				}}>
+					<Text style={styles.scrollText}>
+						{isSelected ? "V" : "Λ"}
+					</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={styles.delete} onPress={() => {
+					tasks.splice(taskId, 1);
+					reRenderTasks(setTasks, tasks, setModified);
+					// setTasks   (tasks);
+					// setModified(true);
+				}}/>
 			</View>
-			<View style={styles.scrollItem}>
-				<Text style={styles.scrollText}>
-					{task.urgency}
-				</Text>
-			</View>
-			<View style={styles.scrollItem}>
-				<TextInput style={styles.scrollText} 
-					value={task.requiredTime.toString()}
-                    type="number"
-                    name="requiredTime"
-                    placeholder= "required time"
-                    onChange={(e) => {
-						tasks[taskId].requiredTime = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
-						//e.target.value.replace(/[^0-9||.]/g,"");
-						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
-						// setTasks   (tasks);
-						// setModified(true);
-					}}
-				/>
-			</View>
-			<View style={styles.scrollItem}>
-				<TextInput style={styles.scrollText} 
-					value={task.deadline.toString()}
-                    type="number"
-                    name="deadline"
-                    placeholder= "deadline"
-                    onChange={(e) => {
-						tasks[taskId].deadline = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
-						//e.target.value.replace(/[^0-9||.]/g,"");
-						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
-						// setTasks   (tasks);
-						// setModified(true);
-					}}
-				/>
-			</View>
-			<View style={styles.scrollItem}>
-				<TextInput style={styles.scrollText} 
-					value={task.priority.toString()}
-                    type="number"
-                    name="priority"
-                    placeholder= "priority"
-                    onChange={(e) => {
-						tasks[taskId].priority = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
-						//.replace(/[^0-9||.]/g,"")
-						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
-						// setTasks   (tasks);
-						// setModified(true);
-					}}
-				/>
-			</View>
+
+			{!isSelected ? null : (<>
+				<View style={styles.scrollItem}>
+					<TextInput style={styles.scrollText} 
+						value={task.requiredTime.toString()}
+						type="number"
+						name="requiredTime"
+						placeholder= "required time"
+						onChange={(e) => {
+							tasks[taskId].requiredTime = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+							//e.target.value.replace(/[^0-9||.]/g,"");
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+							// setTasks   (tasks);
+							// setModified(true);
+						}}
+					/>
+				</View>
+				<View style={styles.scrollItem}>
+					<TextInput style={styles.scrollText} 
+						value={task.deadline.toString()}
+						type="number"
+						name="deadline"
+						placeholder= "deadline"
+						onChange={(e) => {
+							tasks[taskId].deadline = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+							//e.target.value.replace(/[^0-9||.]/g,"");
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+							// setTasks   (tasks);
+							// setModified(true);
+						}}
+					/>
+				</View>
+				<View style={styles.scrollItem}>
+					<TextInput style={styles.scrollText} 
+						value={task.priority.toString()}
+						type="number"
+						name="priority"
+						placeholder= "priority"
+						onChange={(e) => {
+							tasks[taskId].priority = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+							//.replace(/[^0-9||.]/g,"")
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+							// setTasks   (tasks);
+							// setModified(true);
+						}}
+					/>
+				</View>
+			</>)}
 			{/* <View style={styles.scrollItem}>
 				<TextInput style={styles.scrollText} 
 					value={task.like.toString()}
@@ -240,17 +271,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified}) => {
 					}}
 				/>
 			</View> */}
-			<View style={styles.scrollItem}>
-				<Text style={styles.scrollText}>
-					Λ
-				</Text>
-			</View>
-			<TouchableOpacity style={styles.delete} onPress={() => {
-				tasks.splice(taskId, 1);
-				reRenderTasks(setTasks, tasks, setModified);
-				// setTasks   (tasks);
-				// setModified(true);
-			}}/>
+			
 		</View>
 	);
 }
