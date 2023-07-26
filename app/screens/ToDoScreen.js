@@ -112,7 +112,7 @@ const HeaderBar = () => {
 					Urgency
 				</Text>
 			</View>
-			<View style={styles.headerBlock}>
+			{/* <View style={styles.headerBlock}>
 				<Text style={styles.headerText}>
 					Time Required
 				</Text>
@@ -126,7 +126,7 @@ const HeaderBar = () => {
 				<Text style={styles.headerText}>
 					Priority
 				</Text>
-			</View>
+			</View> */}
 			{/* <View style={styles.headerBlock}>
 				<Text style={styles.headerText}>
 					Like
@@ -134,7 +134,7 @@ const HeaderBar = () => {
 			</View> */}
 			<View style={styles.headerBlock}>
 				<Text style={styles.headerText}>
-					Repeat Settings
+					Settings
 				</Text>
 			</View>
 			<View style={styles.headerBlock}>
@@ -187,7 +187,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 				</View>
 				<View style={styles.scrollItem}>
 					<Text style={styles.scrollText}>
-						{task.urgency}
+						{Math.floor(task.urgency*100)}
 					</Text>
 				</View>
 				<TouchableOpacity style={styles.scrollItem} onPress={() => {
@@ -211,6 +211,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 
 			{!isSelected ? null : (<>
 				<View style={styles.scrollItem}>
+					<Text style={styles.scrollText}>
+						Time Required
+					</Text>
 					<TextInput style={styles.scrollText} 
 						value={task.requiredTime.toString()}
 						type="number"
@@ -226,6 +229,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 					/>
 				</View>
 				<View style={styles.scrollItem}>
+					<Text style={styles.scrollText}>
+						Deadline
+					</Text>
 					<TextInput style={styles.scrollText} 
 						value={task.deadline.toString()}
 						type="number"
@@ -241,6 +247,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 					/>
 				</View>
 				<View style={styles.scrollItem}>
+					<Text style={styles.scrollText}>
+						Priority
+					</Text>
 					<TextInput style={styles.scrollText} 
 						value={task.priority.toString()}
 						type="number"
