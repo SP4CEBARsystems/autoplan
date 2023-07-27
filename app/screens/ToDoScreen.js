@@ -10,76 +10,121 @@ export let todo_tasks
 
 // let selected = -1
 
+let globalTasks = [
+	{
+		name          : "loading",
+		requiredTime  : 0,
+		deadline      : 0,
+		priority      : 0,
+		like          : 0,
+		urgency       : 0,
+		minLength     : 0,
+		maxLength     : 0,
+		repeatTimespan: "loading",
+		repeatInterval: 0,
+		repeatOffset  : 0,
+		repeatOffsets : []
+	},{
+		name          : "loading",
+		requiredTime  : 0,
+		deadline      : 0,
+		priority      : 0,
+		like          : 0,
+		urgency       : 0,
+		minLength     : 0,
+		maxLength     : 0,
+		repeatTimespan: "loading",
+		repeatInterval: 0,
+		repeatOffset  : 0,
+		repeatOffsets : []
+	}
+]
+
+// let nextElementKey = 0
+const minutesADay = 1440;
+
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
 	const [selected, setSelected] = useState(-1);
 	const [modified, setModified] = useState(false);
 	const [sync    , setSync    ] = useState(false);
-	const [tasks   , setTasks   ] = useState([
-		{
-			name          : "loading",
-			requiredTime  : 0,
-			deadline      : 0,
-			priority      : 0,
-			like          : 0,
-			urgency       : 0,
-			minLength     : 0,
-			maxLength     : 0,
-			repeatTimespan: "loading",
-			repeatInterval: 0,
-			repeatOffset  : 0,
-			repeatOffsets : []
-		},{
-			name          : "loading",
-			requiredTime  : 0,
-			deadline      : 0,
-			priority      : 0,
-			like          : 0,
-			urgency       : 0,
-			minLength     : 0,
-			maxLength     : 0,
-			repeatTimespan: "loading",
-			repeatInterval: 0,
-			repeatOffset  : 0,
-			repeatOffsets : []
-		}
-	]);
+	// const [tasks   , setTasks   ] = useState([
+	// 	{
+	// 		name          : "loading",
+	// 		requiredTime  : 0,
+	// 		deadline      : 0,
+	// 		priority      : 0,
+	// 		like          : 0,
+	// 		urgency       : 0,
+	// 		minLength     : 0,
+	// 		maxLength     : 0,
+	// 		repeatTimespan: "loading",
+	// 		repeatInterval: 0,
+	// 		repeatOffset  : 0,
+	// 		repeatOffsets : []
+	// 	},{
+	// 		name          : "loading",
+	// 		requiredTime  : 0,
+	// 		deadline      : 0,
+	// 		priority      : 0,
+	// 		like          : 0,
+	// 		urgency       : 0,
+	// 		minLength     : 0,
+	// 		maxLength     : 0,
+	// 		repeatTimespan: "loading",
+	// 		repeatInterval: 0,
+	// 		repeatOffset  : 0,
+	// 		repeatOffsets : []
+	// 	}
+	// ]);
+
+
+	function setTasks (tasks) {
+		globalTasks = tasks
+	}
+	let tasks = globalTasks
+
 	todo_tasks = tasks;
+
+	// console.log(tasks)
+	fetchData (setTasks, setSync);
+	updateData(modified, setModified, sync, tasks);
 
 	return (
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
-				<HeaderBar/>
-				<ScrollView style={styles.scrollingList}>
-					<ToDoListItems 
-						tasks       = {tasks} 
-						setTasks    = {setTasks} 
-						modified    = {modified} 
-						setModified = {setModified} 
-						sync        = {sync} 
-						setSync     = {setSync} 
-						selected    = {selected}
-						setSelected = {setSelected}
-					/>
-				</ScrollView>
+				<HeaderBar
+					tasks       = {tasks}
+					setTasks    = {setTasks}
+					setModified = {setModified}
+				/>
+				<ToDoListItems 
+					tasks       = {tasks} 
+					setTasks    = {setTasks} 
+					setModified = {setModified} 
+					selected    = {selected}
+					setSelected = {setSelected}
+				/>
 				<View style={styles.plusParent}>
 					<TouchableOpacity style={styles.plus} onPress={() => {
 						tasks.push({
 							name          : "new Task",
 							requiredTime  : 120,
 							deadline      : 7,
-							priority      : 0.5,
-							like          : 0.5,
+							priority      : 50,
+							like          : 50,
 							urgency       : 0,
 							minLength     : 0,
 							maxLength     : 120,
 							repeatTimespan: "days",
 							repeatInterval: 0,
 							repeatOffset  : 0,
-							repeatOffsets : []
+							repeatOffsets : [],
+							// id            : nextElementKey,
 						});
 						const l = tasks.length-1;
 						reRenderTasksAndUrgency(setTasks, tasks, tasks[l], l, setModified);
+						// nextElementKey ++;
 						// reRenderTasks(setTasks, tasks, setModified);
 						// setTasks   (tasks);
 						// setModified(true);
@@ -99,39 +144,35 @@ const ToDoScreen = ({ navigation }) => {
 	);
 }
 
-const HeaderBar = () => {
+const HeaderBar = ({tasks, setTasks, setModified}) => {
 	return(
 		<View style={styles.headerBar}>
-			<View style={styles.headerBlock}>
+
+			<View style={styles.headerBlock} 
+			// onPress={() => {
+			// 	// tasks.sort((a, b) => b.name - a.name)
+			// 	tasks.sort((a, b) => String(a[0]).localeCompare(b[0]))
+			// 	setTasks   (tasks)
+			// 	setModified(true)
+			// }}
+			>
 				<Text style={styles.headerText}>
 					Name
 				</Text>
 			</View>
-			<View style={styles.headerBlock}>
+
+			<TouchableOpacity style={styles.headerBlock} onPress={() => {
+				tasks.sort((a, b) => b.urgency - a.urgency)
+				setTasks   (tasks)
+				setModified(true)
+			}}>
 				<Text style={styles.headerText}>
-					Urgency
+					Urgency{"\n"}
+					{"\n"}
+					click to sort
 				</Text>
-			</View>
-			{/* <View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Time Required
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Deadline
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Priority
-				</Text>
-			</View> */}
-			{/* <View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Like
-				</Text>
-			</View> */}
+			</TouchableOpacity>
+
 			<View style={styles.headerBlock}>
 				<Text style={styles.headerText}>
 					Settings
@@ -146,25 +187,26 @@ const HeaderBar = () => {
 	);
 }
 
-const ToDoListItems = ({tasks, setTasks, modified, setModified, sync, setSync, selected, setSelected}) => {
-	fetchData (setTasks, setSync);
-	updateData(modified, setModified, sync, tasks);
-	const n = tasks.length;
-	return [...Array(n)].map((e, i) =>
-		<View key={i}>
-			<ToDoListItem 
-				tasks       = {tasks      }
-				taskId      = {i          }
-				task        = {tasks[i]   }
-				setModified = {setModified}
-				setTasks    = {setTasks   }
-				selected    = {selected}
-				setSelected = {setSelected}
-			/>
-		</View>
-	);
+const ToDoListItems = ({tasks, setTasks, setModified, selected, setSelected}) => {
+	//e.id
+	return (
+		<ScrollView style={styles.scrollingList}>
+			{tasks.map((e, i) => <View key={i}>
+				<ToDoListItem 
+					tasks       = {tasks      }
+					taskId      = {i          }
+					task        = {e          }
+					setModified = {setModified}
+					setTasks    = {setTasks   }
+					selected    = {selected   }
+					setSelected = {setSelected}
+				/>
+			</View>)}
+		</ScrollView>
+	)
 }
-//regular expression for dots
+
+
 const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, setSelected}) => {
 	let isSelected = (selected == taskId)
 	return (
@@ -248,6 +290,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						}}
 					/>
 					<Text style={styles.scrollText2}>
+						days left
 					</Text>
 				</View>
 				<View style={styles.scrollItem2}>
@@ -308,9 +351,9 @@ const reRenderTasks = (setTasks, tasks, setModified) => {
 }
 
 const calculateUrgency = (task) => {
-	const timePressure = Math.min(task.deadline ? task.requiredTime / task.deadline : -1, 1)
+	const timePressure = task.deadline ? 100 * task.requiredTime / (task.deadline * minutesADay) : 1
 	// const timePressure = task.deadline ? task.requiredTime / task.deadline : -1
-	const urgency = task.priority*0.01 * timePressure
+	const urgency = task.priority * 0.01 * Math.min(timePressure, 1)
 	return urgency;
 }
 
@@ -320,6 +363,7 @@ function fetchData (setTasks, setSync) {
 		.then((doc) => {
 			setTasks(doc.data().tasks);
 			setSync(true);
+			// nextElementKey = tasks.length
 		})
 		.catch((e) => {
 			console.log(e);
@@ -333,7 +377,6 @@ function updateData (modified, setModified, sync, tasks) {
 	if(modified){
 		setModified(false);
 		if(sync){
-			tasks.sort((a, b) => b.urgency - a.urgency);
 			updateDoc(doc(firestore, "ToDo", "activeTasks"), {tasks: tasks})
 			.catch((e) => {
 				console.log(e)
