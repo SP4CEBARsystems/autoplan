@@ -148,11 +148,14 @@ function initInterval (tasks, setTimeV, setStr, setBreakTimer, setEventTimer, se
 		let milliseconds = Date.now();
 		let timeMilliseconds = milliseconds % milliSecondsPerDay
 		let jsDate = new Date(milliseconds);
-		setTimeV(Math.round(jsDate.getTime() % milliSecondsPerDay));
+		setTimeV(Math.round(timeMilliseconds));
 		setStr(jsDate.getHours().toString()+":"+jsDate.getMinutes().toString()+":"+jsDate.getSeconds().toString());
-		generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer, setEventName)
+		generateTimers(tasks, timeMilliseconds + timeOffset, setBreakTimer, setEventTimer, setEventName)
 	}, 1000);
 }
+
+const millisecondsPerMinute = 60000
+let timeOffset = 120 * millisecondsPerMinute
 
 const FocusScreen = ({ navigation }) => {
 	const [str         , setStr         ] = useState("");
@@ -183,8 +186,9 @@ const FocusScreen = ({ navigation }) => {
 	}, []);
 
 	// let scrollValue = -(timeV - 34459300)*0.001;
-	let scrollValue = -(timeV)*timeScaleFactor2/60000;
-	console.log(scrollValue);
+	//timeV is in milliseconds
+	let scrollValue = -(timeV + timeOffset)*timeScaleFactor2/millisecondsPerMinute;
+	console.log("scrollValue", scrollValue);
 
 	return (
 		<View style={styles.background}>
