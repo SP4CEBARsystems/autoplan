@@ -43,6 +43,8 @@ let globalTasks = [
 // let nextElementKey = 0
 const minutesADay = 1440;
 
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
 	const [selected, setSelected] = useState(-1);
@@ -110,7 +112,7 @@ const ToDoScreen = ({ navigation }) => {
 						tasks.push({
 							name          : "new Task",
 							requiredTime  : 120,
-							deadline      : 7,
+							deadline      : Date.now(),
 							priority      : 50,
 							like          : 50,
 							urgency       : 0,
@@ -208,7 +210,8 @@ const ToDoListItems = ({tasks, setTasks, setModified, selected, setSelected}) =>
 
 
 const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, setSelected}) => {
-	let isSelected = (selected == taskId)
+	let isSelected = (selected == taskId);
+	let deadline   = new Date(task.deadline);
 	return (
 		<View style={styles.scrollItem}>
 			<View style={styles.scrollBlock}>
@@ -228,7 +231,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 				</View>
 				<View style={styles.scrollItem}>
 					<Text style={styles.scrollText}>
-						{Math.floor(task.urgency*100)}
+						{task.urgency.toFixed(1)}
 					</Text>
 				</View>
 				<TouchableOpacity style={styles.scrollItem} onPress={() => {
@@ -274,15 +277,24 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 				</View>
 				<View style={styles.scrollItem2}>
 					<Text style={styles.scrollText2}>
-						Deadline:
+						Deadline DDMMYYYY:
 					</Text>
 					<TextInput style={styles.scrollText2} 
-						value={task.deadline.toString()}
+						value={deadline.getDate()}
 						type="number"
 						name="deadline"
-						placeholder= "deadline"
+						placeholder= "day"
 						onChange={(e) => {
-							tasks[taskId].deadline = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+							//parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+							//e.target.value + "T00:00:00"
+							// tasks[taskId].deadline = new Date(e.target.value);
+
+							//IN PROGRESS STILL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+							//look up if firebase date matches the shown date
+							maxDaysThisMonth = 31 + 0*deadline.getMonth()
+							deadline.setDate(clamp(e.target.value, 1, maxDaysThisMonth))
+							tasks[taskId].deadline = deadline.getTime();
+							//deadlineDate.getTime()
 							//e.target.value.replace(/[^0-9||.]/g,"");
 							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 							// setTasks   (tasks);
@@ -290,8 +302,80 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						}}
 					/>
 					<Text style={styles.scrollText2}>
-						days left
+						-
 					</Text>
+					<TextInput style={styles.scrollText2} 
+						value={deadline.getMonth()+1}
+						type="number"
+						name="deadline"
+						placeholder= "month"
+						onChange={(e) => {
+							//tasks[taskId].deadline = new Date(e.target.value);
+							deadline.setMonth(clamp(e.target.value, 1, 12)-1);
+							tasks[taskId].deadline = deadline.getTime();
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						}}
+					/>
+					<Text style={styles.scrollText2}>
+						-
+					</Text>
+					<TextInput style={styles.scrollText2} 
+						value={deadline.getFullYear()}
+						type="number"
+						name="deadline"
+						placeholder= "year"
+						onChange={(e) => {
+							//tasks[taskId].deadline = new Date(e.target.value);
+							deadline.setFullYear(e.target.value);
+							tasks[taskId].deadline = deadline.getTime();
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						}}
+					/>
+					<Text style={styles.scrollText2}>
+						_
+					</Text>
+					<TextInput style={styles.scrollText2} 
+						value={deadline.getHours()}
+						type="number"
+						name="deadline"
+						placeholder= "hours"
+						onChange={(e) => {
+							//tasks[taskId].deadline = new Date(e.target.value);
+							deadline.setHours(clamp(e.target.value,0,23));
+							tasks[taskId].deadline = deadline.getTime();
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						}}
+					/>
+					<Text style={styles.scrollText2}>
+						:
+					</Text>
+					<TextInput style={styles.scrollText2} 
+						value={deadline.getMinutes()}
+						type="number"
+						name="deadline"
+						placeholder= "minutes"
+						onChange={(e) => {
+							//tasks[taskId].deadline = new Date(e.target.value);
+							deadline.setMinutes(clamp(e.target.value,0,59));
+							tasks[taskId].deadline = deadline.getTime();
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						}}
+					/>
+					<Text style={styles.scrollText2}>
+						:
+					</Text>
+					<TextInput style={styles.scrollText2} 
+						value={deadline.getSeconds()}
+						type="number"
+						name="deadline"
+						placeholder= "seconds"
+						onChange={(e) => {
+							//tasks[taskId].deadline = new Date(e.target.value);
+							deadline.setSeconds(clamp(e.target.value,0,59));
+							tasks[taskId].deadline = deadline.getTime();
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						}}
+					/>
 				</View>
 				<View style={styles.scrollItem2}>
 					<Text style={styles.scrollText2}>
@@ -351,9 +435,9 @@ const reRenderTasks = (setTasks, tasks, setModified) => {
 }
 
 const calculateUrgency = (task) => {
-	const timePressure = task.deadline ? 100 * task.requiredTime / (task.deadline * minutesADay) : 1
+	const timePressure = task.deadline ? 1 * task.requiredTime / (task.deadline * minutesADay) : 1
 	// const timePressure = task.deadline ? task.requiredTime / task.deadline : -1
-	const urgency = task.priority * 0.01 * Math.min(timePressure, 1)
+	const urgency = 100 * task.priority * 0.01 * Math.min(timePressure, 1)
 	return urgency;
 }
 
@@ -361,7 +445,11 @@ function fetchData (setTasks, setSync) {
 	useEffect(() => {
 		getDoc(doc(firestore, "ToDo", "activeTasks"))
 		.then((doc) => {
-			setTasks(doc.data().tasks);
+			let data = doc.data()
+			// data.forEach(element => {
+			// 	element.deadline = new Date(element.deadline);
+			// });
+			setTasks(data.tasks);
 			setSync(true);
 			// nextElementKey = tasks.length
 		})
@@ -377,7 +465,11 @@ function updateData (modified, setModified, sync, tasks) {
 	if(modified){
 		setModified(false);
 		if(sync){
-			updateDoc(doc(firestore, "ToDo", "activeTasks"), {tasks: tasks})
+			let data = tasks
+			// data.forEach(element => {
+			// 	element.deadline = element.deadline.getTime();
+			// });
+			updateDoc(doc(firestore, "ToDo", "activeTasks"), {tasks: data})
 			.catch((e) => {
 				console.log(e)
 				//throw e;
@@ -461,6 +553,7 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		color: "#fff",
 		textAlign: "center",
+		width: 50,
 	},
 	menuButtons: {
 		height: 100,
