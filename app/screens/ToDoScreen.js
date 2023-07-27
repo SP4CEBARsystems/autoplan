@@ -289,9 +289,15 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 							//e.target.value + "T00:00:00"
 							// tasks[taskId].deadline = new Date(e.target.value);
 
-							//IN PROGRESS STILL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 							//look up if firebase date matches the shown date
-							maxDaysThisMonth = 31 + 0*deadline.getMonth()
+							let month = deadline.getMonth()
+							let year  = deadline.getFullYear()
+							const february = 1
+							const july     = 6
+							const leapYear = 0
+							const maxDaysMonth    = 31
+							const maxDaysFebruary = 29
+							maxDaysThisMonth = month!=february ? maxDaysMonth-(month+(month>july))%2 : maxDaysFebruary-(year%4==leapYear)
 							deadline.setDate(clamp(e.target.value, 1, maxDaysThisMonth))
 							tasks[taskId].deadline = deadline.getTime();
 							//deadlineDate.getTime()
