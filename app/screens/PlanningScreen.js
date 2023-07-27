@@ -842,7 +842,11 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 							setDisplayed   (tasks);
 							setModified(true);
 							// globalAgenda[agendaId].name = e.target.value;
-							agenda[agendaId].name = e.target.value;
+							if (agenda[agendaId]) {
+								agenda[agendaId].name = e.target.value;
+							} else {
+								console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+							}
 							saveData(agenda, sync);
 						}}
 					/>
@@ -863,7 +867,11 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					// setModified(true);
 					setReplan  (true);
 					// globalAgenda[agendaId].startTime += 30;
-					agenda[agendaId].startTime = newValue;
+					if (agenda[agendaId]) {
+						agenda[agendaId].startTime = newValue;
+					} else {
+						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+					}
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
@@ -881,7 +889,11 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 							setDisplayed   (tasks);
 							setReplan  (true);
 							// globalAgenda[agendaId].startTime = e.target.value;
-							agenda[agendaId].startTime = e.target.value;
+							if (agenda[agendaId]) {
+								agenda[agendaId].startTime = e.target.value;
+							} else {
+								console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+							}
 							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 						}}
 					/>
@@ -911,7 +923,11 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					// setModified(true);
 					setReplan  (true);
 					// globalAgenda[agendaId].startTime -= 30;
-					agenda[agendaId].startTime = newValue;
+					if (agenda[agendaId]) {
+						agenda[agendaId].startTime = newValue;
+					} else {
+						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+					}
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
@@ -926,7 +942,11 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					setDisplayed   (tasks);
 					setReplan  (true);
 					// globalAgenda[agendaId].duration += 30;
-					agenda[agendaId].duration = newValue;
+					if (agenda[agendaId]) {
+						agenda[agendaId].duration = newValue;
+					} else {
+						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+					}
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
@@ -946,7 +966,11 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 							// setModified(true);
 							setReplan  (true);
 							// globalAgenda[agendaId].duration = e.target.value;
-							agenda[agendaId].duration = e.target.value;
+							if (agenda[agendaId]) {
+								agenda[agendaId].duration = e.target.value;
+							} else {
+								console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+							}
 							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 						}}
 					/>
@@ -958,7 +982,11 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					setDisplayed   (tasks);
 					setReplan  (true);
 					// globalAgenda[agendaId].duration -= 30;
-					agenda[agendaId].duration = newValue;
+					if (agenda[agendaId]) {
+						agenda[agendaId].duration = newValue;
+					} else {
+						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+					}
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
@@ -974,7 +1002,11 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 					// setAgenda  (agenda);
 					setReplan  (true);
 					// globalAgenda[agendaId].type = taskType;
-					agenda[agendaId].type = taskType;
+					if (agenda[agendaId]) {
+						agenda[agendaId].type = taskType;
+					} else {
+						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+					}
 					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>

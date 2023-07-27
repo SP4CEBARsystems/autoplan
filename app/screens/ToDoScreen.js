@@ -255,14 +255,14 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 
 			{!isSelected ? null : (<>
 				<View style={styles.scrollItem2}>
-					<Text style={styles.scrollText2}>
-						Time Required:
+					<Text style={styles.scrollItemL}>
+						Duration:
 					</Text>
-					<TextInput style={styles.scrollText2} 
+					<TextInput style={styles.scrollItemM} 
 						value={task.requiredTime.toString()}
 						type="number"
 						name="requiredTime"
-						placeholder= "required time"
+						placeholder="required time"
 						onChange={(e) => {
 							tasks[taskId].requiredTime = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
 							//e.target.value.replace(/[^0-9||.]/g,"");
@@ -271,123 +271,16 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 							// setModified(true);
 						}}
 					/>
-					<Text style={styles.scrollText2}>
+					<Text style={styles.scrollItemR}>
 						Minutes
 					</Text>
 				</View>
-				<View style={styles.scrollItem2}>
-					<Text style={styles.scrollText2}>
-						Deadline DDMMYYYY:
-					</Text>
-					<TextInput style={styles.scrollText2} 
-						value={deadline.getDate()}
-						type="number"
-						name="deadline"
-						placeholder= "day"
-						onChange={(e) => {
-							//parseInt(e.target.value) ? parseInt(e.target.value) : 0;
-							//e.target.value + "T00:00:00"
-							// tasks[taskId].deadline = new Date(e.target.value);
 
-							//look up if firebase date matches the shown date
-							let month = deadline.getMonth()
-							let year  = deadline.getFullYear()
-							const february = 1
-							const july     = 6
-							const leapYear = 0
-							const maxDaysMonth    = 31
-							const maxDaysFebruary = 29
-							maxDaysThisMonth = month!=february ? maxDaysMonth-(month+(month>july))%2 : maxDaysFebruary-(year%4==leapYear)
-							deadline.setDate(clamp(e.target.value, 1, maxDaysThisMonth))
-							tasks[taskId].deadline = deadline.getTime();
-							//deadlineDate.getTime()
-							//e.target.value.replace(/[^0-9||.]/g,"");
-							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
-							// setTasks   (tasks);
-							// setModified(true);
-						}}
-					/>
-					<Text style={styles.scrollText2}>
-						-
-					</Text>
-					<TextInput style={styles.scrollText2} 
-						value={deadline.getMonth()+1}
-						type="number"
-						name="deadline"
-						placeholder= "month"
-						onChange={(e) => {
-							//tasks[taskId].deadline = new Date(e.target.value);
-							deadline.setMonth(clamp(e.target.value, 1, 12)-1);
-							tasks[taskId].deadline = deadline.getTime();
-							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
-						}}
-					/>
-					<Text style={styles.scrollText2}>
-						-
-					</Text>
-					<TextInput style={styles.scrollText2} 
-						value={deadline.getFullYear()}
-						type="number"
-						name="deadline"
-						placeholder= "year"
-						onChange={(e) => {
-							//tasks[taskId].deadline = new Date(e.target.value);
-							deadline.setFullYear(e.target.value);
-							tasks[taskId].deadline = deadline.getTime();
-							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
-						}}
-					/>
-					<Text style={styles.scrollText2}>
-						_
-					</Text>
-					<TextInput style={styles.scrollText2} 
-						value={deadline.getHours()}
-						type="number"
-						name="deadline"
-						placeholder= "hours"
-						onChange={(e) => {
-							//tasks[taskId].deadline = new Date(e.target.value);
-							deadline.setHours(clamp(e.target.value,0,23));
-							tasks[taskId].deadline = deadline.getTime();
-							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
-						}}
-					/>
-					<Text style={styles.scrollText2}>
-						:
-					</Text>
-					<TextInput style={styles.scrollText2} 
-						value={deadline.getMinutes()}
-						type="number"
-						name="deadline"
-						placeholder= "minutes"
-						onChange={(e) => {
-							//tasks[taskId].deadline = new Date(e.target.value);
-							deadline.setMinutes(clamp(e.target.value,0,59));
-							tasks[taskId].deadline = deadline.getTime();
-							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
-						}}
-					/>
-					<Text style={styles.scrollText2}>
-						:
-					</Text>
-					<TextInput style={styles.scrollText2} 
-						value={deadline.getSeconds()}
-						type="number"
-						name="deadline"
-						placeholder= "seconds"
-						onChange={(e) => {
-							//tasks[taskId].deadline = new Date(e.target.value);
-							deadline.setSeconds(clamp(e.target.value,0,59));
-							tasks[taskId].deadline = deadline.getTime();
-							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
-						}}
-					/>
-				</View>
 				<View style={styles.scrollItem2}>
-					<Text style={styles.scrollText2}>
+					<Text style={styles.scrollItemL}>
 						Priority:
 					</Text>
-					<TextInput style={styles.scrollText2} 
+					<TextInput style={styles.scrollItemM} 
 						value={task.priority.toString()}
 						type="number"
 						name="priority"
@@ -400,8 +293,160 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 							// setModified(true);
 						}}
 					/>
-					<Text style={styles.scrollText2}>
+					<Text style={styles.scrollItemR}>
 						%
+					</Text>
+				</View>
+
+				<View style={styles.scrollItem2}>
+				</View>
+
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollItemL}>
+						Deadline
+					</Text>
+					<Text style={styles.scrollItemM}>
+					</Text>
+					<Text style={styles.scrollItemR}>
+						select to
+					</Text>
+				</View>
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollItemL}>
+						Day:
+					</Text>
+					<TextInput style={styles.scrollItemM} 
+						value={deadline.getDate()}
+						type="number"
+						name="deadline"
+						placeholder= "day"
+						onChange={(e) => {
+							//parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+							//e.target.value + "T00:00:00"
+							// tasks[taskId].deadline = new Date(e.target.value);
+
+							let maxDays = maxDaysThisMonth(deadline.getMonth(), deadline.getFullYear())
+							deadline.setDate(clamp(e.target.value, 1, maxDays))
+							tasks[taskId].deadline = deadline.getTime();
+							//deadlineDate.getTime()
+							//e.target.value.replace(/[^0-9||.]/g,"");
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+							// setTasks   (tasks);
+							// setModified(true);
+						}}
+					/>
+					<Text style={styles.scrollItemR}>
+						overwrite
+					</Text>
+					{/* <Text style={styles.dateTextSeparator}>
+						-
+					</Text> */}
+				</View>
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollItemL}>
+						Month:
+					</Text>
+					<TextInput style={styles.scrollItemM} 
+						value={deadline.getMonth()+1}
+						type="number"
+						name="deadline"
+						placeholder= "month"
+						onChange={(e) => {
+							//tasks[taskId].deadline = new Date(e.target.value);
+							deadline.setMonth(clamp(e.target.value, 1, 12)-1);
+							tasks[taskId].deadline = deadline.getTime();
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						}}
+					/>
+					<Text style={styles.scrollItemR}>
+					</Text>
+					{/* <Text style={styles.dateTextSeparator}>
+						-
+					</Text> */}
+				</View>
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollItemL}>
+						Year:
+					</Text>
+					<TextInput style={styles.scrollItemM} 
+						value={deadline.getFullYear()}
+						type="number"
+						name="deadline"
+						placeholder= "year"
+						onChange={(e) => {
+							//tasks[taskId].deadline = new Date(e.target.value);
+							deadline.setFullYear(e.target.value);
+							tasks[taskId].deadline = deadline.getTime();
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						}}
+					/>
+					<Text style={styles.scrollItemR}>
+					</Text>
+					{/* <Text style={styles.dateTextSeparator}>
+						_
+					</Text> */}
+				</View>
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollItemL}>
+						Hours:
+					</Text>
+					<TextInput style={styles.scrollItemM} 
+						value={deadline.getHours()}
+						type="number"
+						name="deadline"
+						placeholder= "hours"
+						onChange={(e) => {
+							//tasks[taskId].deadline = new Date(e.target.value);
+							deadline.setHours(clamp(e.target.value,0,23));
+							tasks[taskId].deadline = deadline.getTime();
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						}}
+					/>
+					<Text style={styles.scrollItemR}>
+					</Text>
+					{/* <Text style={styles.dateTextSeparator}>
+						:
+					</Text> */}
+				</View>
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollItemL}>
+						Minutes:
+					</Text>
+					<TextInput style={styles.scrollItemM} 
+						value={deadline.getMinutes()}
+						type="number"
+						name="deadline"
+						placeholder= "minutes"
+						onChange={(e) => {
+							//tasks[taskId].deadline = new Date(e.target.value);
+							deadline.setMinutes(clamp(e.target.value,0,59));
+							tasks[taskId].deadline = deadline.getTime();
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						}}
+					/>
+					<Text style={styles.scrollItemR}>
+					</Text>
+					{/* <Text style={styles.dateTextSeparator}>
+						:
+					</Text> */}
+				</View>
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollItemL}>
+						Seconds:
+					</Text>
+					<TextInput style={styles.scrollItemM}
+						value={deadline.getSeconds()}
+						type="number"
+						name="deadline"
+						placeholder= "seconds"
+						onChange={(e) => {
+							//tasks[taskId].deadline = new Date(e.target.value);
+							deadline.setSeconds(clamp(e.target.value,0,59));
+							tasks[taskId].deadline = deadline.getTime();
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+						}}
+					/>
+					<Text style={styles.scrollItemR}>
 					</Text>
 				</View>
 			</>)}
@@ -441,10 +486,20 @@ const reRenderTasks = (setTasks, tasks, setModified) => {
 }
 
 const calculateUrgency = (task) => {
-	const timePressure = task.deadline ? 1 * task.requiredTime / (task.deadline * minutesADay) : 1
+	let daysUntilDeadline = task.deadline - Date.now()
+	const timePressure = daysUntilDeadline ? 1 * task.requiredTime / (daysUntilDeadline * minutesADay) : 1
 	// const timePressure = task.deadline ? task.requiredTime / task.deadline : -1
 	const urgency = 100 * task.priority * 0.01 * Math.min(timePressure, 1)
 	return urgency;
+}
+
+function maxDaysThisMonth(month, year) {
+	const february = 1;
+	const july = 6;
+	const leapYear = 0;
+	const maxDaysMonth = 31;
+	const maxDaysFebruary = 29;
+	return month != february ? maxDaysMonth - (month + (month > july)) % 2 : maxDaysFebruary - (year % 4 != leapYear);
 }
 
 function fetchData (setTasks, setSync) {
@@ -560,6 +615,50 @@ const styles = StyleSheet.create({
 		color: "#fff",
 		textAlign: "center",
 		width: 50,
+	},
+	scrollItemL: {
+		flex: 1,
+		fontSize: 20,
+		color: "#fff",
+		textAlign: "right",
+		// width: 50,
+	},
+	scrollItemM: {
+		flex: 1,
+		fontSize: 20,
+		color: "#fff",
+		textAlign: "center",
+		width: 50,
+	},
+	scrollItemR: {
+		flex: 1,
+		fontSize: 20,
+		color: "#fff",
+		textAlign: "left",
+		// width: 50,
+	},
+	dateText: {
+		flex: 1,
+		fontSize: 20,
+		color: "#fff",
+		textAlign: "center",
+		width: 10,
+		// margin: 0,
+		// padding: 0,
+	},
+	dateTextLong: {
+		flex: 1,
+		fontSize: 20,
+		color: "#fff",
+		textAlign: "center",
+		width: 20,
+	},
+	dateTextSeparator: {
+		flex: 1,
+		fontSize: 20,
+		color: "#fff",
+		textAlign: "center",
+		width: 5,
 	},
 	menuButtons: {
 		height: 100,
