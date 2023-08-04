@@ -266,35 +266,35 @@ let flooredMinutesToday = javascriptDate.getHours()*60
 // console.log("minutesToday", minutesToday/60);
 
 let globalAgenda = [
-	{
-		name          : "loading",
-		duration      : 0,
-		startTime     : 0,
-		source        : "",
-		type          : "agenda",
-		repeatTimespan: "loading",
-		repeatInterval: 0,
-		repeatOffset  : 0,
-		repeatOffsets : [],
-		id            : 0,
-		zIndex        : 0
-	}
+	// {
+	// 	name          : "loading",
+	// 	duration      : 0,
+	// 	startTime     : 0,
+	// 	source        : "",
+	// 	type          : "loading",
+	// 	repeatTimespan: "loading",
+	// 	repeatInterval: 0,
+	// 	repeatOffset  : 0,
+	// 	repeatOffsets : [],
+	// 	id            : 0,
+	// 	zIndex        : 0
+	// }
 ];
 
 let globalPlanning = [
-	{
-		name          : "loading",
-		duration      : 0,
-		startTime     : 0,
-		source        : "",
-		type          : "agenda",
-		repeatTimespan: "loading",
-		repeatInterval: 0,
-		repeatOffset  : 0,
-		repeatOffsets : [],
-		id            : 0,
-		zIndex        : 0
-	}
+	// {
+	// 	name          : "loading",
+	// 	duration      : 0,
+	// 	startTime     : 0,
+	// 	source        : "",
+	// 	type          : "loading",
+	// 	repeatTimespan: "loading",
+	// 	repeatInterval: 0,
+	// 	repeatOffset  : 0,
+	// 	repeatOffsets : [],
+	// 	id            : 0,
+	// 	zIndex        : 0
+	// }
 ];
 
 let globalGaps = []
@@ -340,7 +340,7 @@ const ToDoScreen = ({ navigation }) => {
 	// 		duration      : 0,
 	// 		startTime     : 0,
 	// 		source        : "",
-	// 		type          : "agenda",
+	// 		type          : "loading",
 	// 		repeatTimespan: "loading",
 	// 		repeatInterval: 0,
 	// 		repeatOffset  : 0,
@@ -355,7 +355,7 @@ const ToDoScreen = ({ navigation }) => {
 	// 		duration      : 0,
 	// 		startTime     : 0,
 	// 		source        : "",
-	// 		type          : "agenda",
+	// 		type          : "loading",
 	// 		repeatTimespan: "loading",
 	// 		repeatInterval: 0,
 	// 		repeatOffset  : 0,
@@ -365,19 +365,19 @@ const ToDoScreen = ({ navigation }) => {
 	// 	}
 	// ]);
 	const [displayed      , setDisplayed      ] = useState([
-		{
-			name          : "loading",
-			duration      : 0,
-			startTime     : 0,
-			source        : "",
-			type          : "agenda",
-			repeatTimespan: "loading",
-			repeatInterval: 0,
-			repeatOffset  : 0,
-			repeatOffsets : [],
-			id            : 0,
-			zIndex        : 0
-		}
+		// {
+		// 	name          : "loading",
+		// 	duration      : 0,
+		// 	startTime     : 0,
+		// 	source        : "",
+		// 	type          : "loading",
+		// 	repeatTimespan: "loading",
+		// 	repeatInterval: 0,
+		// 	repeatOffset  : 0,
+		// 	repeatOffsets : [],
+		// 	id            : 0,
+		// 	zIndex        : 0
+		// }
 	]);
 
 	// setDisplayed
@@ -718,48 +718,6 @@ const ToDoScreen = ({ navigation }) => {
 	);
 }
 
-const HeaderBar = () => {
-	return(
-		<View style={styles.headerBar}>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Name
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Time Required
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Deadline
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Priority
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Like
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					Repeat Settings
-				</Text>
-			</View>
-			<View style={styles.headerBlock}>
-				<Text style={styles.headerText}>
-					delete
-				</Text>
-			</View>
-		</View>
-	);
-}
-
 const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda, setPlanning, dayIndicators}) => {
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
@@ -783,6 +741,8 @@ const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setRelo
 		return ToDoListItem2   (task);
 	} else if (task.type == "generated break"){
 		return breakItem       (task);
+	} else if (task.type == "loading"){
+		return loadingItem       ();
 	} else if (task.type == "date"){
 		// return DateAndTimeItem (task);
 		console.log("IllegaldateAndTimeItem")
@@ -1090,6 +1050,35 @@ const breakItem = (task) => {
 				<View style={styles.scrollItem2}>
 					<Text style={styles.scrollText}>
 						{task.name}
+					</Text>
+				</View>
+			</View>
+		</View>
+	);
+}
+
+const loadingItem = () => {
+	let duration  = 60;
+	return (
+		<View style={[
+			{
+				position: 'absolute',
+				height: duration * timeScaleFactor,
+				width: "100%",
+				// top: startTime * timeScaleFactor, 
+				top: 0,
+				bottom: 0,
+				left: 100, right: 0, 
+				backgroundColor  : "#111",
+				borderColor      : "#222",
+				opacity: .5,
+				borderWidth: 5,
+			}
+		]}>
+			<View style={styles.scrollBlock}>
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollText}>
+						Loading
 					</Text>
 				</View>
 			</View>
