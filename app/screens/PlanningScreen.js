@@ -1197,8 +1197,9 @@ function findGaps(tasks){
 	// let nextTaskStart;
 	// let nextTaskEnd;
 	// let gapStart = 0;
+	const minutesPerDay = 1440;
 	let prevTaskEnd = 0;
-	let maxEnd      = 7500;
+	let maxEnd      = minutesPerDay;
 	let gaps = [];
 	let dayOfTask     = 0;
 	let prevDayOfTask = 0;
