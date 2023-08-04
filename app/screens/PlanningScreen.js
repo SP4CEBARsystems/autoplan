@@ -599,7 +599,7 @@ const ToDoScreen = ({ navigation }) => {
 					renderItem={({item, index}) => 
 						<ToDoListItem9
 						// <ToDoListItemSelector
-							tasks=           {displayed}
+							tasks3=          {displayed}
 							setDisplayed=    {setDisplayed}
 							taskId2=         {index}
 							task=            {item}
@@ -718,11 +718,12 @@ const ToDoScreen = ({ navigation }) => {
 	);
 }
 
-const ToDoListItem9 = ({tasks, setDisplayed, taskId2, task, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda, setPlanning, dayIndicators}) => {
+const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda, setPlanning, dayIndicators}) => {
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
 	// let taskId = taskId2-1;
+	let tasks = tasks3;
 	let taskId = taskId2;
 	
 	console.log("taskID: "    , taskId);
