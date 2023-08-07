@@ -132,7 +132,7 @@ function fetchData4 (dayOffset, planning, setTasks, setSync, ref) {
 }
 
 function fetchData5 (dayOffset, planning, setTasks, setSync, ref) {
-	console.log("fetchdata3");
+	console.log("fetchdata5");
 	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
 	//don't add a semicolon ";" after "getDoc()", Don't do that
 	getDoc(ref).then((doc) => {
@@ -143,8 +143,8 @@ function fetchData5 (dayOffset, planning, setTasks, setSync, ref) {
 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
 		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
 		planning = newPlanning;
-
 		console.log("planning post:", planning)
+		console.log("Agenda loaded:", planning)
 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
 		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
 		
@@ -602,7 +602,7 @@ const ToDoScreen = ({ navigation }) => {
 							tasks3=          {displayed}
 							setDisplayed=    {setDisplayed}
 							taskId2=         {index}
-							task=            {item}
+							task3=           {item}
 							setModified=     {setModified}
 							setReload=       {setReload}
 							setGaps=         {setGaps}
@@ -624,7 +624,7 @@ const ToDoScreen = ({ navigation }) => {
 							// setGaps=         {setGaps}V
 							// setReload=       {setReload}V
 							// setPlannedGaps=  {setPlannedGaps}V
-							// saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+							// saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 							// saveData(agenda, sync);
 							// scrollOffsetY= {scrollOffsetY}
 						/> 
@@ -696,6 +696,8 @@ const ToDoScreen = ({ navigation }) => {
 							id            : tasks.length,
 							zIndex        : 0
 						});
+
+						console.log("agenda push")
 						// scrollOffsetY = flooredMinutesToday * timeScaleFactor
 						// flatListRef.current.scrollToOffset({
 						// 	animated: false,
@@ -718,12 +720,13 @@ const ToDoScreen = ({ navigation }) => {
 	);
 }
 
-const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda, setPlanning, dayIndicators}) => {
+const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda, setPlanning, dayIndicators}) => {
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
 	// let taskId = taskId2-1;
-	let tasks = tasks3;
+	let tasks  = tasks3;
+	let task   = task3
 	let taskId = taskId2;
 	
 	console.log("taskID: "    , taskId);
@@ -762,7 +765,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setRel
 	// saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 	// saveData(tasks, sync);
 
-	// saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
+	// saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setTasks, dayIndicators)
 	// saveData(agenda, sync);
 
 	//still, everything value change is done twice: both somehow find their way to the displayed variable
@@ -797,14 +800,21 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setRel
 						name="name"
 						placeholder= "task name"
 						onChange={(e) => {
-							tasks       [taskId  ].name = e.target.value;
+							task.name = e.target.value;
+							// tasks       [taskId].name = e.target.value;
+							tasks[taskId]=task;
 							// agenda[taskId-1].name = e.target.value;
 							// setAgenda  (agenda);
-							setDisplayed   (tasks);
-							setModified(true);
+							setDisplayed(tasks);
+							setModified (true );
 							// globalAgenda[agendaId].name = e.target.value;
-							if (agenda[agendaId]) {
-								agenda[agendaId].name = e.target.value;
+							//agendaID is different on a different thread
+							let agendaId2 = task.agendaId
+							if (agenda[agendaId2]) {
+								console.log("pre new agenda name:", agenda[agendaId2].name, agenda)
+								// agenda[agendaId].name = e.target.value;
+								agenda[agendaId2] =task;
+								console.log("new agenda name:", agenda[agendaId2].name, agenda)
 							} else {
 								console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 							}
@@ -833,7 +843,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setRel
 					} else {
 						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					}
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -855,7 +865,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setRel
 							} else {
 								console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 							}
-							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+							saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 						}}
 					/>
 				</View>
@@ -889,7 +899,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setRel
 					} else {
 						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					}
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -908,7 +918,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setRel
 					} else {
 						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					}
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -932,7 +942,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setRel
 							} else {
 								console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 							}
-							saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+							saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 						}}
 					/>
 				</View>
@@ -948,7 +958,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setRel
 					} else {
 						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					}
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -968,7 +978,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setRel
 					} else {
 						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					}
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
 						{taskType}
@@ -985,7 +995,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task, setModified, setRel
 					setReplan(true);
 					// globalAgenda.splice(agendaId, 1);
 					agenda.splice(agendaId, 1);
-					saveData2(agenda, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}/>
 			</View>
 		</View>
@@ -1400,15 +1410,15 @@ function generateBreaks(plannedGaps) {
 //if there are no gap borders detected then it's just 0
 
 
-function saveAgendaTimes(duration, startTime, taskId, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators){
-	console.log("dur: ", duration)
-	console.log("tas: ", tasks2, taskId)
-	console.log("is: ", tasks2[taskId])
-	tasks2[taskId].duration  = duration;
-	tasks2[taskId].startTime = startTime;
-	saveData2(tasks2, sync2, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators);
-	console.log("dur2: ", duration)
-}
+// function saveAgendaTimes(duration, startTime, taskId, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators){
+// 	console.log("dur: ", duration)
+// 	console.log("tas: ", tasks2, taskId)
+// 	console.log("is: ", tasks2[taskId])
+// 	tasks2[taskId].duration  = duration;
+// 	tasks2[taskId].startTime = startTime;
+// 	saveData2(tasks2, sync2, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators);
+// 	console.log("dur2: ", duration)
+// }
 
 function saveData(tasks, sync){
 // function saveData(tasks){
@@ -1431,11 +1441,13 @@ function saveData(tasks, sync){
 		// }
 		let day     = loadedDay;
 		let docName = "Day" + day.toString();
+
 		actuallySaveTheData(tasks   , doc(firestore, "Agenda"  , docName));
+		console.log("quick save agenda", tasks)
 	}
 }
 
-function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators){
+function saveData2(tasks4, originalPlanning, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators){
 // function saveData(tasks){
 	// console.log("ready to write");
 	// console.log("sync  check 2: ",sync);
@@ -1447,6 +1459,11 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		//temporary
 		// let gaps        = [];
 		// let plannedGaps = [];
+		// let tasks = tasks4
+		let tasks = [];
+		originalPlanning.forEach(element => {if(element.type == "agenda"){tasks.push(element)}})
+		// console.log("originalPlanning:", originalPlanning)
+		console.log("extracted agenda:", tasks)
 
 		console.log("A1");
 		tasks.sort((a, b) => a.startTime - b.startTime);
@@ -1472,11 +1489,12 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 
 		
 		//disable this for testing purposes \V/
-		setDisplayed(planning.concat(dayIndicators));
+		setDisplayed(planning);
+		// setDisplayed(planning.concat(dayIndicators));
 		// setDisplayed([]);
 
 
-		console.log("dayIndicators 5", dayIndicators)
+		// console.log("dayIndicators 5", dayIndicators)
 
 		setTasks      (tasks      );
 		setGaps       (gaps       );
@@ -1514,6 +1532,7 @@ function saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, se
 		
 		// console.log("savingData1", previousTableTasks      , indexTableTasks      [i])
 		actuallySaveTheData( tasks      , doc( firestore, "Agenda"     , docName ));
+		console.log("save agenda", docName, tasks)
 		// console.log("savingData2", previousTableGaps       , indexTableGaps       [i])
 		actuallySaveTheData( gaps       , doc( firestore, "Gaps"       , docName ));
 		// console.log("savingData3", previousTablePlannedGaps, indexTablePlannedGaps[i])
