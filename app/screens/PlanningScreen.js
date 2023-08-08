@@ -966,8 +966,9 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.counterButton} onPress={() => {
-					taskType = (taskType=="break") ? "agenda": "break";
-					tasks       [taskId  ].type = taskType;
+					task.type = (taskType=="break") ? "agenda": "break";
+					// tasks       [taskId  ].type = taskType;
+					tasks       [taskId  ] = task;
 					// agenda[taskId-1].type = (taskType=="break") ? "agenda": "break";
 					focused = taskId;
 					setDisplayed   (tasks);
@@ -975,7 +976,8 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					setReplan  (true);
 					// globalAgenda[agendaId].type = taskType;
 					if (agenda[agendaId]) {
-						agenda[agendaId].type = taskType;
+						// agenda[agendaId].type = taskType;
+						agenda[agendaId] = task;
 					} else {
 						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					}
@@ -987,6 +989,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.delete} onPress={() => {
+					console.log("delete")
 					// console.log("delete1", tasks[taskId]);
 					tasks.splice       (taskId  , 1);
 					// agenda.splice(taskId-1, 1);
