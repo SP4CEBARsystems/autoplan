@@ -1459,9 +1459,9 @@ function saveData2(tasks4, originalPlanning, sync, setTasks, setGaps, setReload,
 		//temporary
 		// let gaps        = [];
 		// let plannedGaps = [];
-		// let tasks = tasks4
-		let tasks = [];
-		originalPlanning.forEach(element => {if(element.type == "agenda"){tasks.push(element)}})
+		let tasks = tasks4
+		// let tasks = [];
+		// originalPlanning.forEach(element => {if(element.type == "agenda"){tasks.push(element)}})
 		// console.log("originalPlanning:", originalPlanning)
 		console.log("extracted agenda:", tasks)
 
