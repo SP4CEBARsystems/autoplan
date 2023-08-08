@@ -703,7 +703,7 @@ const ToDoScreen = ({ navigation }) => {
 						// 	animated: false,
 						// 	offset: scrollOffsetY
 						// })
-						saveData2(tasks, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+						saveData2(tasks, displayed, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 					}}>
 						<Text style={styles.plusText}>
 							+
@@ -818,7 +818,8 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 							} else {
 								console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 							}
-							saveData(agenda, sync);
+							// saveData(agenda, sync);
+							saveData(tasks, sync);
 						}}
 					/>
 				</View>
@@ -978,7 +979,8 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					} else {
 						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					}
-					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					// saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData(tasks, sync);
 				}}>
 					<Text style={styles.counterText}>
 						{taskType}
@@ -1442,7 +1444,7 @@ function saveData(tasks, sync){
 		let day     = loadedDay;
 		let docName = "Day" + day.toString();
 
-		actuallySaveTheData(tasks   , doc(firestore, "Agenda"  , docName));
+		actuallySaveTheData(tasks   , doc(firestore, "Planning"  , docName));
 		console.log("quick save agenda", tasks)
 	}
 }
@@ -1459,10 +1461,11 @@ function saveData2(tasks4, originalPlanning, sync, setTasks, setGaps, setReload,
 		//temporary
 		// let gaps        = [];
 		// let plannedGaps = [];
-		let tasks = tasks4
-		// let tasks = [];
-		// originalPlanning.forEach(element => {if(element.type == "agenda"){tasks.push(element)}})
+		// let tasks = tasks4
+		let tasks = [];
+		originalPlanning.forEach(element => {if(element.type == "agenda"){tasks.push(element)}})
 		// console.log("originalPlanning:", originalPlanning)
+		console.log("A0");
 		console.log("extracted agenda:", tasks)
 
 		console.log("A1");
