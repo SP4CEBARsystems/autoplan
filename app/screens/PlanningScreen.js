@@ -591,6 +591,7 @@ const ToDoScreen = ({ navigation }) => {
 
 					ListFooterComponentStyle={{
 						// maxWidth: 10,
+						//this made the buttons accessible (not blocked by an overlaying footer) on mobile
 						width:   0,
 						// margin: -10,
 					}}
@@ -1525,31 +1526,38 @@ function saveData2(tasks4, originalPlanning, sync, setTasks, setGaps, setReload,
 		// let gaps        = [];
 		// let plannedGaps = [];
 		// let tasks = tasks4
+		let planning = [];
 		let tasks = [];
 		originalPlanning.forEach(element => {if(element.type == "agenda" || element.type == "break"){tasks.push(element)}})
-		// console.log("originalPlanning:", originalPlanning)
-		console.log("A0");
-		console.log("extracted agenda:", tasks)
+		if(todo_tasks.length>0){
+			// console.log("originalPlanning:", originalPlanning)
+			console.log("A0");
+			console.log("extracted agenda:", tasks)
 
-		console.log("A1");
-		tasks.sort((a, b) => a.startTime - b.startTime);
-		console.log("A2", tasks);
-		//disable this for testing purposes \V/
-		let gaps        = findGaps(tasks);
-		console.log("A3", gaps);
+			console.log("A1");
+			tasks.sort((a, b) => a.startTime - b.startTime);
+			console.log("A2", tasks);
+			//disable this for testing purposes \V/
+			let gaps        = findGaps(tasks);
+			console.log("A3", gaps);
 
-		//disable this for testing purposes \V/
-		let plannedGaps = PlanOut(gaps, todo_tasks);
-		console.log("A4", plannedGaps);
+			//disable this for testing purposes \V/
+			let plannedGaps = PlanOut(gaps, todo_tasks);
+			console.log("A4", plannedGaps);
 
-		let generatedBreaks = generateBreaks(plannedGaps);
+			let generatedBreaks = generateBreaks(plannedGaps);
 
-		let planning    = tasks;
-		//disable this for testing purposes \V/
-		planning = planning.concat(plannedGaps).concat(generatedBreaks);
-		console.log("A5", planning);
-		planning.sort((a, b) => a.startTime - b.startTime);
-		console.log("A6", planning);
+			planning    = tasks;
+			//disable this for testing purposes \V/
+			planning = planning.concat(plannedGaps).concat(generatedBreaks);
+			console.log("A5", planning);
+			planning.sort((a, b) => a.startTime - b.startTime);
+			console.log("A6", planning);
+		} else {
+			// planning = originalPlanning;
+			planning = tasks;
+		}
+
 		// planning.unshift({ name: "TestDay", type: "date" });
 		setPlanning (planning);
 
@@ -1562,9 +1570,9 @@ function saveData2(tasks4, originalPlanning, sync, setTasks, setGaps, setReload,
 
 		// console.log("dayIndicators 5", dayIndicators)
 
-		setTasks      (tasks      );
-		setGaps       (gaps       );
-		setPlannedGaps(plannedGaps);
+		// setTasks      (tasks      );
+		// setGaps       (gaps       );
+		// setPlannedGaps(plannedGaps);
 		// setPlannedGaps(plannedGaps);
 		// setPlanning   (planning   );
 		setReload     (true );

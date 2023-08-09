@@ -150,7 +150,7 @@ function initInterval (tasks, setTimeV, setStr, setBreakTimer, setEventTimer, se
 		let jsDate = new Date(milliseconds);
 		setTimeV(Math.round(timeMilliseconds));
 		setStr(jsDate.getHours().toString()+":"+jsDate.getMinutes().toString()+":"+jsDate.getSeconds().toString());
-		generateTimers(tasks, timeMilliseconds + timeOffset, setBreakTimer, setEventTimer, setEventName)
+		if (tasks.length>0) {generateTimers(tasks, timeMilliseconds + timeOffset, setBreakTimer, setEventTimer, setEventName)}
 	}, 1000);
 }
 
