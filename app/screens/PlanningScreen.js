@@ -179,7 +179,7 @@ let indexTableTasks       = [];
 let indexTableGaps        = [];
 let indexTablePlannedGaps = [];
 let indexTablePlanning    = [];
-let amountOfDaysLoaded    = 0;
+// let amountOfDaysLoaded    = 0;
 let dayOffset             = 0;
 
 const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore) => {
@@ -212,7 +212,7 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	setDayIndicators(dayIndicators);
 	console.log("dayIndicators 4", dayIndicators);
 
-	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, dayIndicators, setSync, doc(firestore, "Planning"   , documentName));
+	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, dayIndicators, setSync, doc(firestore, editPreset ? "Planning preset" : "Planning"   , documentName));
 	// fetchData5 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
 	// fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
 	// fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
@@ -221,7 +221,7 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	// indexTableTasks.push      ( tasks.length       );
 	// indexTablePlannedGaps.push( plannedGaps.length );
 	// indexTableGaps.push       ( gaps.length        );
-	amountOfDaysLoaded++;
+	// amountOfDaysLoaded++;
 
 	//is "planning" with the day indicators used to generate plannings? that would be bad
 	
@@ -239,11 +239,69 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	// fetchData3 (setPlanning, setSync, doc(firestore, "Planning"   , "TestDay"));
 }
 
+// const fetchPreset = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore) => {
+// 	console.log("fetchMore");
+// 	//get js date in milliseconds
+// 	//multiply it by 1/86400000
+// 	//add the offset (we're scrolling into the future)
+// 	//use the resulting number to differentiate the names of the files
+// 	//if no file was found: create a new file
+// 	//use a copy of the variable in a js date formatter to display the date as a string
+	
+// 	// let dayOffset = Math.floor(scrollOffsetY * deltaDayLengthPixels);
+// 	console.log("dayOffset:", dayOffset, scrollOffsetY, deltaDayLengthPixels);
+// 	// let day = loadedDay;
+// 	let day = currentDay;
+// 	let documentName = "Day" + day.toString();
+
+// 	// console.log("dayIndicators 3", dayIndicators)
+// 	// dayIndicators.unshift({
+// 	// 	name: "TestDay",
+// 	// 	type: "date",
+// 	// 	startTime: 7500 * dayOffset
+// 	// })
+// 	dayIndicators = {
+// 		name: "TestDay",
+// 		type: "date",
+// 		startTime: 0
+// 	};
+
+// 	setDayIndicators(dayIndicators);
+// 	console.log("dayIndicators 4", dayIndicators);
+
+// 	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, dayIndicators, setSync, doc(firestore, "Planning"   , documentName));
+// 	// fetchData5 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
+// 	// fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
+// 	// fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
+	
+// 	//generate a table array which holds the day number and the array index number gor each of the arrays
+// 	// indexTableTasks.push      ( tasks.length       );
+// 	// indexTablePlannedGaps.push( plannedGaps.length );
+// 	// indexTableGaps.push       ( gaps.length        );
+// 	// amountOfDaysLoaded++;
+
+// 	//is "planning" with the day indicators used to generate plannings? that would be bad
+	
+// 	loadedDays.push(documentName);
+// 	loadedDay = day;
+
+// 	// fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
+// 	// fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
+// 	// fetchData (setGaps       , setSync, doc(firestore, "Gaps"       , "TestDay"));
+
+// 	// fetchData3 (dayOffset+1, planning, setPlanning, setSync, doc(firestore, "Planning"   , "TestDay2"));
+// 	// fetchData3 (dayOffset+1, planning, setPlanning, setSync, doc(firestore, "Planning"   , "Day" + day.toString()));
+// 	scrollOffsetYLoaded += dayLengthPixels;
+// 	//-dayLengthPixels
+// 	// fetchData3 (setPlanning, setSync, doc(firestore, "Planning"   , "TestDay"));
+// }
+
 	
 let agendaId = 0
 let scrollOffsetY = 0;
 let scrollOffsetYLoaded = 0;
 let focused = 0;
+let editPreset = false
 
 const minutesADay = 1440;
 const millisecondsInDay = 86400000;
@@ -479,6 +537,7 @@ const ToDoScreen = ({ navigation }) => {
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
 						loadedDay--;
 						dayOffset--;
+						if (editPreset && dayOffset<0) {dayOffset=0}
 						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 						// loadedDate = new Date(loadedDay*millisecondsInDay)
 						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
@@ -497,6 +556,7 @@ const ToDoScreen = ({ navigation }) => {
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
 						loadedDay++;
 						dayOffset++;
+						if (editPreset && dayOffset>7) {dayOffset=7}
 						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 						// loadedDate = new Date(loadedDay*millisecondsInDay)
 						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
@@ -515,10 +575,19 @@ const ToDoScreen = ({ navigation }) => {
 							animated: false,
 							offset: scrollOffsetY
 						})
+						editPreset = false
 						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
 					}}>
 						<Text style={styles.counterText}>
 							now
+						</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={styles.counterButton} onPress={() => {
+						editPreset = !editPreset
+						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
+					}}>
+						<Text style={styles.counterText}>
+							presets
 						</Text>
 					</TouchableOpacity>
 
