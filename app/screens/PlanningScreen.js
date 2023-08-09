@@ -839,11 +839,11 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					// setModified(true);
 					setReplan  (true);
 					// globalAgenda[agendaId].startTime += 30;
-					if (agenda[agendaId]) {
-						agenda[agendaId].startTime = newValue;
-					} else {
-						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
-					}
+					// if (agenda[agendaId]) {
+					// 	agenda[agendaId].startTime = newValue;
+					// } else {
+					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+					// }
 					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
@@ -861,11 +861,11 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 							setDisplayed   (tasks);
 							setReplan  (true);
 							// globalAgenda[agendaId].startTime = e.target.value;
-							if (agenda[agendaId]) {
-								agenda[agendaId].startTime = e.target.value;
-							} else {
-								console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
-							}
+							// if (agenda[agendaId]) {
+							// 	agenda[agendaId].startTime = e.target.value;
+							// } else {
+							// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+							// }
 							saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 						}}
 					/>
@@ -895,11 +895,11 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					// setModified(true);
 					setReplan  (true);
 					// globalAgenda[agendaId].startTime -= 30;
-					if (agenda[agendaId]) {
-						agenda[agendaId].startTime = newValue;
-					} else {
-						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
-					}
+					// if (agenda[agendaId]) {
+					// 	agenda[agendaId].startTime = newValue;
+					// } else {
+					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+					// }
 					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
@@ -914,11 +914,11 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					setDisplayed   (tasks);
 					setReplan  (true);
 					// globalAgenda[agendaId].duration += 30;
-					if (agenda[agendaId]) {
-						agenda[agendaId].duration = newValue;
-					} else {
-						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
-					}
+					// if (agenda[agendaId]) {
+					// 	agenda[agendaId].duration = newValue;
+					// } else {
+					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+					// }
 					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
@@ -938,11 +938,11 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 							// setModified(true);
 							setReplan  (true);
 							// globalAgenda[agendaId].duration = e.target.value;
-							if (agenda[agendaId]) {
-								agenda[agendaId].duration = e.target.value;
-							} else {
-								console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
-							}
+							// if (agenda[agendaId]) {
+							// 	agenda[agendaId].duration = e.target.value;
+							// } else {
+							// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+							// }
 							saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 						}}
 					/>
@@ -954,11 +954,11 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					setDisplayed   (tasks);
 					setReplan  (true);
 					// globalAgenda[agendaId].duration -= 30;
-					if (agenda[agendaId]) {
-						agenda[agendaId].duration = newValue;
-					} else {
-						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
-					}
+					// if (agenda[agendaId]) {
+					// 	agenda[agendaId].duration = newValue;
+					// } else {
+					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+					// }
 					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 				}}>
 					<Text style={styles.counterText}>
@@ -975,12 +975,12 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					// setAgenda  (agenda);
 					setReplan  (true);
 					// globalAgenda[agendaId].type = taskType;
-					if (agenda[agendaId]) {
-						// agenda[agendaId].type = taskType;
-						agenda[agendaId] = task;
-					} else {
-						console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
-					}
+					// if (agenda[agendaId]) {
+					// 	// agenda[agendaId].type = taskType;
+					// 	agenda[agendaId] = task;
+					// } else {
+					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
+					// }
 					// saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
 					saveData(tasks, sync);
 				}}>
@@ -1466,7 +1466,7 @@ function saveData2(tasks4, originalPlanning, sync, setTasks, setGaps, setReload,
 		// let plannedGaps = [];
 		// let tasks = tasks4
 		let tasks = [];
-		originalPlanning.forEach(element => {if(element.type == "agenda"){tasks.push(element)}})
+		originalPlanning.forEach(element => {if(element.type == "agenda" || element.type == "break"){tasks.push(element)}})
 		// console.log("originalPlanning:", originalPlanning)
 		console.log("A0");
 		console.log("extracted agenda:", tasks)
@@ -1537,10 +1537,10 @@ function saveData2(tasks4, originalPlanning, sync, setTasks, setGaps, setReload,
 		let docName = "Day" + day.toString();
 		
 		// console.log("savingData1", previousTableTasks      , indexTableTasks      [i])
-		actuallySaveTheData( tasks      , doc( firestore, "Agenda"     , docName ));
-		console.log("save agenda", docName, tasks)
+		// actuallySaveTheData( tasks      , doc( firestore, "Agenda"     , docName ));
+		// console.log("save agenda", docName, tasks)
 		// console.log("savingData2", previousTableGaps       , indexTableGaps       [i])
-		actuallySaveTheData( gaps       , doc( firestore, "Gaps"       , docName ));
+		// actuallySaveTheData( gaps       , doc( firestore, "Gaps"       , docName ));
 		// console.log("savingData3", previousTablePlannedGaps, indexTablePlannedGaps[i])
 		// actuallySaveTheData( plannedGaps, doc( firestore, "PlannedGaps", docName ));
 		// actuallySaveTheData( generatedBreaks, doc( firestore, "GeneratedBreaks", docName ));
