@@ -390,8 +390,10 @@ const ToDoScreen = ({ navigation }) => {
 
 	// fetchData2(setTasks, setSync);
 	
+	let cursorLine = 100
+	
 	useEffect(() => {
-		scrollOffsetY = minutesToday * timeScaleFactor
+		scrollOffsetY = minutesToday * timeScaleFactor - cursorLine
 		flatListRef.current.scrollToOffset({
 			animated: false,
 			offset: scrollOffsetY
@@ -468,6 +470,7 @@ const ToDoScreen = ({ navigation }) => {
 	// 	type: "date",
 	// 	startTime: 0
 	// });
+
 	
 	return (
 		<View style={styles.background}>
@@ -507,7 +510,7 @@ const ToDoScreen = ({ navigation }) => {
 						dayOffset = 0;
 						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 						// loadedDate = new Date(loadedDay*millisecondsInDay)
-						scrollOffsetY = minutesToday * timeScaleFactor
+						scrollOffsetY = minutesToday * timeScaleFactor - cursorLine
 						flatListRef.current.scrollToOffset({
 							animated: false,
 							offset: scrollOffsetY
@@ -522,7 +525,7 @@ const ToDoScreen = ({ navigation }) => {
 
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
 						if (timeScaleFactor>1){
-							scrollOffsetY -= (scrollOffsetY+500) / timeScaleFactor
+							scrollOffsetY = (scrollOffsetY+cursorLine) * (timeScaleFactor-1) / (timeScaleFactor) - cursorLine
 							timeScaleFactor--;
 							flatListRef.current.scrollToOffset({
 								animated: false,
@@ -541,7 +544,7 @@ const ToDoScreen = ({ navigation }) => {
 					</Text>
 
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
-						scrollOffsetY += (scrollOffsetY+500) / timeScaleFactor
+						scrollOffsetY = (scrollOffsetY+cursorLine) * (timeScaleFactor+1) / (timeScaleFactor) - cursorLine
 						timeScaleFactor++;
 						flatListRef.current.scrollToOffset({
 							animated: false,
@@ -708,7 +711,7 @@ const ToDoScreen = ({ navigation }) => {
 						displayed.push({
 							name          : "new Event",
 							duration      : 60,
-							startTime     : scrollOffsetY/timeScaleFactor,
+							startTime     : (scrollOffsetY + cursorLine)/timeScaleFactor,
 							source        : "",
 							type          : "agenda",
 							repeatTimespan: "days",
