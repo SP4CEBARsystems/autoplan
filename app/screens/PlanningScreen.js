@@ -213,14 +213,14 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 	console.log("dayIndicators 4", dayIndicators);
 
 	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, dayIndicators, setSync, doc(firestore, "Planning"   , documentName));
-	fetchData5 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
-	fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
-	fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
+	// fetchData5 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
+	// fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
+	// fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
 	
 	//generate a table array which holds the day number and the array index number gor each of the arrays
-	indexTableTasks.push      ( tasks.length       );
-	indexTablePlannedGaps.push( plannedGaps.length );
-	indexTableGaps.push       ( gaps.length        );
+	// indexTableTasks.push      ( tasks.length       );
+	// indexTablePlannedGaps.push( plannedGaps.length );
+	// indexTableGaps.push       ( gaps.length        );
 	amountOfDaysLoaded++;
 
 	//is "planning" with the day indicators used to generate plannings? that would be bad
@@ -459,7 +459,7 @@ const ToDoScreen = ({ navigation }) => {
 	// 	offset: scrollOffset
 	// })
 	
-	let loadedDate = new Date(loadedDay*86400000);
+	let loadedDate = new Date(loadedDay*millisecondsInDay);
 	agendaId=-1;
 
 	// let actuallyDisplayed = displayed
@@ -476,6 +476,8 @@ const ToDoScreen = ({ navigation }) => {
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
 						loadedDay--;
 						dayOffset--;
+						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
+						// loadedDate = new Date(loadedDay*millisecondsInDay)
 						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
 					}}>
 						<Text style={styles.counterText}>
@@ -492,6 +494,8 @@ const ToDoScreen = ({ navigation }) => {
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
 						loadedDay++;
 						dayOffset++;
+						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
+						// loadedDate = new Date(loadedDay*millisecondsInDay)
 						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
 					}}>
 						<Text style={styles.counterText}>
