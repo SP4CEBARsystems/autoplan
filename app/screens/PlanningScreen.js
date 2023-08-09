@@ -502,6 +502,17 @@ const ToDoScreen = ({ navigation }) => {
 							next
 						</Text>
 					</TouchableOpacity>
+					<TouchableOpacity style={styles.counterButton} onPress={() => {
+						// loadedDay = ;
+						dayOffset = 0;
+						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
+						// loadedDate = new Date(loadedDay*millisecondsInDay)
+						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
+					}}>
+						<Text style={styles.counterText}>
+							today
+						</Text>
+					</TouchableOpacity>
 
 
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
@@ -565,12 +576,23 @@ const ToDoScreen = ({ navigation }) => {
                 	// stickyHeaderIndices={[0]}
 					//ListFooterComponent
 					//ListHeaderComponent
-					ListFooterComponent={() => <DateAndTimeItem/>}
-					contentContainerStyle={{ 
-						// minHeight: minutesADay * timeScaleFactor,
-						flexGrow: 1, borderWidth: 1, borderColor: 'transparent'
-						//the border makes android render all, but the content makes it stop
-						//try to zoom out
+					ListFooterComponent={() => 
+						// {
+						// <View style={{
+						// 	height: minutesADay * timeScaleFactor, 
+						// 	width: 100,
+						// }}>
+							// <DateAndTimeItemTest/>
+							
+							<DateAndTimeItem/>
+						// </View>
+					// }
+					}
+
+					ListFooterComponentStyle={{
+						// maxWidth: 10,
+						width:   0,
+						// margin: -10,
 					}}
 					// columnWrapperStyle={{
 					// 	// minHeight: minutesADay * timeScaleFactor,
@@ -580,15 +602,23 @@ const ToDoScreen = ({ navigation }) => {
 					// }}
 					// contentContainerStyle={{ flexGrow: 1, borderWidth: 1, borderColor: 'transparent' }}
 					stickyHeaderIndices={[0]}
+					contentContainerStyle={{ 
+						// minHeight: minutesADay * timeScaleFactor,
+						flexGrow: 1, borderWidth: 1, zIndex: -5, borderColor: 'transparent',
+						//the border makes android render all, but the content makes it stop
+						//try to zoom out
+					}}
 					ListHeaderComponent={
 						<View
 							style={{
 								position: "absolute",
 								backgroundColor: "transparent",
+								
 								// backgroundColor: "#e0e0e0",
 
 								height: "100%",
 								width: "100%",
+								zIndex: -5,
 							}}
 							// animate={{
 							// 	backgroundColor: "#e0e0e0",
@@ -856,7 +886,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 				</TouchableOpacity>
 				<View style={styles.scrollItem}>
 					<TextInput style={styles.scrollText} 
-						value={task.startTime}
+						value={task.startTime.toString()}
 						type="number"
 						name="startTime"
 						placeholder= "start time"
@@ -931,7 +961,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 				</TouchableOpacity>
 				<View style={styles.scrollItem}>
 					<TextInput style={styles.scrollText}
-						value={task.duration}
+						value={task.duration.toString()}
 						type="number"
 						name="duration"
 						placeholder= "duration"
@@ -1106,6 +1136,28 @@ const loadingItem = () => {
 	);
 }
 
+const DateAndTimeItemTest = () => {
+	return (
+		<View style={[
+			{
+				height: minutesADay * timeScaleFactor, 
+				position: "relative",
+				// flex: 1,
+				// height: 1000, 
+				// maxwidth: 10,
+				maxWidth: 10,
+				width:   10,
+				margin: -10,
+				// zIndex: -1000,
+
+			}, {
+				transform: [{translateX: -100}]
+			}
+		]}>
+		</View>
+	)
+}
+
 const DateAndTimeItem = () => {
 	//55 is the value I found that scales this close enough to the agenda bars 
 	// const indicatorScale = 55 * timeScaleFactor;
@@ -1117,24 +1169,27 @@ const DateAndTimeItem = () => {
 	return (
 		<View style={{
 			flex: 0,
-			// position: 'absolute',
 			height: minutesADay * timeScaleFactor,
+			//^ problem, buttons dont work
+			width: 100,
+			zIndex: -100,
+
+			// position: 'absolute',
 			// top: 0, 
 			// bottom: 0,
 			// left: 0, right: 0, 
-			width: 100,
 			// backgroundColor  : "#CCC",
 			// borderColor      : "#AAA",
 			// borderWidth: 5,
-			// zIndex: 10
 		}}>
 			<View style={styles.timeIndicatorBlock}>
 				{timeIndicators.map( (timeIndicator, index) => 
 					<View key={index} style={{
 						position: 'absolute',
 						// height: 5,
-						top: timeIndicator*60 * timeScaleFactor,
+						top: timeIndicator * 60 * timeScaleFactor,
 						// marginBottom: indicatorScale
+						width: 100,
 					}}>
 						<View style={{
 							height: 5,
@@ -1146,7 +1201,30 @@ const DateAndTimeItem = () => {
 						</Text>
 					</View>
 				)}
-				{/* <Text style={styles.dateIndicatorText}>
+			</View>
+			<View style={{
+				position: 'absolute',
+				height: 35,
+				top: minutesToday * timeScaleFactor, 
+				left: 0, right: 0, 
+				width: 100,
+				backgroundColor  : "#000",
+				opacity: 0.9
+			}}>
+				<View style={{
+					height: 5,
+					width: 100,
+					backgroundColor  : "#0F0",
+				}}/>
+				<Text style={styles.timeDisplayText}>
+					{timeString}
+				</Text>
+			</View>
+		</View>
+	);
+}
+
+{/* <Text style={styles.dateIndicatorText}>
 					{"\n"}
 					{"\n"}
 					{"\n"}
@@ -1179,28 +1257,6 @@ const DateAndTimeItem = () => {
 					22:00{"\n"}
 					23:00
 				</Text> */}
-			</View>
-			<View style={{
-				position: 'absolute',
-				height: 35,
-				top: minutesToday * timeScaleFactor, 
-				left: 0, right: 0, 
-				width: 100,
-				backgroundColor  : "#000",
-				opacity: 0.9
-			}}>
-				<View style={{
-					height: 5,
-					width: 100,
-					backgroundColor  : "#0F0",
-				}}/>
-				<Text style={styles.timeDisplayText}>
-					{timeString}
-				</Text>
-			</View>
-		</View>
-	);
-}
 
 //a function to find all gaps
 
@@ -1700,6 +1756,7 @@ const styles = StyleSheet.create({
 		marginTop: 10,
 		flexDirection:"row",
 		opacity: .5,
+		zIndex: 100
 	},
 	scrollItem: {
 		flex: 1,
