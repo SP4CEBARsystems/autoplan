@@ -26,7 +26,8 @@ import { auth, firestore } from "../../firebase";
 //format the clock digits to always have two digits: "03:04" or "3:04" instead of "3:4"
 
 function generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer, setEventName) {
-	let timeMinutes = timeMilliseconds/60000
+	// const millisecondsPerMinute = 60000
+	let timeMinutes = timeMilliseconds/millisecondsPerMinute
 	let found = findCurrentEvent(tasks, timeMinutes, -1);
 	// console.log("found", found)
 	if (found === undefined) {return}
@@ -56,8 +57,8 @@ function generateTimers(tasks, timeMilliseconds, setBreakTimer, setEventTimer, s
 	}
 
 	console.log("breakTimer and eventTimer", breakTimer*60, eventTimer*60)
-	let brakeJsTime = new Date(breakTimer*60000)
-	let eventJsTime = new Date(eventTimer*60000)
+	let brakeJsTime = new Date(breakTimer*millisecondsPerMinute)
+	let eventJsTime = new Date(eventTimer*millisecondsPerMinute)
 	//the hours are wrong
 	let breakTimerH = brakeJsTime.getHours()
 	let breakTimerM = brakeJsTime.getMinutes()

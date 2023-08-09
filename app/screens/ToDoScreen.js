@@ -316,7 +316,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						Day:
 					</Text>
 					<TextInput style={styles.scrollItemM} 
-						value={deadline.getDate()}
+						value={deadline.getDate().toString()}
 						type="number"
 						name="deadline"
 						placeholder= "day"
@@ -347,7 +347,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						Month:
 					</Text>
 					<TextInput style={styles.scrollItemM} 
-						value={deadline.getMonth()+1}
+						value={(deadline.getMonth()+1).toString()}
 						type="number"
 						name="deadline"
 						placeholder= "month"
@@ -369,7 +369,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						Year:
 					</Text>
 					<TextInput style={styles.scrollItemM} 
-						value={deadline.getFullYear()}
+						value={deadline.getFullYear().toString()}
 						type="number"
 						name="deadline"
 						placeholder= "year"
@@ -391,7 +391,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						Hours:
 					</Text>
 					<TextInput style={styles.scrollItemM} 
-						value={deadline.getHours()}
+						value={deadline.getHours().toString()}
 						type="number"
 						name="deadline"
 						placeholder= "hours"
@@ -413,7 +413,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						Minutes:
 					</Text>
 					<TextInput style={styles.scrollItemM} 
-						value={deadline.getMinutes()}
+						value={deadline.getMinutes().toString()}
 						type="number"
 						name="deadline"
 						placeholder= "minutes"
@@ -435,7 +435,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						Seconds:
 					</Text>
 					<TextInput style={styles.scrollItemM}
-						value={deadline.getSeconds()}
+						value={deadline.getSeconds().toString()}
 						type="number"
 						name="deadline"
 						placeholder= "seconds"

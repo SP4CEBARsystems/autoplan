@@ -16,18 +16,18 @@ let sync2        = false;
 let tasks2       = [];
 // let unlockScroll = true;
 
-function fetchData2 (setTasks, setSync) {
-	//, setAgenda
-	//refAgenda = doc(firestore, "Agenda", "TestDay")
-	//refToDo   = doc(firestore, "ToDo", "activeTasks")
-	// fetchData (setAgenda, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
-	// fetchData (setTasks , setSync, doc(firestore, "PlannedGaps", "TestDay"    ));
-	fetchData (setTasks, setSync, doc(firestore, "Planning"   , "TestDay"    ));
-	// fetchData (setTasks, setSync, doc(firestore, "Gaps"       , "TestDay"    ));
-	// fetchData (setTasks, setSync, doc(firestore, "ToDo"       , "activeTasks"));
-	//doc(firestore, "Agenda", "TestDay")
-	//fetchData (setTasks, setSync, doc(firestore, "Planning", "TestDay"));
-}
+// function fetchData2 (setTasks, setSync) {
+// 	//, setAgenda
+// 	//refAgenda = doc(firestore, "Agenda", "TestDay")
+// 	//refToDo   = doc(firestore, "ToDo", "activeTasks")
+// 	// fetchData (setAgenda, setSync, doc(firestore, "Agenda"     , "TestDay"    ));
+// 	// fetchData (setTasks , setSync, doc(firestore, "PlannedGaps", "TestDay"    ));
+// 	fetchData (setTasks, setSync, doc(firestore, "Planning"   , "TestDay"    ));
+// 	// fetchData (setTasks, setSync, doc(firestore, "Gaps"       , "TestDay"    ));
+// 	// fetchData (setTasks, setSync, doc(firestore, "ToDo"       , "activeTasks"));
+// 	//doc(firestore, "Agenda", "TestDay")
+// 	//fetchData (setTasks, setSync, doc(firestore, "Planning", "TestDay"));
+// }
 
 //the structure is bad: I need to split all the tasks up into separate documents for queries to be useful
 //for now I can sort the tasks array before uploading it
@@ -94,42 +94,42 @@ function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, day
 	});
 }
 
-function fetchData4 (dayOffset, planning, setTasks, setSync, ref) {
-	console.log("fetchdata3");
-	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
-	//don't add a semicolon ";" after "getDoc()", Don't do that
-	getDoc(ref).then((doc) => {
-		console.log("doc");
-		let data = doc.data();
-		let newPlanning = data ? data.tasks : [];
-		console.log("planning pre:", planning)
-		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
-		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
-		planning = newPlanning;
+// function fetchData4 (dayOffset, planning, setTasks, setSync, ref) {
+// 	console.log("fetchdata3");
+// 	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
+// 	//don't add a semicolon ";" after "getDoc()", Don't do that
+// 	getDoc(ref).then((doc) => {
+// 		console.log("doc");
+// 		let data = doc.data();
+// 		let newPlanning = data ? data.tasks : [];
+// 		console.log("planning pre:", planning)
+// 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+// 		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+// 		planning = newPlanning;
 
-		console.log("planning post:", planning)
-		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
-		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+// 		console.log("planning post:", planning)
+// 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+// 		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
 		
-		// let newPlanning = data ? data.tasks : [];
-		// newPlanning.unshift({
-		// 	name: "TestDay",
-		// 	type: "date",
-		// 	startTime: 7500 * (dayOffset+1)
-		// });
-		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+// 		// let newPlanning = data ? data.tasks : [];
+// 		// newPlanning.unshift({
+// 		// 	name: "TestDay",
+// 		// 	type: "date",
+// 		// 	startTime: 7500 * (dayOffset+1)
+// 		// });
+// 		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
 		
-		console.log("newplan,", planning);
-		// setTasks(newPlanning);
-		setTasks(planning);
-		//globalAgenda = planning
-		setSync(true);
-	}).catch((e) => {
-		console.log("firebase error:", e);
-		//throw e;
-		//alert(error.message);
-	});
-}
+// 		console.log("newplan,", planning);
+// 		// setTasks(newPlanning);
+// 		setTasks(planning);
+// 		//globalAgenda = planning
+// 		setSync(true);
+// 	}).catch((e) => {
+// 		console.log("firebase error:", e);
+// 		//throw e;
+// 		//alert(error.message);
+// 	});
+// }
 
 function fetchData5 (dayOffset, planning, setTasks, setSync, ref) {
 	console.log("fetchdata5");
@@ -507,10 +507,15 @@ const ToDoScreen = ({ navigation }) => {
 						dayOffset = 0;
 						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 						// loadedDate = new Date(loadedDay*millisecondsInDay)
+						scrollOffsetY = minutesToday * timeScaleFactor
+						flatListRef.current.scrollToOffset({
+							animated: false,
+							offset: scrollOffsetY
+						})
 						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
 					}}>
 						<Text style={styles.counterText}>
-							today
+							now
 						</Text>
 					</TouchableOpacity>
 
@@ -1137,27 +1142,27 @@ const loadingItem = () => {
 	);
 }
 
-const DateAndTimeItemTest = () => {
-	return (
-		<View style={[
-			{
-				height: minutesADay * timeScaleFactor, 
-				position: "relative",
-				// flex: 1,
-				// height: 1000, 
-				// maxwidth: 10,
-				maxWidth: 10,
-				width:   10,
-				margin: -10,
-				// zIndex: -1000,
+// const DateAndTimeItemTest = () => {
+// 	return (
+// 		<View style={[
+// 			{
+// 				height: minutesADay * timeScaleFactor, 
+// 				position: "relative",
+// 				// flex: 1,
+// 				// height: 1000, 
+// 				// maxwidth: 10,
+// 				maxWidth: 10,
+// 				width:   10,
+// 				margin: -10,
+// 				// zIndex: -1000,
 
-			}, {
-				transform: [{translateX: -100}]
-			}
-		]}>
-		</View>
-	)
-}
+// 			}, {
+// 				transform: [{translateX: -100}]
+// 			}
+// 		]}>
+// 		</View>
+// 	)
+// }
 
 const DateAndTimeItem = () => {
 	//55 is the value I found that scales this close enough to the agenda bars 
