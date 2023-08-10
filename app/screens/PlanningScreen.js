@@ -46,49 +46,82 @@ function fetchData (setTasks, setSync, ref) {
 	});
 }
 
-function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, dayIndicators, setSync, ref) {
+function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, dayIndicators, setReload, setPlanning, sync, setSync, ref, docRef) {
 	console.log("fetchdata3");
 	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
 	//don't add a semicolon ";" after "getDoc()", Don't do that
+
+	
+	//docRef
+	// ref.get().then((doc) => {
+	// 	if (doc.exists) {
+	// 		console.log("fetchdata3 success2 Document data:", doc.data());
+	// 	} else {
+	// 		// doc.data() will be undefined in this case
+	// 		console.log("fetchdata3 No such document!");
+	// 	}
+	// }).catch((error) => {
+	// 	console.log("fetchdata3 Error getting document:", error);
+	// });
+
+
 	getDoc(ref).then((doc) => {
 		console.log("doc");
+		console.log("fetchdata3 success", doc);
 		let data = doc.data();
-		let newPlanning = data ? data.tasks : [];
-		console.log("planning pre:", planning)
-		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
-		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
-		planning = newPlanning;
-		
-		console.log("planning post:", planning)
-		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
-		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
-		
-		// let newPlanning = data ? data.tasks : [];
-		// newPlanning.unshift({
-		// 	name: "TestDay",
-		// 	type: "date",
-		// 	startTime: 7500 * (dayOffset+1)
-		// });
-		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
-		
-		console.log("newplan,", planning);
-		// setTasks(newPlanning);
-		setTasks(planning);
+		if (data===undefined) {
+			// doc.data() will be undefined in this case
+			console.log("fetchdata3 No such document!");
+			let newPlanning = [];
+			planning = newPlanning;
+			setTasks(planning);
+			setDisplayed(planning);
+			setSync(true);
+			console.log("fetchdata3 No such document!");
+			saveData2(planning, true, setReload, setPlanning, setDisplayed);
+		} else {
+			console.log("fetchdata3 success2 Document data:", doc.data());
+			let newPlanning = data ? data.tasks : [];
+			planning = newPlanning;
+			setTasks(planning);
+			setDisplayed(planning);
+			setSync(true);
 
-		//use an array for just the day indicators and add it to it whenever the planning algorithm is done
+			// console.log("planning pre:", planning)
+			// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+			// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+			
+			// console.log("planning post:", planning)
+			// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+			// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+			
+			// let newPlanning = data ? data.tasks : [];
+			// newPlanning.unshift({
+			// 	name: "TestDay",
+			// 	type: "date",
+			// 	startTime: 7500 * (dayOffset+1)
+			// });
+			// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+			
+			// console.log("newplan,", planning);
+			// setTasks(newPlanning);
 
-		// planning.unshift({
-		// 	name: "TestDay",
-		// 	type: "date",
-		// 	startTime: 0
-		// });
-		// startTime: 7500 * dayOffset
+			//use an array for just the day indicators and add it to it whenever the planning algorithm is done
+
+			// planning.unshift({
+			// 	name: "TestDay",
+			// 	type: "date",
+			// 	startTime: 0
+			// });
+			// startTime: 7500 * dayOffset
+			
+			// setDisplayed(planning.concat(dayIndicators));
 		
-		setDisplayed(planning);
-		// setDisplayed(planning.concat(dayIndicators));
-		setSync(true);
+		}
 	}).catch((e) => {
 		// console.log("firebase error:", e);
+		console.log("fetchdata3 error");
+		
 		throw e;
 		//alert(error.message);
 	});
@@ -131,42 +164,42 @@ function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, day
 // 	});
 // }
 
-function fetchData5 (dayOffset, planning, setTasks, setSync, ref) {
-	console.log("fetchdata5");
-	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
-	//don't add a semicolon ";" after "getDoc()", Don't do that
-	getDoc(ref).then((doc) => {
-		console.log("doc");
-		let data = doc.data();
-		let newPlanning = data ? data.tasks : [];
-		console.log("planning pre:", planning)
-		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
-		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
-		planning = newPlanning;
-		console.log("planning post:", planning)
-		console.log("Agenda loaded:", planning)
-		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
-		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+// function fetchData5 (dayOffset, planning, setTasks, setSync, ref) {
+// 	console.log("fetchdata5");
+// 	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
+// 	//don't add a semicolon ";" after "getDoc()", Don't do that
+// 	getDoc(ref).then((doc) => {
+// 		console.log("doc");
+// 		let data = doc.data();
+// 		let newPlanning = data ? data.tasks : [];
+// 		console.log("planning pre:", planning)
+// 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+// 		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+// 		planning = newPlanning;
+// 		console.log("planning post:", planning)
+// 		console.log("Agenda loaded:", planning)
+// 		// console.log("comparison:", planning[0].name == "loading", newPlanning, planning.concat(newPlanning));
+// 		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
 		
-		// let newPlanning = data ? data.tasks : [];
-		// newPlanning.unshift({
-		// 	name: "TestDay",
-		// 	type: "date",
-		// 	startTime: 7500 * (dayOffset+1)
-		// });
-		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
+// 		// let newPlanning = data ? data.tasks : [];
+// 		// newPlanning.unshift({
+// 		// 	name: "TestDay",
+// 		// 	type: "date",
+// 		// 	startTime: 7500 * (dayOffset+1)
+// 		// });
+// 		// planning = planning[0].name == "loading" ? newPlanning : planning.concat(newPlanning);
 		
-		console.log("newplan,", planning);
-		// setTasks(newPlanning);
-		setTasks(planning);
-		globalAgenda = planning
-		setSync(true);
-	}).catch((e) => {
-		console.log("firebase error:", e);
-		//throw e;
-		//alert(error.message);
-	});
-}
+// 		console.log("newplan,", planning);
+// 		// setTasks(newPlanning);
+// 		setTasks(planning);
+// 		globalAgenda = planning
+// 		setSync(true);
+// 	}).catch((e) => {
+// 		console.log("firebase error:", e);
+// 		//throw e;
+// 		//alert(error.message);
+// 	});
+// }
 
 let dayLengthPixels       = 6068.7998046874;
 let deltaDayLengthPixels  = 1/dayLengthPixels;
@@ -182,7 +215,7 @@ let indexTablePlanning    = [];
 // let amountOfDaysLoaded    = 0;
 let dayOffset             = 0;
 
-const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore) => {
+const fetchMore = (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore) => {
 	console.log("fetchMore");
 	//get js date in milliseconds
 	//multiply it by 1/86400000
@@ -211,8 +244,9 @@ const fetchMore = (planning, setPlanning, tasks, setTasks, plannedGaps, setPlann
 
 	setDayIndicators(dayIndicators);
 	console.log("dayIndicators 4", dayIndicators);
-
-	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, dayIndicators, setSync, doc(firestore, editPreset ? "Planning preset" : "Planning"   , documentName));
+	// var docRef = firestore.collection(editPreset ? "Planning preset" : "Planning").doc(documentName);
+	var docRef = 0
+	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, dayIndicators, setReload, setPlanning, sync, setSync, doc(firestore, editPreset ? "Planning preset" : "Planning"   , documentName), docRef);
 	// fetchData5 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
 	// fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
 	// fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
@@ -322,6 +356,7 @@ let flooredMinutesToday = javascriptDate.getHours()*60
 // console.log("minutesToday", javascriptDate.getMinutes()+javascriptDate.getHours()*60);
 // console.log("minutesToday", milliSecondsToday/3600000);
 // console.log("minutesToday", minutesToday/60);
+let isToday = editPreset == false && dayOffset == 0;
 
 let globalAgenda = [
 	// {
@@ -464,7 +499,7 @@ const ToDoScreen = ({ navigation }) => {
 		// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
 		// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
 		// updateData(modified , setModified, sync, tasks);
-		fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
+		fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
 
 		if (pendingFetch) {
 			// fetchMore (planning, setPlanning, setSync, firestore);
@@ -521,6 +556,7 @@ const ToDoScreen = ({ navigation }) => {
 	
 	let loadedDate = new Date(loadedDay*millisecondsInDay);
 	agendaId=-1;
+	isToday = editPreset == false && dayOffset == 0
 
 	// let actuallyDisplayed = displayed
 	// actuallyDisplayed.unshift({
@@ -540,7 +576,7 @@ const ToDoScreen = ({ navigation }) => {
 						if (editPreset && dayOffset<0) {dayOffset=0}
 						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 						// loadedDate = new Date(loadedDay*millisecondsInDay)
-						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
+						fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
 					}}>
 						<Text style={styles.counterText}>
 							previous
@@ -559,7 +595,7 @@ const ToDoScreen = ({ navigation }) => {
 						if (editPreset && dayOffset>7) {dayOffset=7}
 						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 						// loadedDate = new Date(loadedDay*millisecondsInDay)
-						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
+						fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
 					}}>
 						<Text style={styles.counterText}>
 							next
@@ -576,7 +612,7 @@ const ToDoScreen = ({ navigation }) => {
 							offset: scrollOffsetY
 						})
 						editPreset = false
-						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
+						fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
 					}}>
 						<Text style={styles.counterText}>
 							now
@@ -584,7 +620,7 @@ const ToDoScreen = ({ navigation }) => {
 					</TouchableOpacity>
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
 						editPreset = !editPreset
-						fetchMore (planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, setSync, firestore);
+						fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
 					}}>
 						<Text style={styles.counterText}>
 							presets
@@ -815,7 +851,7 @@ const ToDoScreen = ({ navigation }) => {
 						// 	animated: false,
 						// 	offset: scrollOffsetY
 						// })
-						saveData2(tasks, displayed, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+						saveData2(displayed, sync, setReload, setPlanning, setDisplayed)
 					}}>
 						<Text style={styles.plusText}>
 							+
@@ -956,7 +992,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					// } else {
 					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					// }
-					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -978,7 +1014,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 							// } else {
 							// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 							// }
-							saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+							saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
 						}}
 					/>
 				</View>
@@ -1012,7 +1048,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					// } else {
 					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					// }
-					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -1031,7 +1067,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					// } else {
 					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					// }
-					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -1055,7 +1091,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 							// } else {
 							// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 							// }
-							saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+							saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
 						}}
 					/>
 				</View>
@@ -1071,7 +1107,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					// } else {
 					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					// }
-					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -1112,7 +1148,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					setReplan(true);
 					// globalAgenda.splice(agendaId, 1);
 					agenda.splice(agendaId, 1);
-					saveData2(agenda, tasks, sync, setAgenda, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators)
+					saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
 				}}/>
 			</View>
 		</View>
@@ -1280,7 +1316,7 @@ const DateAndTimeItem = () => {
 					</View>
 				)}
 			</View>
-			<View style={{
+			{!isToday ? null : (<View style={{
 				position: 'absolute',
 				height: 35,
 				top: minutesToday * timeScaleFactor, 
@@ -1297,7 +1333,7 @@ const DateAndTimeItem = () => {
 				<Text style={styles.timeDisplayText}>
 					{timeString}
 				</Text>
-			</View>
+			</View>)}
 		</View>
 	);
 }
@@ -1590,7 +1626,7 @@ function saveData(tasks, sync){
 	}
 }
 
-function saveData2(tasks4, originalPlanning, sync, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators){
+function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed){
 // function saveData(tasks){
 	// console.log("ready to write");
 	// console.log("sync  check 2: ",sync);
