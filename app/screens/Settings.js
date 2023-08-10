@@ -2,17 +2,38 @@ import React, { useState, useEffect } from 'react';
 import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput} from 'react-native';
 
 const Settings = ({ navigation }) => {
-    <View>
-        <Text>
-            hi
-        </Text>
-        <View style={styles.menuButtons}>
-            <TouchableOpacity style={styles.menuButton1}/>
-            <TouchableOpacity style={styles.menuButton2} onPress={() => navigation.navigate("Planning")}/>
-            <TouchableOpacity style={styles.menuButton3} onPress={() => navigation.navigate("Focus"   )}/>
-            <TouchableOpacity style={styles.menuButton3} onPress={() => navigation.navigate("Settings")}/>
+    return (
+        <View style={styles.background}>
+            <SafeAreaView style={styles.container}>
+                <ScrollView>
+                    <Text style={styles.headerText}>
+                        Settings
+                    </Text>
+                    <Text style={styles.scrollText}>
+                        There are no settings yet.
+                    </Text>
+                    <Text style={styles.headerText}>
+                        Support
+                    </Text>
+                    <Text style={styles.scrollText}>
+                        If you encounter any problems, or you want to give feedback, please send an e-mail to "plannedout2@gmail.com".
+                    </Text>
+                    <Text style={styles.headerText}>
+                        About me
+                    </Text>
+                    <Text style={styles.scrollText}>
+                        I am Boaz Crezee, and this is my first app. It took a year to make. The goal of this app is that it calculates what you should do now for you to get the things done you want to get done now, next week, next year, or ever.
+                    </Text>
+                </ScrollView>
+                <View style={styles.menuButtons}>
+                    <TouchableOpacity style={styles.menuButton1} onPress={() => navigation.navigate("ToDo"    )}/>
+                    <TouchableOpacity style={styles.menuButton2} onPress={() => navigation.navigate("Planning")}/>
+                    <TouchableOpacity style={styles.menuButton3} onPress={() => navigation.navigate("Focus"   )}/>
+                    <TouchableOpacity style={styles.menuButton3} onPress={() => navigation.navigate("Settings")}/>
+                </View>
+            </SafeAreaView>
         </View>
-    </View>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -81,6 +102,11 @@ const styles = StyleSheet.create({
 	},
 	scrollText: {
 		fontSize: 20,
+		color: "#fff",
+		textAlign: "center",
+	},
+	headerText: {
+		fontSize: 50,
 		color: "#fff",
 		textAlign: "center",
 	},
