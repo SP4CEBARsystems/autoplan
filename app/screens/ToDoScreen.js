@@ -140,6 +140,7 @@ const ToDoScreen = ({ navigation }) => {
 					<TouchableOpacity style={styles.menuButton1}/>
 					<TouchableOpacity style={styles.menuButton2} onPress={() => navigation.navigate("Planning")}/>
 					<TouchableOpacity style={styles.menuButton3} onPress={() => navigation.navigate("Focus"   )}/>
+					<TouchableOpacity style={styles.menuButton3} onPress={() => navigation.navigate("Settings")}/>
 				</View>
 			</SafeAreaView>
 		</View>
