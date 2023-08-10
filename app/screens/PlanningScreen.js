@@ -944,9 +944,9 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 				<View style={styles.scrollItem}>
 					<TextInput style={styles.scrollText} 
 						value={task.name}
-						type="text"
-						name="name"
-						placeholder= "task name"
+						// type="text"
+						// name="name"
+						// placeholder= "task name"
 						editable
 						onChangeText={(text) => {
 							task.name = text;
@@ -1002,9 +1002,9 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 				<View style={styles.scrollItem}>
 					<TextInput style={styles.scrollText} 
 						value={task.startTime.toString()}
-						type="number"
-						name="startTime"
-						placeholder= "start time"
+						// type="number"
+						// name="startTime"
+						// placeholder= "start time"
 						editable
 						onChangeText={(text) => {
 							tasks       [taskId  ].startTime = text;
@@ -1078,9 +1078,9 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 				<View style={styles.scrollItem}>
 					<TextInput style={styles.scrollText}
 						value={task.duration.toString()}
-						type="number"
-						name="duration"
-						placeholder= "duration"
+						// type="number"
+						// name="duration"
+						// placeholder= "duration"
 						editable
 						onChangeText={(text) => {
 							focused = taskId;

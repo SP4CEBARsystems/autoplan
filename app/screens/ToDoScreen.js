@@ -278,9 +278,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 					</Text>
 					<TextInput style={styles.scrollItemM} 
 						value={task.requiredTime.toString()}
-						type="number"
-						name="requiredTime"
-						placeholder="required time"
+						// type="number"
+						// name="requiredTime"
+						// placeholder="required time"
 						editable
 						onChangeText={(text) => {
 							task.requiredTime = parseInt(text) ? parseInt(text) : 0;
@@ -302,9 +302,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 					</Text>
 					<TextInput style={styles.scrollItemM} 
 						value={task.priority.toString()}
-						type="number"
-						name="priority"
-						placeholder= "priority"
+						// type="number"
+						// name="priority"
+						// placeholder= "priority"
 						editable
 						onChangeText={(text) => {
 							task.priority = parseInt(text) ? parseInt(text) : 0;
@@ -339,9 +339,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 					</Text>
 					<TextInput style={styles.scrollItemM} 
 						value={deadline.getDate().toString()}
-						type="number"
-						name="deadline"
-						placeholder= "day"
+						// type="number"
+						// name="deadline"
+						// placeholder= "day"
 						editable
 						onChangeText={(text) => {
 							//parseInt(text) ? parseInt(text) : 0;
@@ -372,9 +372,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 					</Text>
 					<TextInput style={styles.scrollItemM} 
 						value={(deadline.getMonth()+1).toString()}
-						type="number"
-						name="deadline"
-						placeholder= "month"
+						// type="number"
+						// name="deadline"
+						// placeholder= "month"
 						editable
 						onChangeText={(text) => {
 							//tasks[taskId].deadline = new Date(text);
@@ -396,9 +396,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 					</Text>
 					<TextInput style={styles.scrollItemM} 
 						value={deadline.getFullYear().toString()}
-						type="number"
-						name="deadline"
-						placeholder= "year"
+						// type="number"
+						// name="deadline"
+						// placeholder= "year"
 						editable
 						onChangeText={(text) => {
 							//tasks[taskId].deadline = new Date(text);
@@ -420,9 +420,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 					</Text>
 					<TextInput style={styles.scrollItemM} 
 						value={deadline.getHours().toString()}
-						type="number"
-						name="deadline"
-						placeholder= "hours"
+						// type="number"
+						// name="deadline"
+						// placeholder= "hours"
 						editable
 						onChangeText={(text) => {
 							//tasks[taskId].deadline = new Date(text);
@@ -444,9 +444,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 					</Text>
 					<TextInput style={styles.scrollItemM} 
 						value={deadline.getMinutes().toString()}
-						type="number"
-						name="deadline"
-						placeholder= "minutes"
+						// type="number"
+						// name="deadline"
+						// placeholder= "minutes"
 						editable
 						onChangeText={(text) => {
 							//tasks[taskId].deadline = new Date(text);
@@ -468,9 +468,9 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 					</Text>
 					<TextInput style={styles.scrollItemM}
 						value={deadline.getSeconds().toString()}
-						type="number"
-						name="deadline"
-						placeholder= "seconds"
+						// type="number"
+						// name="deadline"
+						// placeholder= "seconds"
 						editable
 						onChangeText={(text) => {
 							//tasks[taskId].deadline = new Date(text);
