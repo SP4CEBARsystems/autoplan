@@ -219,11 +219,28 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 				<View style={styles.scrollItem}>
 					<TextInput style={styles.scrollText} 
 						value={task.name.toString()}
-						type="text"
-						name="name"
-						placeholder= "task name"
-						onChange={(e) => {
-							tasks[taskId].name = e.target.value;
+						// type="text"
+						// name="name"
+						// placeholder= "task name"
+
+
+						
+						// editable
+						// multiline
+						// numberOfLines={4}
+						// maxLength={40}
+						// onChangeText={text => onChangeText(text)}
+
+
+						// onChange={(e) => {
+						editable
+						onChangeText={(text) => {
+							// console.log("name", text)
+							// task.name = e.target.value;
+							task.name = text;
+							console.log("task name", task.name)
+							tasks[taskId] = task
+							console.log("task", tasks[taskId])
 							reRenderTasks(setTasks, tasks, setModified);
 							// setTasks   (tasks);
 							// setModified(true);
@@ -264,9 +281,11 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						type="number"
 						name="requiredTime"
 						placeholder="required time"
-						onChange={(e) => {
-							tasks[taskId].requiredTime = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
-							//e.target.value.replace(/[^0-9||.]/g,"");
+						editable
+						onChangeText={(text) => {
+							task.requiredTime = parseInt(text) ? parseInt(text) : 0;
+							tasks[taskId] = task
+							//text.replace(/[^0-9||.]/g,"");
 							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 							// setTasks   (tasks);
 							// setModified(true);
@@ -286,8 +305,10 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						type="number"
 						name="priority"
 						placeholder= "priority"
-						onChange={(e) => {
-							tasks[taskId].priority = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
+						editable
+						onChangeText={(text) => {
+							task.priority = parseInt(text) ? parseInt(text) : 0;
+							tasks[taskId] = task
 							//.replace(/[^0-9||.]/g,"")
 							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 							// setTasks   (tasks);
@@ -321,16 +342,18 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						type="number"
 						name="deadline"
 						placeholder= "day"
-						onChange={(e) => {
-							//parseInt(e.target.value) ? parseInt(e.target.value) : 0;
-							//e.target.value + "T00:00:00"
-							// tasks[taskId].deadline = new Date(e.target.value);
+						editable
+						onChangeText={(text) => {
+							//parseInt(text) ? parseInt(text) : 0;
+							//text + "T00:00:00"
+							// tasks[taskId].deadline = new Date(text);
 
 							let maxDays = maxDaysThisMonth(deadline.getMonth(), deadline.getFullYear())
-							deadline.setDate(clamp(e.target.value, 1, maxDays))
-							tasks[taskId].deadline = deadline.getTime();
+							deadline.setDate(clamp(text, 1, maxDays))
+							task.deadline = deadline.getTime();
+							tasks[taskId] = task
 							//deadlineDate.getTime()
-							//e.target.value.replace(/[^0-9||.]/g,"");
+							//text.replace(/[^0-9||.]/g,"");
 							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 							// setTasks   (tasks);
 							// setModified(true);
@@ -352,10 +375,12 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						type="number"
 						name="deadline"
 						placeholder= "month"
-						onChange={(e) => {
-							//tasks[taskId].deadline = new Date(e.target.value);
-							deadline.setMonth(clamp(e.target.value, 1, 12)-1);
-							tasks[taskId].deadline = deadline.getTime();
+						editable
+						onChangeText={(text) => {
+							//tasks[taskId].deadline = new Date(text);
+							deadline.setMonth(clamp(text, 1, 12)-1);
+							task.deadline = deadline.getTime();
+							tasks[taskId] = task
 							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						}}
 					/>
@@ -374,10 +399,12 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						type="number"
 						name="deadline"
 						placeholder= "year"
-						onChange={(e) => {
-							//tasks[taskId].deadline = new Date(e.target.value);
-							deadline.setFullYear(e.target.value);
-							tasks[taskId].deadline = deadline.getTime();
+						editable
+						onChangeText={(text) => {
+							//tasks[taskId].deadline = new Date(text);
+							deadline.setFullYear(text);
+							task.deadline = deadline.getTime();
+							tasks[taskId] = task
 							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						}}
 					/>
@@ -396,10 +423,12 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						type="number"
 						name="deadline"
 						placeholder= "hours"
-						onChange={(e) => {
-							//tasks[taskId].deadline = new Date(e.target.value);
-							deadline.setHours(clamp(e.target.value,0,23));
-							tasks[taskId].deadline = deadline.getTime();
+						editable
+						onChangeText={(text) => {
+							//tasks[taskId].deadline = new Date(text);
+							deadline.setHours(clamp(text,0,23));
+							task.deadline = deadline.getTime();
+							tasks[taskId] = task
 							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						}}
 					/>
@@ -418,10 +447,12 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						type="number"
 						name="deadline"
 						placeholder= "minutes"
-						onChange={(e) => {
-							//tasks[taskId].deadline = new Date(e.target.value);
-							deadline.setMinutes(clamp(e.target.value,0,59));
-							tasks[taskId].deadline = deadline.getTime();
+						editable
+						onChangeText={(text) => {
+							//tasks[taskId].deadline = new Date(text);
+							deadline.setMinutes(clamp(text,0,59));
+							task.deadline = deadline.getTime();
+							tasks[taskId] = task
 							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						}}
 					/>
@@ -440,10 +471,12 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						type="number"
 						name="deadline"
 						placeholder= "seconds"
-						onChange={(e) => {
-							//tasks[taskId].deadline = new Date(e.target.value);
-							deadline.setSeconds(clamp(e.target.value,0,59));
-							tasks[taskId].deadline = deadline.getTime();
+						editable
+						onChangeText={(text) => {
+							//tasks[taskId].deadline = new Date(text);
+							deadline.setSeconds(clamp(text,0,59));
+							task.deadline = deadline.getTime();
+							tasks[taskId] = task
 							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						}}
 					/>
@@ -457,9 +490,10 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
                     type="number"
                     name="like"
                     placeholder= "number"
-                    onChange={(e) => {
-						tasks[taskId].like = parseInt(e.target.value) ? parseInt(e.target.value) : 0;
-						//e.target.value.replace(/[^0-9||.]/g,"");
+                    editable
+						onChangeText={(text) => {
+						tasks[taskId].like = parseInt(text) ? parseInt(text) : 0;
+						//text.replace(/[^0-9||.]/g,"");
 						reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
 						// setTasks   (tasks);
 						// setModified(true);
@@ -476,7 +510,8 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 // export default test
 
 const reRenderTasksAndUrgency = (setTasks, tasks, task, taskId, setModified) => {
-	tasks[taskId].urgency = calculateUrgency(task);
+	task.urgency = calculateUrgency(task);
+	tasks[taskId] = task
 	reRenderTasks(setTasks, tasks, setModified);
 }
 
