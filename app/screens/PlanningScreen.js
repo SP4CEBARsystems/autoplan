@@ -947,20 +947,21 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 						type="text"
 						name="name"
 						placeholder= "task name"
-						onChange={(e) => {
-							task.name = e.target.value;
-							// tasks       [taskId].name = e.target.value;
+						editable
+						onChangeText={(text) => {
+							task.name = text;
+							// tasks       [taskId].name = text;
 							tasks[taskId]=task;
-							// agenda[taskId-1].name = e.target.value;
+							// agenda[taskId-1].name = text;
 							// setAgenda  (agenda);
 							setDisplayed(tasks);
 							setModified (true );
-							// globalAgenda[agendaId].name = e.target.value;
+							// globalAgenda[agendaId].name = text;
 							//agendaID is different on a different thread
 							let agendaId2 = task.agendaId
 							if (agenda[agendaId2]) {
 								console.log("pre new agenda name:", agenda[agendaId2].name, agenda)
-								// agenda[agendaId].name = e.target.value;
+								// agenda[agendaId].name = text;
 								agenda[agendaId2] =task;
 								console.log("new agenda name:", agenda[agendaId2].name, agenda)
 							} else {
@@ -1004,13 +1005,14 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 						type="number"
 						name="startTime"
 						placeholder= "start time"
-						onChange={(e) => {
-							tasks       [taskId  ].startTime = e.target.value;
+						editable
+						onChangeText={(text) => {
+							tasks       [taskId  ].startTime = text;
 							setDisplayed   (tasks);
 							setReplan  (true);
-							// globalAgenda[agendaId].startTime = e.target.value;
+							// globalAgenda[agendaId].startTime = text;
 							// if (agenda[agendaId]) {
-							// 	agenda[agendaId].startTime = e.target.value;
+							// 	agenda[agendaId].startTime = text;
 							// } else {
 							// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 							// }
@@ -1079,15 +1081,16 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 						type="number"
 						name="duration"
 						placeholder= "duration"
-						onChange={(e) => {
+						editable
+						onChangeText={(text) => {
 							focused = taskId;
-							tasks       [taskId  ].duration = e.target.value;
+							tasks       [taskId  ].duration = text;
 							setDisplayed   (tasks);
 							// setModified(true);
 							setReplan  (true);
-							// globalAgenda[agendaId].duration = e.target.value;
+							// globalAgenda[agendaId].duration = text;
 							// if (agenda[agendaId]) {
-							// 	agenda[agendaId].duration = e.target.value;
+							// 	agenda[agendaId].duration = text;
 							// } else {
 							// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 							// }
