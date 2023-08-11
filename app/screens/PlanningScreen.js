@@ -451,10 +451,12 @@ const ToDoScreen = ({ navigation }) => {
 	const [pendingFetch  , setPendingFetch  ] = useState(false);
 	const [dayIndicators , setDayIndicators ] = useState([]);
 	const [pasteAreYouSure  , setPasteAreYouSure  ] = useState(false);
+	const [copiedPlanning , setCopiedPlanning ] = useState([]);
 	let tasks       = globalAgenda
 	let planning    = globalPlanning
 	let gaps        = globalGaps
 	let plannedGaps = globalPlannedGaps
+	// let copiedPlanning = []
 	// const [tasks         , setTasks         ] = useState([
 	// 	{
 	// 		name          : "loading",
@@ -593,132 +595,137 @@ const ToDoScreen = ({ navigation }) => {
 	// 	startTime: 0
 	// });
 
-	
+	console.log("copiedPlanning: ", copiedPlanning, copiedPlanning==[]);
 	return (
 		<View style={styles.background}>
 			<SafeAreaView style={styles.container}>
-				<View style={styles.fixedDateDisplay}>
-					<TouchableOpacity style={styles.counterButton} onPress={() => {
-						loadedDay--;
-						dayOffset--;
-						if (editPreset && dayOffset<0) {dayOffset=6}
-						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
-						// loadedDate = new Date(loadedDay*millisecondsInDay)
-						fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
-					}}>
-						<Text style={styles.counterText}>
-							previous
+				{/* <ScrollView style={styles.displayScroller}> */}
+					<View style={styles.fixedDateDisplay}>
+						<TouchableOpacity style={styles.counterButton} onPress={() => {
+							loadedDay--;
+							dayOffset--;
+							if (editPreset && dayOffset<0) {dayOffset=6}
+							currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
+							// loadedDate = new Date(loadedDay*millisecondsInDay)
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
+						}}>
+							<Text style={styles.counterText}>
+								previous
+							</Text>
+						</TouchableOpacity>
+						<Text style={styles.fixedDateDisplayText}>
+							{
+								// "Day" + loadedDay.toString() 
+								editPreset ? dayOfWeekString(dayOffset) : loadedDate.toDateString()
+								//loadedDate==today ? " (today)" : ""
+							}
 						</Text>
-					</TouchableOpacity>
-					<Text style={styles.fixedDateDisplayText}>
-						{
-							// "Day" + loadedDay.toString() 
-							editPreset ? dayOfWeekString(dayOffset) : loadedDate.toDateString()
-							//loadedDate==today ? " (today)" : ""
-						}
-					</Text>
-					<TouchableOpacity style={styles.counterButton} onPress={() => {
-						loadedDay++;
-						dayOffset++;
-						if (editPreset && dayOffset>6) {dayOffset=0}
-						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
-						// loadedDate = new Date(loadedDay*millisecondsInDay)
-						fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
-					}}>
-						<Text style={styles.counterText}>
-							next
-						</Text>
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.counterButton} onPress={() => {
-						// loadedDay = ;
-						dayOffset = 0;
-						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
-						// loadedDate = new Date(loadedDay*millisecondsInDay)
-						scrollOffsetY = minutesToday * timeScaleFactor - cursorLine
-						flatListRef.current.scrollToOffset({
-							animated: false,
-							offset: scrollOffsetY
-						})
-						editPreset = false
-						fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
-					}}>
-						<Text style={styles.counterText}>
-							now
-						</Text>
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.counterButton} onPress={() => {
-						editPreset = !editPreset
-						fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
-					}}>
-						<Text style={styles.counterText}>
-							presets
-						</Text>
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.counterButton} onPress={() => {
-						copiedPlanning = displayed
-					}}>
-						<Text style={styles.counterText}>
-							Copy
-						</Text>
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.counterButton} onPress={() => {
-						if (pasteAreYouSure) {
-							setDisplayed(copiedPlanning);
-							saveData(copiedPlanning, sync);
-						} else {
-							setTimeout(() => {
-								// pasteAreYouSure=false
-								setPasteAreYouSure(false)
-							}, 2000);
-						}
-						// pasteAreYouSure = !pasteAreYouSure
-						setPasteAreYouSure(!pasteAreYouSure)
-					}}>
-						<Text style={styles.counterText}>
-							{pasteAreYouSure ? "Are you sure?" : "Paste"}
-						</Text>
-					</TouchableOpacity>
+						<TouchableOpacity style={styles.counterButton} onPress={() => {
+							loadedDay++;
+							dayOffset++;
+							if (editPreset && dayOffset>6) {dayOffset=0}
+							currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
+							// loadedDate = new Date(loadedDay*millisecondsInDay)
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
+						}}>
+							<Text style={styles.counterText}>
+								next
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity style={styles.counterButton} onPress={() => {
+							// loadedDay = ;
+							dayOffset = 0;
+							currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
+							// loadedDate = new Date(loadedDay*millisecondsInDay)
+							scrollOffsetY = minutesToday * timeScaleFactor - cursorLine
+							flatListRef.current.scrollToOffset({
+								animated: false,
+								offset: scrollOffsetY
+							})
+							editPreset = false
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
+						}}>
+							<Text style={styles.counterText}>
+								now
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity style={styles.counterButton} onPress={() => {
+							editPreset = !editPreset
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
+						}}>
+							<Text style={styles.counterText}>
+								presets
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity style={styles.counterButton} onPress={() => {
+							// copiedPlanning = displayed
+							setCopiedPlanning(extractAgenda(displayed))
+						}}>
+							<Text style={styles.counterText}>
+								Copy
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity style={styles.counterButton} onPress={() => {
+							if (copiedPlanning.length==0) {
+								if (pasteAreYouSure) {
+									setDisplayed(copiedPlanning);
+									saveData(copiedPlanning, sync);
+								} else {
+									setTimeout(() => {
+										// pasteAreYouSure=false
+										setPasteAreYouSure(false)
+									}, 2000);
+								}
+								// pasteAreYouSure = !pasteAreYouSure
+								setPasteAreYouSure(!pasteAreYouSure)
+							}
+						}}>
+							<Text style={styles.counterText}>
+								{copiedPlanning.length==0 ? "Nothing to paste" : (pasteAreYouSure ? "Are you sure?" : "Paste")}
+							</Text>
+						</TouchableOpacity>
 
 
-					<TouchableOpacity style={styles.counterButton} onPress={() => {
-						if (timeScaleFactor>1){
-							scrollOffsetY = (scrollOffsetY+cursorLine) * (timeScaleFactor-1) / (timeScaleFactor) - cursorLine
-							timeScaleFactor--;
+						<TouchableOpacity style={styles.counterButton} onPress={() => {
+							if (timeScaleFactor>1){
+								scrollOffsetY = (scrollOffsetY+cursorLine) * (timeScaleFactor-1) / (timeScaleFactor) - cursorLine
+								timeScaleFactor--;
+								flatListRef.current.scrollToOffset({
+									animated: false,
+									offset: scrollOffsetY
+								})
+								setReload(true);
+							}
+						}}>
+							<Text style={styles.counterText}>
+								-
+							</Text>
+						</TouchableOpacity>
+
+						<Text style={styles.fixedDateDisplayText}>
+							{"zoom: " + timeScaleFactor.toString()}
+						</Text>
+
+						<TouchableOpacity style={styles.counterButton} onPress={() => {
+							scrollOffsetY = (scrollOffsetY+cursorLine) * (timeScaleFactor+1) / (timeScaleFactor) - cursorLine
+							timeScaleFactor++;
 							flatListRef.current.scrollToOffset({
 								animated: false,
 								offset: scrollOffsetY
 							})
 							setReload(true);
-						}
-					}}>
-						<Text style={styles.counterText}>
-							-
-						</Text>
-					</TouchableOpacity>
-
-					<Text style={styles.fixedDateDisplayText}>
-						{"zoom: " + timeScaleFactor.toString()}
-					</Text>
-
-					<TouchableOpacity style={styles.counterButton} onPress={() => {
-						scrollOffsetY = (scrollOffsetY+cursorLine) * (timeScaleFactor+1) / (timeScaleFactor) - cursorLine
-						timeScaleFactor++;
-						flatListRef.current.scrollToOffset({
-							animated: false,
-							offset: scrollOffsetY
-						})
-						setReload(true);
-					}}>
-						<Text style={styles.counterText}>
-							+
-						</Text>
-					</TouchableOpacity>
-					{sync ? null : (
-						<Text>
-							Loading...
-						</Text>
-					)}
-				</View>
+						}}>
+							<Text style={styles.counterText}>
+								+
+							</Text>
+						</TouchableOpacity>
+						{sync ? null : (
+							<Text>
+								Loading...
+							</Text>
+						)}
+					</View>
+				{/* </ScrollView> */}
 				<FlatList
 					// ref={this.theFlatList}
 					ref={flatListRef}
@@ -908,7 +915,7 @@ const ToDoScreen = ({ navigation }) => {
 						// 	animated: false,
 						// 	offset: scrollOffsetY
 						// })
-						saveData2(displayed, sync, setReload, setPlanning, setDisplayed)
+						saveData2(planning, sync, setReload, setPlanning, setDisplayed)
 					}}>
 						<Text style={styles.plusText}>
 							+
@@ -1686,6 +1693,12 @@ function saveData(tasks, sync){
 	}
 }
 
+const extractAgenda = (originalPlanning) => {
+	let tasks = [];
+	originalPlanning.forEach(element => {if(element.type == "agenda" || element.type == "break"){tasks.push(element)}})
+	return tasks;
+}
+
 function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed){
 // function saveData(tasks){
 	// console.log("ready to write");
@@ -1700,8 +1713,8 @@ function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed)
 		// let plannedGaps = [];
 		// let tasks = tasks4
 		let planning = [];
-		let tasks = [];
-		originalPlanning.forEach(element => {if(element.type == "agenda" || element.type == "break"){tasks.push(element)}})
+		let tasks = extractAgenda(originalPlanning);
+
 		if (!editPreset){
 			if(todo_tasks.length>0){
 				// console.log("originalPlanning:", originalPlanning)
@@ -2055,26 +2068,35 @@ const styles = StyleSheet.create({
 		marginRight : 1,
 		marginTop   : 4,
 		marginBottom: 4,
-		maxWidth: 200
+		maxWidth: 200,
+		// width: 200,
+		// height: 75,
 	},
 	counterText: {
 		fontSize: 40,
 		textAlign: "center",
 		textAlignVertical: "center",
-		color: "#FFF"
+		color: "#FFF",
+	},
+	displayScroller: {
+		// height: 50,
+		backgroundColor: "#888",
+		flexDirection:"row",
+		width: "100%",
+		height: 50,
 	},
 	fixedDateDisplay: {
 		// height: 50,
 		backgroundColor: "#888",
 		flexDirection:"row",
 		width: "100%",
-		height: "10%"
+		height: "10%",
 	},
 	fixedDateDisplayText: {
 		fontSize: 40,
 		textAlign: "center",
 		textAlignVertical: "center",
-		color: "#FFF"
+		color: "#FFF",
 	}
 })
 
