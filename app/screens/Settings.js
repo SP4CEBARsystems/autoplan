@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput} from 'react-native';
+import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput, Linking} from 'react-native';
 
 const Settings = ({ navigation }) => {
     return (
@@ -17,6 +17,11 @@ const Settings = ({ navigation }) => {
                     </Text>
                     <Text style={styles.scrollText}>
                         If you encounter any problems, or you want to give feedback, please send an e-mail to "plannedout2@gmail.com".
+                    </Text>
+                    <Text style={[styles.scrollText, {color: 'blue'}]}
+						onPress={() => Linking.openURL('https://discord.gg/EawFudKz')}
+					>
+						Or click here to join the Planned Out Discord server
                     </Text>
                     <Text style={styles.headerText}>
                         About me

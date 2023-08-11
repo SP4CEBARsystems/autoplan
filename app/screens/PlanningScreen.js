@@ -666,16 +666,20 @@ const ToDoScreen = ({ navigation }) => {
 							</Text>
 						</TouchableOpacity>
 						<TouchableOpacity style={styles.counterButton} onPress={() => {
-							if (copiedPlanning.length==0) {
+							console.log("copiedPlanning paste button pressed: ", copiedPlanning.length)
+							if (copiedPlanning.length!=0) {
 								if (pasteAreYouSure) {
+									console.log("copiedPlanning paste: ", copiedPlanning)
 									setDisplayed(copiedPlanning);
-									saveData(copiedPlanning, sync);
+									saveData2(copiedPlanning, sync, setReload, setPlanning, setDisplayed)
 								} else {
+									console.log("copiedPlanning warning")
 									setTimeout(() => {
 										// pasteAreYouSure=false
 										setPasteAreYouSure(false)
 									}, 2000);
 								}
+								console.log("copiedPlanning switch")
 								// pasteAreYouSure = !pasteAreYouSure
 								setPasteAreYouSure(!pasteAreYouSure)
 							}
