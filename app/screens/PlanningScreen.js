@@ -409,6 +409,33 @@ const setPlannedGaps = (plannedGaps) => {
 	globalPlannedGaps = plannedGaps
 }
 
+const dayOfWeekString = (day) => {
+	switch(day){
+		case 0:
+			return "Preset Monday"
+			break;
+		case 1:
+			return "Preset Tuesday"
+			break;
+		case 2:
+			return "Preset Wednesday"
+			break;
+		case 3:
+			return "Preset Thursday"
+			break;
+		case 4:
+			return "Preset Friday"
+			break;
+		case 5:
+			return "Preset Saturday"
+			break;
+		case 6:
+			return "Preset Sunday"
+			break;
+	}
+	return "Preset out of bounds: " + day.toString()
+}
+
 const ToDoScreen = ({ navigation }) => {
 	//process.on('unhandledRejection', r => console.log(r));
 	const [modified      , setModified      ] = useState(false);
@@ -573,7 +600,7 @@ const ToDoScreen = ({ navigation }) => {
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
 						loadedDay--;
 						dayOffset--;
-						if (editPreset && dayOffset<0) {dayOffset=0}
+						if (editPreset && dayOffset<0) {dayOffset=6}
 						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 						// loadedDate = new Date(loadedDay*millisecondsInDay)
 						fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
@@ -585,14 +612,14 @@ const ToDoScreen = ({ navigation }) => {
 					<Text style={styles.fixedDateDisplayText}>
 						{
 							// "Day" + loadedDay.toString() 
-    						loadedDate.toDateString()
+							editPreset ? dayOfWeekString(dayOffset) : loadedDate.toDateString()
 							//loadedDate==today ? " (today)" : ""
 						}
 					</Text>
 					<TouchableOpacity style={styles.counterButton} onPress={() => {
 						loadedDay++;
 						dayOffset++;
-						if (editPreset && dayOffset>7) {dayOffset=7}
+						if (editPreset && dayOffset>6) {dayOffset=0}
 						currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 						// loadedDate = new Date(loadedDay*millisecondsInDay)
 						fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
@@ -661,6 +688,11 @@ const ToDoScreen = ({ navigation }) => {
 							+
 						</Text>
 					</TouchableOpacity>
+					{sync ? null : (
+						<Text>
+							Loading...
+						</Text>
+					)}
 				</View>
 				<FlatList
 					// ref={this.theFlatList}
