@@ -450,6 +450,7 @@ const ToDoScreen = ({ navigation }) => {
 	const [scrollOffset  , setScrollOffset  ] = useState(0);
 	const [pendingFetch  , setPendingFetch  ] = useState(false);
 	const [dayIndicators , setDayIndicators ] = useState([]);
+	const [pasteAreYouSure  , setPasteAreYouSure  ] = useState(false);
 	let tasks       = globalAgenda
 	let planning    = globalPlanning
 	let gaps        = globalGaps
@@ -651,6 +652,30 @@ const ToDoScreen = ({ navigation }) => {
 					}}>
 						<Text style={styles.counterText}>
 							presets
+						</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={styles.counterButton} onPress={() => {
+						copiedPlanning = displayed
+					}}>
+						<Text style={styles.counterText}>
+							Copy
+						</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={styles.counterButton} onPress={() => {
+						if (pasteAreYouSure) {
+							setDisplayed(copiedPlanning);
+							saveData(copiedPlanning, sync);
+						} else {
+							setTimeout(() => {
+								// pasteAreYouSure=false
+								setPasteAreYouSure(false)
+							}, 2000);
+						}
+						// pasteAreYouSure = !pasteAreYouSure
+						setPasteAreYouSure(!pasteAreYouSure)
+					}}>
+						<Text style={styles.counterText}>
+							{pasteAreYouSure ? "Are you sure?" : "Paste"}
 						</Text>
 					</TouchableOpacity>
 
@@ -1666,7 +1691,6 @@ function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed)
 	// console.log("ready to write");
 	// console.log("sync  check 2: ",sync);
 	// console.log("sync2 check 2: ",sync2);
-	if (editPreset) {return;}
 	
 	if(sync){
 		// console.log("written");
@@ -1678,35 +1702,36 @@ function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed)
 		let planning = [];
 		let tasks = [];
 		originalPlanning.forEach(element => {if(element.type == "agenda" || element.type == "break"){tasks.push(element)}})
-		if(todo_tasks.length>0){
-			// console.log("originalPlanning:", originalPlanning)
-			console.log("A0");
-			console.log("extracted agenda:", tasks)
+		if (!editPreset){
+			if(todo_tasks.length>0){
+				// console.log("originalPlanning:", originalPlanning)
+				console.log("A0");
+				console.log("extracted agenda:", tasks)
 
-			console.log("A1");
-			tasks.sort((a, b) => a.startTime - b.startTime);
-			console.log("A2", tasks);
-			//disable this for testing purposes \V/
-			let gaps        = findGaps(tasks);
-			console.log("A3", gaps);
+				console.log("A1");
+				tasks.sort((a, b) => a.startTime - b.startTime);
+				console.log("A2", tasks);
+				//disable this for testing purposes \V/
+				let gaps        = findGaps(tasks);
+				console.log("A3", gaps);
 
-			//disable this for testing purposes \V/
-			let plannedGaps = PlanOut(gaps, todo_tasks);
-			console.log("A4", plannedGaps);
+				//disable this for testing purposes \V/
+				let plannedGaps = PlanOut(gaps, todo_tasks);
+				console.log("A4", plannedGaps);
 
-			let generatedBreaks = generateBreaks(plannedGaps);
+				let generatedBreaks = generateBreaks(plannedGaps);
 
-			planning    = tasks;
-			//disable this for testing purposes \V/
-			planning = planning.concat(plannedGaps).concat(generatedBreaks);
-			console.log("A5", planning);
-			planning.sort((a, b) => a.startTime - b.startTime);
-			console.log("A6", planning);
-		} else {
-			// planning = originalPlanning;
-			planning = tasks;
+				planning    = tasks;
+				//disable this for testing purposes \V/
+				planning = planning.concat(plannedGaps).concat(generatedBreaks);
+				console.log("A5", planning);
+				planning.sort((a, b) => a.startTime - b.startTime);
+				console.log("A6", planning);
+			} else {
+				// planning = originalPlanning;
+				planning = tasks;
+			}
 		}
-
 		// planning.unshift({ name: "TestDay", type: "date" });
 		setPlanning (planning);
 
