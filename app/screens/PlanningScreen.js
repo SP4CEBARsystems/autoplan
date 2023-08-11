@@ -246,7 +246,7 @@ const fetchMore = (setReload, planning, setPlanning, tasks, setTasks, plannedGap
 	console.log("dayIndicators 4", dayIndicators);
 	// var docRef = firestore.collection(editPreset ? "Planning preset" : "Planning").doc(documentName);
 	var docRef = 0
-	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, dayIndicators, setReload, setPlanning, sync, setSync, doc(firestore, editPreset ? "Planning preset" : "Planning"   , documentName), docRef);
+	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, dayIndicators, setReload, setPlanning, sync, setSync, doc(firestore, editPreset ? "Planning presets" : "Planning"   , documentName), docRef);
 	// fetchData5 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
 	// fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
 	// fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
@@ -846,7 +846,7 @@ const ToDoScreen = ({ navigation }) => {
 					<TouchableOpacity style={styles.plus} onPress={() => {
 						// tasks.push({
 						displayed.push({
-							name          : "new Event",
+							name          : "New Event",
 							duration      : 60,
 							startTime     : (scrollOffsetY + cursorLine)/timeScaleFactor,
 							source        : "",
@@ -1666,6 +1666,7 @@ function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed)
 	// console.log("ready to write");
 	// console.log("sync  check 2: ",sync);
 	// console.log("sync2 check 2: ",sync2);
+	if (editPreset) {return;}
 	
 	if(sync){
 		// console.log("written");
