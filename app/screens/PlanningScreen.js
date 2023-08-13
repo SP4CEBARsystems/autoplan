@@ -1552,8 +1552,9 @@ function PlanOut(gaps, tasks){
 	let plannedGaps   = [];
 	let dayOfTask     = 0;
 	let prevDayOfTask = 0;
-	for(let i=0; i<gaps.length; i++){
-		let gap    = gaps[i];
+	gaps.forEach((gap, i) => {
+	// for(let i=0; i<gaps.length; i++){
+		// let gap    = gaps[i];
 		let time   = gap.startTime;
 		let gapEnd = time + gap.duration;
 		let taskID = 0;
@@ -1609,7 +1610,8 @@ function PlanOut(gaps, tasks){
 			}
 			taskID++;
 		}
-	}
+	// }
+	});
 	console.log("return tasks:", tasks);
 	return plannedGaps;
 }

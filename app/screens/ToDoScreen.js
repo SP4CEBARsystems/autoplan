@@ -23,7 +23,8 @@ let globalTasks = [
 		repeatTimespan: "loading",
 		repeatInterval: 0,
 		repeatOffset  : 0,
-		repeatOffsets : []
+		repeatOffsets : [],
+		cooldown      : 0
 	},{
 		name          : "loading",
 		requiredTime  : 0,
@@ -36,7 +37,8 @@ let globalTasks = [
 		repeatTimespan: "loading",
 		repeatInterval: 0,
 		repeatOffset  : 0,
-		repeatOffsets : []
+		repeatOffsets : [],
+		cooldown      : 0
 	}
 ]
 
@@ -122,6 +124,7 @@ const ToDoScreen = ({ navigation }) => {
 							repeatInterval: 0,
 							repeatOffset  : 0,
 							repeatOffsets : [],
+							cooldown      : 60
 							// id            : nextElementKey,
 						});
 						const l = tasks.length-1;
@@ -481,6 +484,33 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 						}}
 					/>
 					<Text style={styles.scrollItemR}>
+					</Text>
+				</View>
+
+				<View style={styles.scrollItem2}>
+				</View>
+
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollItemL}>
+						Task cooldown period:
+					</Text>
+					<TextInput style={styles.scrollItemM} 
+						value={task.cooldown.toString()}
+						// type="number"
+						// name="requiredTime"
+						// placeholder="required time"
+						editable
+						onChangeText={(text) => {
+							task.cooldown = parseInt(text) ? parseInt(text) : 0;
+							tasks[taskId] = task
+							//text.replace(/[^0-9||.]/g,"");
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+							// setTasks   (tasks);
+							// setModified(true);
+						}}
+					/>
+					<Text style={styles.scrollItemR}>
+						Minutes
 					</Text>
 				</View>
 			</>)}
