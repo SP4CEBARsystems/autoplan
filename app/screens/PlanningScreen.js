@@ -1548,7 +1548,8 @@ function findGaps(tasks){
 //choose between absolute and relative times and stop mixing them
 //figure out if firebase has a modified flag so that I can refetch the data from the database
 
-function PlanOut(gaps, tasks){
+function PlanOut(gaps, originalTasks){
+	let tasks = originalTasks;
 	let plannedGaps   = [];
 	let dayOfTask     = 0;
 	let prevDayOfTask = 0;
@@ -1572,42 +1573,45 @@ function PlanOut(gaps, tasks){
 			// 	// plannedGaps.push ({name : task.name, duration : timeLeft, startTime : time});
 			// 	// break;
 			// } else 
-			if (task.maxLength > timeLeft){
-				console.log(task);
-				// let duration = task.maxLength;
-				plannedGaps.push ({
-					name      : task.name, 
-					duration  : timeLeft, 
-					startTime : time, 
-					type      : "generated", 
-					id        : -plannedGaps.length*2
-				});
-		
-				dayOfTask = Math.floor (time * deltaDayLengthPixels);
-				if( dayOfTask != prevDayOfTask ){
-					indexTablePlannedGaps.push(i);
-				}
-				prevDayOfTask = dayOfTask;
-				// time = gapEnd;
-				break;
-			} else {
-				// let duration = gapEnd;
-				plannedGaps.push ({
-					name      : task.name, 
-					duration  : task.maxLength, 
-					startTime : time, 
-					type      : "generated",
-					id        : -plannedGaps.length*2
-				});
-		
-				dayOfTask = Math.floor (time * deltaDayLengthPixels);
-				if( dayOfTask != prevDayOfTask ){
-					indexTablePlannedGaps.push(i);
-				}
-				prevDayOfTask = dayOfTask;
+			if (task.cooldownTimestamp <= time) {
+				if (task.maxLength > timeLeft){
+					console.log(task);
+					// let duration = task.maxLength;
+					plannedGaps.push ({
+						name      : task.name, 
+						duration  : timeLeft, 
+						startTime : time, 
+						type      : "generated", 
+						id        : -plannedGaps.length*2
+					});
+			
+					dayOfTask = Math.floor (time * deltaDayLengthPixels);
+					if( dayOfTask != prevDayOfTask ){
+						indexTablePlannedGaps.push(i);
+					}
+					prevDayOfTask = dayOfTask;
+					// time = gapEnd;
+					break;
+				} else {
+					// let duration = gapEnd;
+					plannedGaps.push ({
+						name      : task.name, 
+						duration  : task.maxLength, 
+						startTime : time, 
+						type      : "generated",
+						id        : -plannedGaps.length*2
+					});
+			
+					dayOfTask = Math.floor (time * deltaDayLengthPixels);
+					if( dayOfTask != prevDayOfTask ){
+						indexTablePlannedGaps.push(i);
+					}
+					prevDayOfTask = dayOfTask;
 
-				time += task.maxLength;
+					time += task.maxLength;
+				}
 			}
+
 			taskID++;
 		}
 	// }
