@@ -252,7 +252,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 				</View>
 				<View style={styles.scrollItem}>
 					<Text style={styles.scrollText}>
-						{task.urgency.toFixed(1)}
+						{(Math.log10(task.urgency)).toFixed(1)}
 					</Text>
 				</View>
 				<TouchableOpacity style={styles.scrollItem} onPress={() => {
@@ -516,7 +516,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 
 				<View style={styles.scrollItem2}>
 					<Text style={styles.scrollItemL}>
-						Session cooldown period:
+						Session resting period:
 					</Text>
 					<TextInput style={styles.scrollItemM} 
 						value={task.cooldown.toString()}
@@ -580,7 +580,7 @@ const calculateUrgency = (task, time) => {
 	let daysUntilDeadline = task.deadline - time
 	const timePressure = daysUntilDeadline ? 1 * task.requiredTime / (daysUntilDeadline * minutesADay) : 1
 	// const timePressure = task.deadline ? task.requiredTime / task.deadline : -1
-	const urgency = 100 * task.priority * 0.01 * Math.min(timePressure, 1)
+	const urgency = 100 * task.priority * 0.01 * Math.min(timePressure, 1);
 	return urgency;
 }
 
