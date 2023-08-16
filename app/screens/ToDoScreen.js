@@ -540,7 +540,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 // export default test
 
 const reRenderTasksAndUrgency = (setTasks, tasks, task, taskId, setModified) => {
-	task.urgency = calculateUrgency(task);
+	task.urgency = calculateUrgency(task, Date.now());
 	tasks[taskId] = task
 	reRenderTasks(setTasks, tasks, setModified);
 }
@@ -551,8 +551,9 @@ const reRenderTasks = (setTasks, tasks, setModified) => {
 	setModified(true);
 }
 
-const calculateUrgency = (task) => {
-	let daysUntilDeadline = task.deadline - Date.now()
+const calculateUrgency = (task, time) => {
+	// don't forget to modify the copy of this function too in the PlanningScreen
+	let daysUntilDeadline = task.deadline - time
 	const timePressure = daysUntilDeadline ? 1 * task.requiredTime / (daysUntilDeadline * minutesADay) : 1
 	// const timePressure = task.deadline ? task.requiredTime / task.deadline : -1
 	const urgency = 100 * task.priority * 0.01 * Math.min(timePressure, 1)

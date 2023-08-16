@@ -1560,12 +1560,14 @@ function PlanOut(gaps, originalTasks){
 		let gapEnd = time + gap.duration;
 		let taskID = 0;
 		console.log("planning loop", time, gapEnd, gap)
+		tasks = recalculateUrgencies(time, tasks);
 		while(time < gapEnd){
 			if (taskID >= tasks.length) {
 				taskID = 0;
 				// break;
 			}
 			let task     = tasks[taskID];
+			if (task.cooldownTimestamp === undefined) {task.cooldownTimestamp = 0}
 			let timeLeft = gapEnd-time;
 			console.log("time: ", i, taskID, time, timeLeft, task.maxLength);
 			// if (time + task.minlength > timeLeft){
@@ -1574,41 +1576,14 @@ function PlanOut(gaps, originalTasks){
 			// 	// break;
 			// } else 
 			if (task.cooldownTimestamp <= time) {
-				if (task.maxLength > timeLeft){
+				({ time, dayOfTask, prevDayOfTask, tasks } = addTaskToPlanning( task.maxLength > timeLeft ? timeLeft : task.maxLength , plannedGaps, task, time, dayOfTask, prevDayOfTask, i, tasks ));
+				if (task.maxLength > timeLeft) {
 					console.log(task);
 					// let duration = task.maxLength;
-					plannedGaps.push ({
-						name      : task.name, 
-						duration  : timeLeft, 
-						startTime : time, 
-						type      : "generated", 
-						id        : -plannedGaps.length*2
-					});
-			
-					dayOfTask = Math.floor (time * deltaDayLengthPixels);
-					if( dayOfTask != prevDayOfTask ){
-						indexTablePlannedGaps.push(i);
-					}
-					prevDayOfTask = dayOfTask;
 					// time = gapEnd;
 					break;
-				} else {
+				// } else {
 					// let duration = gapEnd;
-					plannedGaps.push ({
-						name      : task.name, 
-						duration  : task.maxLength, 
-						startTime : time, 
-						type      : "generated",
-						id        : -plannedGaps.length*2
-					});
-			
-					dayOfTask = Math.floor (time * deltaDayLengthPixels);
-					if( dayOfTask != prevDayOfTask ){
-						indexTablePlannedGaps.push(i);
-					}
-					prevDayOfTask = dayOfTask;
-
-					time += task.maxLength;
 				}
 			}
 
@@ -1618,6 +1593,47 @@ function PlanOut(gaps, originalTasks){
 	});
 	console.log("return tasks:", tasks);
 	return plannedGaps;
+}
+
+function addTaskToPlanning(eventDuration, plannedGaps, task, time, dayOfTask, prevDayOfTask, i, tasks) {
+	plannedGaps.push({
+		name: task.name,
+		duration: eventDuration,
+		startTime: time,
+		type: "generated",
+		id: -plannedGaps.length * 2
+	});
+	dayOfTask = Math.floor(time * deltaDayLengthPixels);
+	if (dayOfTask != prevDayOfTask) {
+		indexTablePlannedGaps.push(i);
+	}
+	prevDayOfTask = dayOfTask;
+
+	time += eventDuration;
+	task.duration -= eventDuration;
+	task.cooldownTimestamp = time + task.cooldown;
+	tasks = recalculateUrgencies(time, tasks);
+	return { time, dayOfTask, prevDayOfTask, tasks };
+}
+
+function recalculateUrgencies(time, tasks) {
+	tasks.forEach((task, index) => {
+		// make sure the time units are the same (minutes or milliseconds)
+		// Recalculate the urgencies
+		task.urgency = calculateUrgency(task, time * 60000);
+		tasks[index] = task;
+	});
+	// Sort the copied version (list)
+	tasks.sort((a, b) => b.urgency - a.urgency)
+}
+
+const calculateUrgency = (task, time) => {
+	// don't forget to modify the copy of this function too in the ToDoScreen
+	let daysUntilDeadline = task.deadline - time
+	const timePressure = daysUntilDeadline ? 1 * task.requiredTime / (daysUntilDeadline * minutesADay) : 1
+	// const timePressure = task.deadline ? task.requiredTime / task.deadline : -1
+	const urgency = 100 * task.priority * 0.01 * Math.min(timePressure, 1)
+	return urgency;
 }
 
 function generateBreaks(plannedGaps) {
