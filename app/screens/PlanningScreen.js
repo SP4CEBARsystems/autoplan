@@ -1549,7 +1549,14 @@ function findGaps(tasks){
 //figure out if firebase has a modified flag so that I can refetch the data from the database
 
 function PlanOut(gaps, originalTasks){
+	// fix the time units:
+	// - minutes today
+	// - minutes since the epoch
+	// - milliseconds today
+	// - milliseconds since the epoch
+
 	let tasks = originalTasks;
+	console.log("Tasks is no longer ", tasks)
 	let plannedGaps   = [];
 	let dayOfTask     = 0;
 	let prevDayOfTask = 0;
@@ -1557,24 +1564,29 @@ function PlanOut(gaps, originalTasks){
 	// for(let i=0; i<gaps.length; i++){
 		// let gap    = gaps[i];
 		let time   = gap.startTime;
+		console.log ("log time: initial: ", time, gapEnd)
 		let gapEnd = time + gap.duration;
 		let taskID = 0;
 		console.log("planning loop", time, gapEnd, gap)
 		tasks = recalculateUrgencies(time, tasks);
-		while(time < gapEnd){
+		console.log("Tasks is ", tasks)
+		for (let index2 = 0; time < gapEnd; index2++) {
+		// }
+		// while(time < gapEnd){
 			if (taskID >= tasks.length) {
 				taskID = 0;
 				// break;
 			}
 			let task     = tasks[taskID];
-			if (task.cooldownTimestamp === undefined) {task.cooldownTimestamp = 0}
-			let timeLeft = gapEnd-time;
-			console.log("time: ", i, taskID, time, timeLeft, task.maxLength);
+			if (task.cooldownTimestamp === undefined) {task.cooldownTimestamp = 0};
+			let timeLeft = gapEnd - time;
+			console.log("log time: ", time," of ", gapEnd, ", index ", i, taskID, ", time left", timeLeft, task.maxLength, "loop number: ", index2);
 			// if (time + task.minlength > timeLeft){
 			// 	// //continue;
 			// 	// plannedGaps.push ({name : task.name, duration : timeLeft, startTime : time});
 			// 	// break;
 			// } else 
+			console.log("monitor time", task.cooldownTimestamp, time, task.cooldownTimestamp <= time)
 			if (task.cooldownTimestamp <= time) {
 				({ time, dayOfTask, prevDayOfTask, tasks } = addTaskToPlanning( task.maxLength > timeLeft ? timeLeft : task.maxLength , plannedGaps, task, time, dayOfTask, prevDayOfTask, i, tasks ));
 				if (task.maxLength > timeLeft) {
@@ -1588,6 +1600,10 @@ function PlanOut(gaps, originalTasks){
 			}
 
 			taskID++;
+			if (index2>1000) {
+				console.log("planned out timed out")
+				break;
+			}
 		}
 	// }
 	});
@@ -1610,6 +1626,7 @@ function addTaskToPlanning(eventDuration, plannedGaps, task, time, dayOfTask, pr
 	prevDayOfTask = dayOfTask;
 
 	time += eventDuration;
+	console.log ("log time: progressed: ", time, eventDuration)
 	task.duration -= eventDuration;
 	task.cooldownTimestamp = time + task.cooldown;
 	tasks = recalculateUrgencies(time, tasks);
@@ -1625,6 +1642,7 @@ function recalculateUrgencies(time, tasks) {
 	});
 	// Sort the copied version (list)
 	tasks.sort((a, b) => b.urgency - a.urgency)
+	return tasks;
 }
 
 const calculateUrgency = (task, time) => {
