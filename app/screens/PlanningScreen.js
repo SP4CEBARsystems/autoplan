@@ -1576,6 +1576,9 @@ function PlanOut(gaps, originalTasks){
 			if (taskID >= tasks.length) {
 				taskID = 0;
 				// break;
+				tasks.forEach((task, i) => {
+					task.cooldownTimestamp = 0;
+				})
 			}
 			let task     = tasks[taskID];
 			if (task.cooldownTimestamp === undefined) {task.cooldownTimestamp = 0};
