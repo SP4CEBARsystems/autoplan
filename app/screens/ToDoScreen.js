@@ -277,7 +277,7 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 			{!isSelected ? null : (<>
 				<View style={styles.scrollItem2}>
 					<Text style={styles.scrollItemL}>
-						Duration:
+						Time required:
 					</Text>
 					<TextInput style={styles.scrollItemM} 
 						value={task.requiredTime.toString()}
@@ -492,7 +492,31 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 
 				<View style={styles.scrollItem2}>
 					<Text style={styles.scrollItemL}>
-						Task cooldown period:
+						Maximum session duration:
+					</Text>
+					<TextInput style={styles.scrollItemM} 
+						value={task.maxLength.toString()}
+						// type="number"
+						// name="requiredTime"
+						// placeholder="required time"
+						editable
+						onChangeText={(text) => {
+							task.maxLength = parseInt(text) ? parseInt(text) : 0;
+							tasks[taskId] = task
+							//text.replace(/[^0-9||.]/g,"");
+							reRenderTasksAndUrgency(setTasks, tasks, task, taskId, setModified);
+							// setTasks   (tasks);
+							// setModified(true);
+						}}
+					/>
+					<Text style={styles.scrollItemR}>
+						Minutes
+					</Text>
+				</View>
+
+				<View style={styles.scrollItem2}>
+					<Text style={styles.scrollItemL}>
+						Session cooldown period:
 					</Text>
 					<TextInput style={styles.scrollItemM} 
 						value={task.cooldown.toString()}
