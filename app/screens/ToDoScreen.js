@@ -252,7 +252,8 @@ const ToDoListItem = ({tasks, taskId, task, setTasks, setModified, selected, set
 				</View>
 				<View style={styles.scrollItem}>
 					<Text style={styles.scrollText}>
-						{(Math.log10(task.urgency)).toFixed(1)}
+						{(Math.log2(task.urgency)+100).toFixed(1)}
+						{/* {task.urgency} */}
 					</Text>
 				</View>
 				<TouchableOpacity style={styles.scrollItem} onPress={() => {
