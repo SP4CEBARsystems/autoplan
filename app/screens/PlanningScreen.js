@@ -1459,18 +1459,27 @@ function findGaps(tasks){
 	// let nextTaskEnd;
 	// let gapStart = 0;
 	const minutesPerDay = 1440;
-	let prevTaskEnd = 0;
-	let maxEnd      = minutesPerDay;
-	let gaps = [];
+	let prevTaskEnd   = 0;
+	let maxEnd        = minutesPerDay;
+	let gaps          = [];
 	let dayOfTask     = 0;
 	let prevDayOfTask = 0;
-	indexTableGaps = [];
+	indexTableGaps    = [];
 	console.log("tt: ", tasks)
+	
+	let generatedBreaks = [];
+	const breakLength = 5;
+	const workLength  = 25;
+	const cycleLength = workLength + breakLength;
+
 	for (let i=0; i<tasks.length; i++) {
 		taskStart   = tasks[i].startTime
 		console.log("taskStart: ", prevTaskEnd, taskStart)
-		if (prevTaskEnd < taskStart) {
-			gaps.push({name: "gap", startTime: prevTaskEnd, duration: taskStart-prevTaskEnd});
+		if (prevTaskEnd < taskStart){
+			// gaps.push({name: "gap", startTime: gapStartTime, duration: gapDuration});
+			//planned breaks
+			alternateGapAndBreaks(prevTaskEnd, taskStart-prevTaskEnd, workLength, breakLength, cycleLength, generatedBreaks, gaps);
+			//how are the arrays returned?
 		}
 		prevTaskEnd = tasks[i].duration + taskStart
 		
@@ -1497,11 +1506,66 @@ function findGaps(tasks){
 		// gapStart = taskEnd;
 	}
 	if (prevTaskEnd < maxEnd) {
-		gaps.push({name: "gap", startTime: prevTaskEnd, duration: maxEnd-prevTaskEnd});
+		// gaps.push({name: "gap", startTime: prevTaskEnd, duration: maxEnd-prevTaskEnd});
+		
+		alternateGapAndBreaks(prevTaskEnd, maxEnd-prevTaskEnd, workLength, breakLength, cycleLength, generatedBreaks, gaps);
 	}
 
 	// console.log("gaps: ", gaps);
 	return gaps;
+}
+
+function alternateGapAndBreaks(gapStartTime, gapDuration, workLength, breakLength, cycleLength, generatedBreaks, gaps) {
+	for (let i = workLength; i < gapDuration; i += cycleLength) {
+		generatedBreaks.push({
+			name: "short break",
+			duration: Math.min(breakLength, gapDuration),
+			startTime: gapStartTime + i,
+			type: "generated break",
+			id: -generatedBreaks.length * 2 + 1,
+		});
+	}
+	for (let i = 0; i < gapDuration; i += cycleLength) {
+		gaps.push({
+			name: "gap",
+			startTime: gapStartTime + i,
+			duration: Math.min(workLength, gapDuration),
+		});
+	}
+	return {generatedBreaks, gaps}
+}
+
+function generateBreaks(gaps) {
+	let generatedBreaks = [];
+	const breakLength = 5;
+	const workLength  = 25;
+	const cycleLength = workLength + breakLength;
+	gaps.forEach(gap => {
+		for(let i=workLength; i<gap.duration; i+=cycleLength){
+			generatedBreaks.push ({
+				name      : "short break",
+				duration  : Math.min(breakLength, gap.duration),
+				startTime : gap.startTime + i, 
+				type      : "generated break",
+				id        : -generatedBreaks.length * 2 + 1,
+			});
+		}
+	});
+	return generatedBreaks;
+}
+
+function getPlannedHours( breaks, gaps, date1, date2 ) {
+	//dates in milliseconds
+	
+	//for each valid day
+		//
+}
+
+function getPlannedHoursDay( breaks, gaps, day ) {
+	//dates in milliseconds
+	let time = 0
+
+	return time
 }
 
 //load planning, load agenda -> view planning 
@@ -1547,6 +1611,110 @@ function findGaps(tasks){
 //add repeating tasks and events
 //choose between absolute and relative times and stop mixing them
 //figure out if firebase has a modified flag so that I can refetch the data from the database
+
+function PlanOut2(gaps, generatedBreaks, originalTasks){
+	let amountOfDaysInScope = 7
+	let timeAvailable = new Array(amountOfDaysInScope-1)
+	timeAvailable.array.forEach((element, index) => {
+		element = getTimeAvailable(index)
+	});
+	let days = new Array(amountOfDaysInScope-1)
+	let tasks = originalTasks
+	tasks.sort((a, b) => b.priority - a.priority)
+	let hoursLeftToday  = getPlannedHoursLeftToday()
+	let scopedHoursLeft = getScopedHoursLeft( hoursLeftToday )
+	tasks.forEach(task => {
+		let maxDaysToPlan = task.minDuration ? task.requiredTime / task.minDuration : Infinity
+		if (maxDaysToPlan<1) {maxDaysToPlan=1}
+		//infinity may cause things to malfunction
+		let daysUntilDeadline1 = getDaysUntilDeadline()
+		let daysUntilDeadline = Math.min(maxDaysToPlan, daysUntilDeadline1 )
+		let timeUntilDeadline = getTimeUntilDeadline( task, hoursLeftToday, scopedHoursLeft, daysUntilDeadline, amountOfDaysInScope )
+		// display planningFactor as a percentage on the todo list
+
+		let planningFactor = timeUntilDeadline ? task.requiredTime / timeUntilDeadline : 1
+		// let averageDuration = task.requiredTime / daysUntilDeadline
+		// if (task.requiredTime < task.minDuration) {
+		// 	//( maxDaysToPlan < 1 )
+		// 	//ignore something
+		// }
+		//what does this measure?
+		//what does planningFactor measure? percentage (actually factor) of time until deadline that's dedicated to that task
+
+		//min-duration
+		//
+		days.array.forEach(day => {
+			day = planningFactor
+			//I decided to just keep the percentages in this phase, but what if a 10 minute task is stretched over 7 days?
+			//satisfy min-length
+			//oh no, the most urgent task will fill up all time, leaving no time left for more urgent tasks, oh wait, the factor will be really low
+			//don't care about min and max lengths for now, yes, short tasks will be cut in many pieces then
+
+			//calculate a min-factor: days have to be reduced (from the start) until this factor is large enough
+		});
+		//   - This factor is then written to each day that's in scope
+		//   - and checked for to do list parameters: a valid time section has to exceed min-length, and not exceed max-length 
+		//   - This task is now (not) either:
+		//     - going to be spread evenly over the day now in a way that it can't possibly get overwritten by later tasks 
+		//       - (because the durations parameters of tasks may be different), 
+		//     - or (definitely) all tasks are going to be chronologically planned in later
+	});
+}
+
+function PlanOut2_Stage2(gaps, generatedBreaks, originalTasks){
+	//percentage to minutes
+}
+
+function getTimeAvailable(index) {
+	
+}
+
+function getDaysUntilDeadline() {
+
+}
+
+function getTimeUntilDeadline( task, hoursLeftToday, scopedHoursLeft, daysUntilDeadline, amountOfDaysInScope ) {
+	//time unit: milliseconds since epoch
+	let now   = Date.now()
+	let today = Math.ceil( now / millisecondsInDay )
+	let scope = today + amountOfDaysInScope - 1
+	if (task.deadline <  now  ) {return}
+	// if (task.deadline <= today) {return getPlannedHours( now, deadline )}
+	//return getPlannedHoursUntilDeadlineToday(task.deadline)
+	if (task.deadline <= scope) {return getPlannedHours( now, deadline )}
+	//return hoursLeftToday + getScopedHoursUntilDeadline(task.deadline)
+	return getPlannedHours( now, scope ) + getUnscopedHours( scope, deadline )
+	// return scopedHoursLeft + getUnscopedHoursUntilDeadline( scope, deadline )
+}
+
+function getUnscopedHours( date1, date2 ) {
+	
+}
+
+
+
+function getUnscopedHoursUntilDeadline( deadline ) {
+	// return (unscoped days until potential deadline) * average amount of work per day
+}
+
+function getScopedHoursLeft( hoursLeftToday ) {
+	return hoursLeftToday
+}
+
+function getScopedHoursUntilDeadline( deadline ) {
+
+}
+
+function getPlannedHoursUntilDeadlineToday( deadline ) {
+}
+
+function getPlannedHoursLeftToday() {
+	//if (deadline today) {
+
+	// } else {
+
+	// }
+}
 
 function PlanOut(gaps, originalTasks){
 	// fix the time units:
@@ -1657,25 +1825,6 @@ const calculateUrgency = (task, time) => {
 	return urgency;
 }
 
-function generateBreaks(plannedGaps) {
-	let generatedBreaks = [];
-	const breakLength = 5;
-	const workLength  = 25;
-	const cycleLength = workLength + breakLength;
-	plannedGaps.forEach(element => {
-		for(let i=workLength; i<element.duration; i+=cycleLength){
-			generatedBreaks.push ({
-				name      : "short break",
-				duration  : Math.min(breakLength, element.duration),
-				startTime : element.startTime + i, 
-				type      : "generated break",
-				id        : -generatedBreaks.length*2+1
-			});
-		}
-	});
-	return generatedBreaks;
-}
-
 //postpone for now:
 //a function to find a (new) gap's size after the task and to find if it's previous gap is merged with another gap
 //a promising method:
@@ -1776,10 +1925,14 @@ function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed)
 				console.log("A3", gaps);
 
 				//disable this for testing purposes \V/
-				let plannedGaps = PlanOut(gaps, todo_tasks);
-				console.log("A4", plannedGaps);
+				// let plannedGaps = PlanOut(gaps, todo_tasks);
+				// console.log("A4", plannedGaps);
 
-				let generatedBreaks = generateBreaks(plannedGaps);
+				//generateBreaks(plannedGaps)
+				let generatedBreaks = generateBreaks(gaps);
+
+				let plannedGaps = PlanOut2(gaps, generatedBreaks, todo_tasks);
+				console.log("A4", plannedGaps);
 
 				planning    = tasks;
 				//disable this for testing purposes \V/
