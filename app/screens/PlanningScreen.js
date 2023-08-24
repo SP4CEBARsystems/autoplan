@@ -1554,19 +1554,55 @@ function generateBreaks(gaps) {
 	return generatedBreaks;
 }
 
-function getPlannedHours( breaks, gaps, date1, date2 ) {
+function getPlannedHours( gaps, date1, date2 ) {
+	//load gaps from database under a new variable name
 	//dates in milliseconds
-	
-	//for each valid day
-		//
-}
-
-function getPlannedHoursDay( breaks, gaps, day ) {
 	//dates in milliseconds
+	let day1 = dayOf( date1 )
+	let day2 = dayOf( date2 )
+	if ( day1 == day2 ) { return getPlannedHoursDay( gaps, date1, date2 ); }
 	let time = 0
-
+	time += getPlannedHoursDay( gaps, date1, endOfDay(day1) );
+	for (let day=day1+1; day<=day2-1; day++) {
+		time += getPlannedHoursDay( gaps, startOfDay(day), endOfDay(day) );
+	}
+	time += getPlannedHoursDay( gaps, startOfDay(day2) , date2 );
 	return time
 }
+
+function dayOf( date ) {
+	return date / millisecondsInDay
+}
+
+function endOfDay( day ) {
+	return (day+1) * millisecondsInDay - 1
+}
+
+function startOfDay( day ) {
+	return day * millisecondsInDay
+}
+
+function getPlannedHoursDay( gaps, date1, date2 ) {
+	//dates in milliseconds since epoch
+	// let time = 0;
+	return gaps.filter( gap => gap.startTime >= date1 && gap.startTime+gap.duration <= date2 )
+		// .forEach( gap => time += gap.duration );
+		.reduce((accumulator, gap) => accumulator + gap.duration, 0);
+
+	// let index1 = gaps.indexOf( gaps.find( (gap) => gap.startTime >= date1 ) );
+	// let index2 = gaps.indexOf( gaps.find( (gap) => gap.startTime + gap.duration >= date2 ) );
+	// for (i = index1; i<=index2; i++) {
+
+	// }
+	// return time;
+}
+
+// function getPlannedHoursFullDay( gaps, date1, date2 ) {
+// 	//dates in milliseconds
+// 	let time = 0
+
+// 	return time
+// }
 
 //load planning, load agenda -> view planning 
 //  - on modify -> modify agenda -> update planning
