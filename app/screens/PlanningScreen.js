@@ -1554,19 +1554,19 @@ function generateBreaks(gaps) {
 	return generatedBreaks;
 }
 
-function getPlannedHours( gaps, date1, date2 ) {
+function getPlannedHours( gaps_scope, date1, date2 ) {
 	//load gaps from database under a new variable name
 	//dates in milliseconds
 	//dates in milliseconds
 	let day1 = dayOf( date1 )
 	let day2 = dayOf( date2 )
-	if ( day1 == day2 ) { return getPlannedHoursDay( gaps, date1, date2 ); }
+	if ( day1 == day2 ) { return getPlannedHoursDay( gaps_scope[day1], date1, date2 ); }
 	let time = 0
-	time += getPlannedHoursDay( gaps, date1, endOfDay(day1) );
+	time += getPlannedHoursDay( gaps_scope[day1], date1, endOfDay(day1) );
 	for (let day=day1+1; day<=day2-1; day++) {
-		time += getPlannedHoursDay( gaps, startOfDay(day), endOfDay(day) );
+		time += getPlannedHoursDay( gaps_scope[day], startOfDay(day), endOfDay(day) );
 	}
-	time += getPlannedHoursDay( gaps, startOfDay(day2) , date2 );
+	time += getPlannedHoursDay( gaps_scope[day2], startOfDay(day2) , date2 );
 	return time
 }
 
@@ -1649,11 +1649,16 @@ function getPlannedHoursDay( gaps, date1, date2 ) {
 //figure out if firebase has a modified flag so that I can refetch the data from the database
 
 function PlanOut2(gaps, generatedBreaks, originalTasks){
+	//this function looks like it needs to be broken up into smaller functions
 	let amountOfDaysInScope = 7
 	let timeAvailable = new Array(amountOfDaysInScope-1)
 	timeAvailable.array.forEach((element, index) => {
 		element = getTimeAvailable(index)
 	});
+
+	let gaps_scope = []
+	//go load it from the database
+
 	let days = new Array(amountOfDaysInScope-1)
 	let tasks = originalTasks
 	tasks.sort((a, b) => b.priority - a.priority)
@@ -1664,8 +1669,8 @@ function PlanOut2(gaps, generatedBreaks, originalTasks){
 		if (maxDaysToPlan<1) {maxDaysToPlan=1}
 		//infinity may cause things to malfunction
 		let daysUntilDeadline1 = getDaysUntilDeadline()
-		let daysUntilDeadline = Math.min(maxDaysToPlan, daysUntilDeadline1 )
-		let timeUntilDeadline = getTimeUntilDeadline( task, hoursLeftToday, scopedHoursLeft, daysUntilDeadline, amountOfDaysInScope )
+		let daysUntilDeadline  = Math.min( maxDaysToPlan, daysUntilDeadline1 )
+		let timeUntilDeadline  = getTimeUntilDeadline( gaps_scope, task, hoursLeftToday, scopedHoursLeft, daysUntilDeadline, amountOfDaysInScope )
 		// display planningFactor as a percentage on the todo list
 
 		let planningFactor = timeUntilDeadline ? task.requiredTime / timeUntilDeadline : 1
@@ -1709,7 +1714,7 @@ function getDaysUntilDeadline() {
 
 }
 
-function getTimeUntilDeadline( task, hoursLeftToday, scopedHoursLeft, daysUntilDeadline, amountOfDaysInScope ) {
+function getTimeUntilDeadline( gaps_scope, task, hoursLeftToday, scopedHoursLeft, daysUntilDeadline, amountOfDaysInScope ) {
 	//time unit: milliseconds since epoch
 	let now   = Date.now()
 	let today = Math.ceil( now / millisecondsInDay )
@@ -1717,14 +1722,16 @@ function getTimeUntilDeadline( task, hoursLeftToday, scopedHoursLeft, daysUntilD
 	if (task.deadline <  now  ) {return}
 	// if (task.deadline <= today) {return getPlannedHours( now, deadline )}
 	//return getPlannedHoursUntilDeadlineToday(task.deadline)
-	if (task.deadline <= scope) {return getPlannedHours( now, deadline )}
+	if (task.deadline <= scope) {return getPlannedHours( gaps_scope, now, deadline )}
 	//return hoursLeftToday + getScopedHoursUntilDeadline(task.deadline)
-	return getPlannedHours( now, scope ) + getUnscopedHours( scope, deadline )
+	return getPlannedHours( gaps_scope, now, scope ) + getUnscopedHours( scope, deadline )
 	// return scopedHoursLeft + getUnscopedHoursUntilDeadline( scope, deadline )
 }
 
 function getUnscopedHours( date1, date2 ) {
-	
+	//averageUsefulTime =  take a look at the prepared array of time available in scope
+	averageUsefulTime = 0.1
+	return (date2 - date1) * averageUsefulTime
 }
 
 
