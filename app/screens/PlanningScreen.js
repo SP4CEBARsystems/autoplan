@@ -1889,6 +1889,11 @@ function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed,
 
 				//generateBreaks(plannedGaps)
 				let generatedBreaks = generateBreaks(gaps);
+				gaps_scope.forEach(element => {
+					let element2 = findGaps(element)
+					element2 = generateBreaks(element2)
+					return element2
+				});  
 
 				let plannedGaps = PlanOut2(gaps, generatedBreaks, todo_tasks, gaps_scope);
 				console.log("A4", plannedGaps);
