@@ -7,6 +7,7 @@ const millisecondsInDay = 86400000;
 export const PlanOut2 = (gaps, generatedBreaks, originalTasks, gaps_scope) => {
 	//this function looks like it needs to be broken up into smaller functions
     console.log("gaps_scope: ", gaps_scope)
+    //gaps for the gap scope need to be generated
 	let amountOfDaysInScope = 7
 	let timeAvailable = new Array(amountOfDaysInScope-1)
 	timeAvailable.forEach((element, index) => {
