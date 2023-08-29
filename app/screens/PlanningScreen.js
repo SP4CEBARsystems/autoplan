@@ -911,7 +911,7 @@ const ToDoScreen = ({ navigation }) => {
 							repeatOffset  : 0,
 							repeatOffsets : [],
 							id            : tasks.length,
-							zIndex        : 0
+							zIndex        : 0,
 						});
 
 						console.log("agenda push")
@@ -952,6 +952,11 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 	console.log("tasks task: ", tasks[taskId]);
 
 	if(taskId==0){agendaId=-1;}
+
+	if (task === undefined) {
+		console.log("undefined agenda event ", taskId);
+		return;
+	}
 
 	if (task.type == "agenda" || task.type == "break" ){
 		// ToDoListItem9 (tasks, taskId, task, setTasks, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef);
@@ -1555,55 +1560,6 @@ function generateBreaks(gaps) {
 	return generatedBreaks;
 }
 
-function getPlannedHours( gaps_scope, date1, date2 ) {
-	//load gaps from database under a new variable name
-	//dates in milliseconds
-	//dates in milliseconds
-	let day1 = dayOf( date1 )
-	let day2 = dayOf( date2 )
-	if ( day1 == day2 ) { return getPlannedHoursDay( gaps_scope[day1], date1, date2 ); }
-	let time = 0
-	time += getPlannedHoursDay( gaps_scope[day1], date1, endOfDay(day1) );
-	for (let day=day1+1; day<=day2-1; day++) {
-		time += getPlannedHoursDay( gaps_scope[day], startOfDay(day), endOfDay(day) );
-	}
-	time += getPlannedHoursDay( gaps_scope[day2], startOfDay(day2) , date2 );
-	return time
-}
-
-function dayOf( date ) {
-	return date / millisecondsInDay
-}
-
-function endOfDay( day ) {
-	return (day+1) * millisecondsInDay - 1
-}
-
-function startOfDay( day ) {
-	return day * millisecondsInDay
-}
-
-function getPlannedHoursDay( gaps, date1, date2 ) {
-	//dates in milliseconds since epoch
-	// let time = 0;
-	return gaps.filter( gap => gap.startTime >= date1 && gap.startTime+gap.duration <= date2 )
-		// .forEach( gap => time += gap.duration );
-		.reduce((accumulator, gap) => accumulator + gap.duration, 0);
-
-	// let index1 = gaps.indexOf( gaps.find( (gap) => gap.startTime >= date1 ) );
-	// let index2 = gaps.indexOf( gaps.find( (gap) => gap.startTime + gap.duration >= date2 ) );
-	// for (i = index1; i<=index2; i++) {
-
-	// }
-	// return time;
-}
-
-// function getPlannedHoursFullDay( gaps, date1, date2 ) {
-// 	//dates in milliseconds
-// 	let time = 0
-
-// 	return time
-// }
 
 //load planning, load agenda -> view planning 
 //  - on modify -> modify agenda -> update planning
@@ -1860,13 +1816,13 @@ function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed)
 				console.log("A3", gaps);
 
 				//disable this for testing purposes \V/
-				// let plannedGaps = PlanOut(gaps, todo_tasks);
+				let plannedGaps = PlanOut(gaps, todo_tasks);
 				// console.log("A4", plannedGaps);
 
 				//generateBreaks(plannedGaps)
 				let generatedBreaks = generateBreaks(gaps);
 
-				let plannedGaps = PlanOut2(gaps, generatedBreaks, todo_tasks);
+				// let plannedGaps = PlanOut2(gaps, generatedBreaks, todo_tasks);
 				console.log("A4", plannedGaps);
 
 				planning    = tasks;
@@ -2006,7 +1962,10 @@ function actuallySaveTheData(tasks, ref){
 	//updateDoc
 	
 	console.log("savingData", tasks)
-	setDoc(ref, {tasks: tasks})
+	setDoc(ref, {
+		tasks : tasks, 
+		day   : loadedDay
+	})
 	.catch((e) => {
 		console.log(e)
 		//throw e;
