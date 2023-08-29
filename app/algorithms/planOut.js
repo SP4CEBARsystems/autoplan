@@ -1,39 +1,37 @@
 
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { auth, firestore } from "../../firebase";
-
-
+// import { collection, query, where, getDocs } from "firebase/firestore";
+// import { auth, firestore } from "../../firebase";
 
 const millisecondsInDay = 86400000;
 
-export const PlanOut2 = (gaps, generatedBreaks, originalTasks) => {
+export const PlanOut2 = (gaps, generatedBreaks, originalTasks, gaps_scope) => {
 	//this function looks like it needs to be broken up into smaller functions
+    console.log("gaps_scope: ", gaps_scope)
 	let amountOfDaysInScope = 7
 	let timeAvailable = new Array(amountOfDaysInScope-1)
 	timeAvailable.forEach((element, index) => {
 		element = getTimeAvailable(index)
 	});
 
-	let gaps_scope = []
     //new Array(7)
 
-    const q = query(collection(firestore, "Planning"), where("day", "==", 0));
+    // const q = query(collection(firestore, "Planning"), where("day", "==", 0));
     // const querySnapshot = await getDocs(q);
     // querySnapshot.forEach((doc) => {
     //     // doc.data() is never undefined for query doc snapshots
     //     console.log(doc.id, " => ", doc.data());
     // });
 
-    getDocs(q).then((doc) => {
-		// setTasks(doc.data().tasks);
-		// setSync(true);
-	}).catch((e) => {
-		console.log(e);
-		//throw e;
-		//alert(error.message);
-	});
+    // getDocs(q).then((doc) => {
+	// 	// setTasks(doc.data().tasks);
+	// 	// setSync(true);
+	// }).catch((e) => {
+	// 	console.log(e);
+	// 	//throw e;
+	// 	//alert(error.message);
+	// });
 
-    if (gaps_scope.length<=0){return;}
+    if (gaps_scope.length<=0) {return;}
 
     // console.log([12, 5, 8, 130, 44].filter(value => value >= 10));
 

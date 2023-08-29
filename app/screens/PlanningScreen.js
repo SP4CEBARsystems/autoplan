@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, Component } from 'react';
 import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput, Animated, PanResponder } from 'react-native';
 //import { Box, FlatList, Center, NativeBaseProvider} from "native-base";
 // import { doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore"; 
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, query, where, getDocs  } from 'firebase/firestore';
 import { auth, firestore } from "../../firebase";
 //import { firestore, auth } from "/config/firebase"
 
@@ -47,7 +47,7 @@ function fetchData (setTasks, setSync, ref) {
 	});
 }
 
-function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, dayIndicators, setReload, setPlanning, sync, setSync, ref, docRef) {
+function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, dayIndicators, setReload, setPlanning, sync, setSync, ref, docRef, gaps_scope) {
 	console.log("fetchdata3");
 	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
 	//don't add a semicolon ";" after "getDoc()", Don't do that
@@ -79,7 +79,7 @@ function fetchData3 (dayOffset, planning, setTasks, displayed, setDisplayed, day
 			setDisplayed(planning);
 			setSync(true);
 			console.log("fetchdata3 No such document!");
-			saveData2(planning, true, setReload, setPlanning, setDisplayed);
+			saveData2(planning, true, setReload, setPlanning, setDisplayed, gaps_scope);
 		} else {
 			console.log("fetchdata3 success2 Document data:", doc.data());
 			let newPlanning = data ? data.tasks : [];
@@ -216,7 +216,12 @@ let indexTablePlanning    = [];
 // let amountOfDaysLoaded    = 0;
 let dayOffset             = 0;
 
-const fetchMore = (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore) => {
+const generateNewDay = (day) => {
+	console.log("generating day: ", day)
+	return []
+}
+
+const fetchMore = (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope) => {
 	console.log("fetchMore");
 	//get js date in milliseconds
 	//multiply it by 1/86400000
@@ -247,7 +252,54 @@ const fetchMore = (setReload, planning, setPlanning, tasks, setTasks, plannedGap
 	console.log("dayIndicators 4", dayIndicators);
 	// var docRef = firestore.collection(editPreset ? "Planning preset" : "Planning").doc(documentName);
 	var docRef = 0
-	fetchData3 (dayOffset, planning   , setPlanning   , displayed, setDisplayed, dayIndicators, setReload, setPlanning, sync, setSync, doc(firestore, editPreset ? "Planning presets" : "Planning"   , documentName), docRef);
+	fetchData3 (dayOffset, planning, setPlanning, displayed, setDisplayed, dayIndicators, setReload, setPlanning, sync, setSync, doc(firestore, editPreset ? "Planning presets" : "Planning"   , documentName), docRef, gaps_scope);
+	
+	//loadedDay and currentDay
+	
+	let amountOfDaysInScope = 7
+    const q = query(collection(firestore, "Planning"), where("day", ">=", currentDay), where("day", "<=", currentDay + amountOfDaysInScope));
+
+    getDocs(q).then((docArray) => {
+		// setTasks(doc.data().tasks);
+		let Gaps_scope = docArray
+		let Gaps_scopeReturn = [7]
+		let day2 = currentDay
+		let j = 0;
+		for (let i = 0; i < 7; i++) {
+			let doc   = docArray[j];
+			let day   = currentDay + i;
+			let fileDay = doc.data().day;
+			if (fileDay == day) {
+				Gaps_scopeReturn[i] = doc.data().tasks;
+				j++;
+			} else {
+				Gaps_scopeReturn[i] = generateNewDay(day);
+			}
+		}
+		// Gaps_scope.forEach(doc => {
+		// 	let tasks = doc.data().tasks
+		// 	// let day   = doc.data().day
+		// 	// if (day2 != day) {
+		// 		for (
+		// 			let day = doc.data().day; 
+		// 			day < (currentDay + index); 
+		// 			day++
+		// 		) {
+		// 			generateNewDay(day);
+		// 		}
+		// 	// }
+		// 	// (currentDay + index) - day
+		// 	return tasks;
+		// });
+		setGaps_scope(Gaps_scope)
+		// setSync(true);
+	}).catch((e) => {
+		console.log(e);
+		//throw e;
+		//alert(error.message);
+	});
+
+	
 	// fetchData5 (dayOffset, tasks      , setTasks      , setSync, doc(firestore, "Agenda"     , documentName));
 	// fetchData4 (dayOffset, plannedGaps, setPlannedGaps, setSync, doc(firestore, "PlannedGaps", documentName));
 	// fetchData4 (dayOffset, gaps       , setGaps       , setSync, doc(firestore, "Gaps"       , documentName));
@@ -410,6 +462,11 @@ const setPlannedGaps = (plannedGaps) => {
 	globalPlannedGaps = plannedGaps
 }
 
+let globalSetGaps_scope = 0;
+const setGaps_scope = (gaps_scope) => {
+	globalSetGaps_scope = gaps_scope
+}
+
 const dayOfWeekString = (day) => {
 	switch(day){
 		case 0:
@@ -522,6 +579,8 @@ const ToDoScreen = ({ navigation }) => {
 			animated: false,
 			offset: scrollOffsetY
 		})
+		
+		let gaps_scope = [];
 		// fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
 		// fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
 		// fetchData (setGaps       , setSync, doc(firestore, "Gaps"       , "TestDay"));
@@ -530,7 +589,7 @@ const ToDoScreen = ({ navigation }) => {
 		// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
 		// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
 		// updateData(modified , setModified, sync, tasks);
-		fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
+		fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope);
 
 		if (pendingFetch) {
 			// fetchMore (planning, setPlanning, setSync, firestore);
@@ -596,6 +655,7 @@ const ToDoScreen = ({ navigation }) => {
 	// 	startTime: 0
 	// });
 
+
 	console.log("copiedPlanning: ", copiedPlanning, copiedPlanning==[]);
 	return (
 		<View style={styles.background}>
@@ -608,7 +668,7 @@ const ToDoScreen = ({ navigation }) => {
 							if (editPreset && dayOffset<0) {dayOffset=6}
 							currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 							// loadedDate = new Date(loadedDay*millisecondsInDay)
-							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope);
 						}}>
 							<Text style={styles.counterText}>
 								previous
@@ -627,7 +687,7 @@ const ToDoScreen = ({ navigation }) => {
 							if (editPreset && dayOffset>6) {dayOffset=0}
 							currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 							// loadedDate = new Date(loadedDay*millisecondsInDay)
-							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope);
 						}}>
 							<Text style={styles.counterText}>
 								next
@@ -644,7 +704,7 @@ const ToDoScreen = ({ navigation }) => {
 								offset: scrollOffsetY
 							})
 							editPreset = false
-							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope);
 						}}>
 							<Text style={styles.counterText}>
 								now
@@ -652,7 +712,7 @@ const ToDoScreen = ({ navigation }) => {
 						</TouchableOpacity>
 						<TouchableOpacity style={styles.counterButton} onPress={() => {
 							editPreset = !editPreset
-							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore);
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope);
 						}}>
 							<Text style={styles.counterText}>
 								presets
@@ -672,7 +732,7 @@ const ToDoScreen = ({ navigation }) => {
 								if (pasteAreYouSure) {
 									console.log("copiedPlanning paste: ", copiedPlanning)
 									setDisplayed(copiedPlanning);
-									saveData2(copiedPlanning, sync, setReload, setPlanning, setDisplayed)
+									saveData2(copiedPlanning, sync, setReload, setPlanning, setDisplayed, gaps_scope)
 								} else {
 									console.log("copiedPlanning warning")
 									setTimeout(() => {
@@ -833,6 +893,7 @@ const ToDoScreen = ({ navigation }) => {
 							setAgenda=       {setTasks}
 							setPlanning=     {setPlanning}
 							dayIndicators=   {dayIndicators}
+							gaps_scope=      {gaps_scope}
 							// tasks=           {tasks}C
 							// setTasks=        {setTasks}C
 							// setDisplayed=    {setDisplayed}C
@@ -920,7 +981,7 @@ const ToDoScreen = ({ navigation }) => {
 						// 	animated: false,
 						// 	offset: scrollOffsetY
 						// })
-						saveData2(planning, sync, setReload, setPlanning, setDisplayed)
+						saveData2(planning, sync, setReload, setPlanning, setDisplayed, gaps_scope)
 					}}>
 						<Text style={styles.plusText}>
 							+
@@ -937,7 +998,7 @@ const ToDoScreen = ({ navigation }) => {
 	);
 }
 
-const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda, setPlanning, dayIndicators}) => {
+const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setReload, setGaps, setReplan, setPlannedGaps, setUnlockScroll, sync, setScrollOffset, flatListRef, agenda, setAgenda, setPlanning, dayIndicators, gaps_scope}) => {
 	//add buttons to increment and decrement the values
 	//offset the scrolling to counter the starttime change when such a button is tapped
 	//saveAgendaTimes(pan.x._offset, pan.y._offset, taskId, setTasks, setGaps, setReload, setPlannedGaps);
@@ -1067,7 +1128,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					// } else {
 					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					// }
-					saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
+					saveData2(tasks, sync, setReload, setPlanning, setDisplayed, gaps_scope)
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -1090,7 +1151,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 							// } else {
 							// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 							// }
-							saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
+							saveData2(tasks, sync, setReload, setPlanning, setDisplayed, gaps_scope)
 						}}
 					/>
 				</View>
@@ -1124,7 +1185,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					// } else {
 					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					// }
-					saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
+					saveData2(tasks, sync, setReload, setPlanning, setDisplayed, gaps_scope)
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -1143,7 +1204,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					// } else {
 					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					// }
-					saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
+					saveData2(tasks, sync, setReload, setPlanning, setDisplayed, gaps_scope)
 				}}>
 					<Text style={styles.counterText}>
 						+
@@ -1168,7 +1229,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 							// } else {
 							// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 							// }
-							saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
+							saveData2(tasks, sync, setReload, setPlanning, setDisplayed, gaps_scope)
 						}}
 					/>
 				</View>
@@ -1184,7 +1245,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					// } else {
 					// 	console.log("ERROR invalid agenda ID", agendaId, "of", agenda.length)
 					// }
-					saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
+					saveData2(tasks, sync, setReload, setPlanning, setDisplayed, gaps_scope)
 				}}>
 					<Text style={styles.counterText}>
 						-
@@ -1225,7 +1286,7 @@ const ToDoListItem9 = ({tasks3, setDisplayed, taskId2, task3, setModified, setRe
 					setReplan(true);
 					// globalAgenda.splice(agendaId, 1);
 					agenda.splice(agendaId, 1);
-					saveData2(tasks, sync, setReload, setPlanning, setDisplayed)
+					saveData2(tasks, sync, setReload, setPlanning, setDisplayed, gaps_scope)
 				}}/>
 			</View>
 		</View>
@@ -1792,11 +1853,12 @@ const extractAgenda = (originalPlanning) => {
 	return tasks;
 }
 
-function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed){
+function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed, gaps_scope){
 // function saveData(tasks){
 	// console.log("ready to write");
 	// console.log("sync  check 2: ",sync);
 	// console.log("sync2 check 2: ",sync2);
+
 	
 	if(sync){
 		// console.log("written");
@@ -1828,10 +1890,10 @@ function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed)
 				//generateBreaks(plannedGaps)
 				let generatedBreaks = generateBreaks(gaps);
 
-				let plannedGaps = PlanOut2(gaps, generatedBreaks, todo_tasks);
+				let plannedGaps = PlanOut2(gaps, generatedBreaks, todo_tasks, gaps_scope);
 				console.log("A4", plannedGaps);
 
-				planning    = tasks;
+				planning = tasks;
 				//disable this for testing purposes \V/
 				planning = planning.concat(plannedGaps).concat(generatedBreaks);
 				console.log("A5", planning);
@@ -1986,7 +2048,7 @@ function actuallySaveTheData(tasks, ref){
 	});
 }
 
-function removeUndefined(data) {
+function removeUndefined (data) {
 	data = data.filter(function (element) {
 		return element !== undefined;
 	});
