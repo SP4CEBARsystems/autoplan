@@ -1782,7 +1782,13 @@ function saveData(tasks, sync){
 
 const extractAgenda = (originalPlanning) => {
 	let tasks = [];
-	originalPlanning.forEach(element => {if(element.type == "agenda" || element.type == "break"){tasks.push(element)}})
+	originalPlanning.forEach((element, index) => {
+		if ( element === undefined ) { 
+			console.log("undefined agenda event entered the agenda extractor, at index: ", index);
+			return; 
+		}
+		if ( element.type == "agenda" || element.type == "break" ) { tasks.push(element) }
+	})
 	return tasks;
 }
 
@@ -1816,13 +1822,13 @@ function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed)
 				console.log("A3", gaps);
 
 				//disable this for testing purposes \V/
-				let plannedGaps = PlanOut(gaps, todo_tasks);
+				// let plannedGaps = PlanOut(gaps, todo_tasks);
 				// console.log("A4", plannedGaps);
 
 				//generateBreaks(plannedGaps)
 				let generatedBreaks = generateBreaks(gaps);
 
-				// let plannedGaps = PlanOut2(gaps, generatedBreaks, todo_tasks);
+				let plannedGaps = PlanOut2(gaps, generatedBreaks, todo_tasks);
 				console.log("A4", plannedGaps);
 
 				planning    = tasks;
@@ -1961,7 +1967,14 @@ function saveData2(originalPlanning, sync, setReload, setPlanning, setDisplayed)
 function actuallySaveTheData(tasks, ref){
 	//updateDoc
 	
-	console.log("savingData", tasks)
+	console.log("savingData: ", loadedDay, tasks)
+	if (tasks === undefined || loadedDay === undefined) {
+		console.log("can't save data: loaded day = ", loadedDay, ", tasks = ", tasks )
+		return;
+	}
+
+	tasks = removeUndefined(tasks);
+
 	setDoc(ref, {
 		tasks : tasks, 
 		day   : loadedDay
@@ -1971,6 +1984,13 @@ function actuallySaveTheData(tasks, ref){
 		//throw e;
 		//alert(error.message);
 	});
+}
+
+function removeUndefined(data) {
+	data = data.filter(function (element) {
+		return element !== undefined;
+	});
+	return data;
 }
 
 function updateData (modified, setModified, replan, setReplan, sync, tasks, setTasks, setGaps, setReload, setPlannedGaps, setPlanning, setDisplayed, dayIndicators) {
