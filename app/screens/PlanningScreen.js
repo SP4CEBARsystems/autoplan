@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef, Component } from 'react';
 import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput, Animated, PanResponder } from 'react-native';
 //import { Box, FlatList, Center, NativeBaseProvider} from "native-base";
 // import { doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore"; 
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, query, where, getDocs  } from 'firebase/firestore';
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { auth, firestore } from "../../firebase";
 //import { firestore, auth } from "/config/firebase"
 
 //panresponder's animated variables are prepared and defined too early so that the data is still a placeholder
-import { query, orderBy, limit } from "firebase/firestore";  
+// import { query, } from "firebase/firestore";  //this line (duplicate import) causes the module build to crash
 
 import { todo_tasks } from "./ToDoScreen"
 import { PlanOut2   } from "../algorithms/planOut"
@@ -261,8 +261,8 @@ const fetchMore = (setReload, planning, setPlanning, tasks, setTasks, plannedGap
 
     getDocs(q).then((docArray) => {
 		// setTasks(doc.data().tasks);
-		let Gaps_scope = docArray
-		let Gaps_scopeReturn = [7]
+		gaps_scope = docArray
+		let gaps_scopeReturn = [7]
 		let day2 = currentDay
 		let j = 0;
 		for (let i = 0; i < 7; i++) {
@@ -270,13 +270,13 @@ const fetchMore = (setReload, planning, setPlanning, tasks, setTasks, plannedGap
 			let day   = currentDay + i;
 			let fileDay = doc.data().day;
 			if (fileDay == day) {
-				Gaps_scopeReturn[i] = doc.data().tasks;
+				gaps_scopeReturn[i] = doc.data().tasks;
 				j++;
 			} else {
-				Gaps_scopeReturn[i] = generateNewDay(day);
+				gaps_scopeReturn[i] = generateNewDay(day);
 			}
 		}
-		// Gaps_scope.forEach(doc => {
+		// gaps_scope.forEach(doc => {
 		// 	let tasks = doc.data().tasks
 		// 	// let day   = doc.data().day
 		// 	// if (day2 != day) {
@@ -291,7 +291,7 @@ const fetchMore = (setReload, planning, setPlanning, tasks, setTasks, plannedGap
 		// 	// (currentDay + index) - day
 		// 	return tasks;
 		// });
-		setGaps_scope(Gaps_scope)
+		setGaps_scope(gaps_scope)
 		// setSync(true);
 	}).catch((e) => {
 		console.log(e);
@@ -573,6 +573,8 @@ const ToDoScreen = ({ navigation }) => {
 	
 	let cursorLine = 100
 	
+	let gaps_scope = []
+	
 	useEffect(() => {
 		scrollOffsetY = minutesToday * timeScaleFactor - cursorLine
 		flatListRef.current.scrollToOffset({
@@ -580,7 +582,7 @@ const ToDoScreen = ({ navigation }) => {
 			offset: scrollOffsetY
 		})
 		
-		let gaps_scope = [];
+		// let gaps_scope = [];
 		// fetchData (setTasks      , setSync, doc(firestore, "Agenda"     , "TestDay"));
 		// fetchData (setPlannedGaps, setSync, doc(firestore, "PlannedGaps", "TestDay"));
 		// fetchData (setGaps       , setSync, doc(firestore, "Gaps"       , "TestDay"));
