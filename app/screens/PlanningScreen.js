@@ -258,23 +258,47 @@ const fetchMore = (setReload, planning, setPlanning, tasks, setTasks, plannedGap
 	
 	let amountOfDaysInScope = 7
     const q = query(collection(firestore, "Planning"), where("day", ">=", currentDay), where("day", "<=", currentDay + amountOfDaysInScope));
-
+	
+	console.log("requestingToAdd DayToScope")
     getDocs(q).then((docArray) => {
+		console.log("readyToAdd DayToScope")
 		// setTasks(doc.data().tasks);
 		gaps_scope = docArray
 		let gaps_scopeReturn = [7]
 		let day2 = currentDay
 		let j = 0;
 		for (let i = 0; i < 7; i++) {
+			console.log("loopToAdd DayToScope: ", i, j)
 			let doc   = docArray[j];
+			console.log("DayToScope2: ", doc)
 			let day   = currentDay + i;
-			let fileDay = doc.data().day;
-			if (fileDay == day) {
-				gaps_scopeReturn[i] = doc.data().tasks;
-				j++;
-			} else {
+			console.log("DayToScope3: ", day)
+			console.log("DayToScope is undefined: ", doc!==undefined)
+
+			if (doc===undefined) {
+				console.log("DayToScope undefined")
+				// console.log("DayToScope4: ", data)
 				gaps_scopeReturn[i] = generateNewDay(day);
-			}
+				console.log("generateDayToScopeAA: ", i, j, day, gaps_scopeReturn[i])
+			} else {
+				console.log("DayToScope defined")
+				let data  = doc.data()
+				if(data.day != day){
+					gaps_scopeReturn[i] = generateNewDay(day);
+					console.log("generateDayToScopeAA: ", i, j, fileDay, day, gaps_scopeReturn[i])
+				} else {
+					gaps_scopeReturn[i] = doc.data().tasks;
+					console.log("loadDayToScopeAA: ", i, j, day, gaps_scopeReturn[i])
+					j++;
+				}
+			} 
+
+			// let fileDay = data.day;
+			// console.log("DayToScope5: ", fileDay)
+			// console.log("loopToAdd DayToScope4: ", day, fileDay)
+			// if (fileDay == day) {
+			// } else {
+			// }
 		}
 		// gaps_scope.forEach(doc => {
 		// 	let tasks = doc.data().tasks
