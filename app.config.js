@@ -25,7 +25,8 @@ export default {
       "adaptiveIcon": {
         "foregroundImage": "./app/assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.plannedOut"
     },
     "web": {
       "favicon": "./app/assets/favicon.png"
