@@ -12,5 +12,5 @@ A feature-rich productivity tool written in react native. It will generate a pla
     ```
 3.
     ```sh
-    npx run dev
+    npx expo start
     ```
