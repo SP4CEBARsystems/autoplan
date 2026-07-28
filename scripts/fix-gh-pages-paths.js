@@ -46,26 +46,4 @@ function rewriteFile(filePath) {
 rewriteFile('index.html');
 rewriteFile('manifest.json');
 
-const assetsDir = path.join(buildDir, 'static');
-if (fs.existsSync(assetsDir)) {
-  const files = [];
-  const walk = (dir) => {
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        walk(full);
-      } else {
-        files.push(full);
-      }
-    }
-  };
-  walk(assetsDir);
-
-  for (const filePath of files) {
-    const content = fs.readFileSync(filePath, 'utf8');
-    const updated = rewriteRootPathValues(content.replace(/\\/g, '/'));
-    fs.writeFileSync(filePath, updated);
-  }
-}
-
 console.log(`Updated web build paths to use ${normalizedBasePath}`);
