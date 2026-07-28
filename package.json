@@ -19,6 +19,7 @@
     "expo-dev-client": "~2.0.1",
     "expo-status-bar": "~1.4.2",
     "firebase": "^9.17.1",
+    "graphql": "^15.8.0",
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-native": "0.70.8",
@@ -27,7 +28,17 @@
     "react-native-web": "~0.18.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.3"
+    "@babel/core": "^7.19.3",
+    "babel-loader": "^8.2.5",
+    "webpack": "^4.47.0"
   },
-  "private": true
+  "overrides": {
+    "@expo/webpack-config": {
+      "babel-loader": "^8.3.0"
+    }
+  },
+  "private": true,
+  "volta": {
+    "node": "18.20.8"
+  }
 }
