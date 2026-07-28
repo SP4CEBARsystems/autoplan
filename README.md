@@ -1,5 +1,5 @@
 # AutoPlan
-A feature-rich productivity tool written in react native. It will generate a planning based on your todo list.
+A feature-rich productivity tool written in react native. It will generate a planning based on your todo list. It has a todo list, agenda, and focus timer page.
 
 ## How To Run
 1.
