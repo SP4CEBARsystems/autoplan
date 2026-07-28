@@ -162,7 +162,7 @@ const generateNewDay = (day) => {
 	return []
 }
 
-const fetchMore = (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope) => {
+const fetchMore = (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, gaps_scope) => {
 	console.log("fetchMore");
 	//get js date in milliseconds
 	//multiply it by 1/86400000
@@ -516,7 +516,7 @@ const ToDoScreen = ({ navigation }) => {
 		// fetchData (setTasks , setSync, doc(firestore, "Planning"   , "TestDay"    ));
 		// fetchData (setTasks , setSync, doc(firestore, "ToDo"       , "activeTasks"));
 		// updateData(modified , setModified, sync, tasks);
-		fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope);
+		fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, gaps_scope);
 
 		if (pendingFetch) {
 			// fetchMore (planning, setPlanning, setSync, firestore);
@@ -595,7 +595,7 @@ const ToDoScreen = ({ navigation }) => {
 							if (editPreset && dayOffset<0) {dayOffset=6}
 							currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 							// loadedDate = new Date(loadedDay*millisecondsInDay)
-							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope);
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, gaps_scope);
 						}}>
 							<Text style={styles.counterText}>
 								previous
@@ -614,7 +614,7 @@ const ToDoScreen = ({ navigation }) => {
 							if (editPreset && dayOffset>6) {dayOffset=0}
 							currentDay   = Math.floor(milliSeconds * millisecondsToDay) + dayOffset;
 							// loadedDate = new Date(loadedDay*millisecondsInDay)
-							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope);
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, gaps_scope);
 						}}>
 							<Text style={styles.counterText}>
 								next
@@ -631,7 +631,7 @@ const ToDoScreen = ({ navigation }) => {
 								offset: scrollOffsetY
 							})
 							editPreset = false
-							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope);
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, gaps_scope);
 						}}>
 							<Text style={styles.counterText}>
 								now
@@ -639,7 +639,7 @@ const ToDoScreen = ({ navigation }) => {
 						</TouchableOpacity>
 						<TouchableOpacity style={styles.counterButton} onPress={() => {
 							editPreset = !editPreset
-							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, firestore, gaps_scope);
+							fetchMore (setReload, planning, setPlanning, tasks, setTasks, plannedGaps, setPlannedGaps, gaps , setGaps, displayed, setDisplayed, dayIndicators, setDayIndicators, sync, setSync, gaps_scope);
 						}}>
 							<Text style={styles.counterText}>
 								presets
