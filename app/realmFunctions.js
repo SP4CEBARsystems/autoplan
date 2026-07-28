@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import Realm from 'realm';
+// import Realm from 'realm';
 // import {createRealmContext} from '@realm/react';
 
 // // Define your object model (I think it's like a struct)
