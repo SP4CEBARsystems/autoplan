@@ -4,8 +4,7 @@
 
 import React, { useState, useEffect, useRef, Component } from 'react';
 import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput, Animated, PanResponder, Dimensions } from 'react-native';
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { auth, firestore } from "../../firebase";
+import { loadPlanningDoc, savePlanningDoc } from "../storage";
 // import {Dimensions} from 'react-native';
 
 //import { Box, FlatList, Center, NativeBaseProvider} from "native-base";
@@ -121,20 +120,15 @@ function findCurrentEvent(tasks, timeMinutes, guess) {
 
 
 
-function fetchData3 (setTasks, ref, setTimeV, setStr, setBreakTimer, setEventTimer, setEventName) {
+function fetchData3 (setTasks, documentName, setTimeV, setStr, setBreakTimer, setEventTimer, setEventName) {
 	console.log("fetchdata3");
-	// const AgendaQuery = query(Planning, orderBy("startTime"), limit(10000));
-	//don't add a semicolon ";" after "getDoc()", Don't do that
-	getDoc(ref).then((doc) => {
-		console.log("doc");
-		let data = doc.data();
-		let planning = data ? data.tasks : [];
+	loadPlanningDoc(documentName).then((doc) => {
+		let planning = doc ? doc.tasks : [];
 		console.log("planning", planning)
 		setTasks(planning);
 		initInterval(planning, setTimeV, setStr, setBreakTimer, setEventTimer, setEventName);
 	}).catch((e) => {
-		throw e;
-		// alert(error.message);
+		console.log(e);
 	});
 }
 
@@ -183,7 +177,7 @@ const FocusScreen = ({ navigation }) => {
 	// let globalTasks = tasks;
 
 	useEffect(() => {
-		fetchData3 (setTasks, doc(firestore, "Planning", "Day"+Math.floor(Date.now()/milliSecondsPerDay)), setTimeV, setStr, setBreakTimer, setEventTimer, setEventName);
+		fetchData3 (setTasks, "Day"+Math.floor(Date.now()/milliSecondsPerDay), setTimeV, setStr, setBreakTimer, setEventTimer, setEventName);
 	}, []);
 
 	// let scrollValue = -(timeV - 34459300)*0.001;
@@ -418,11 +412,8 @@ function saveData(tasks, sync){
 	
 	if(sync){
 		// console.log("written");
-		updateDoc(doc(firestore, "Planning", "TestDay"), {tasks: tasks})
-		.catch((e) => {
+		savePlanningDoc("TestDay", { tasks: tasks, day: Math.floor(Date.now() / milliSecondsPerDay) }).catch((e) => {
 			console.log(e)
-			//throw e;
-			//alert(error.message);
 		});
 	}
 }

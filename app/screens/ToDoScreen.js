@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ImageBackground, StyleSheet, View , Text, FlatList, TouchableOpacity, SafeAreaView, ScrollView, Button, TextInput} from 'react-native';
 //import { Box, FlatList, Center, NativeBaseProvider} from "native-base";
 // import { doc, setDoc, updateDoc, arrayUnion } from "firebase/firestore"; 
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { auth, firestore } from "../../firebase";
+import { loadToDoTasks, saveToDoTasks } from "../storage";
 //import { firestore, auth } from "/config/firebase"
 
 export let todo_tasks
@@ -596,20 +595,13 @@ function maxDaysThisMonth(month, year) {
 
 function fetchData (setTasks, setSync) {
 	useEffect(() => {
-		getDoc(doc(firestore, "ToDo", "activeTasks"))
-		.then((doc) => {
-			let data = doc.data()
-			// data.forEach(element => {
-			// 	element.deadline = new Date(element.deadline);
-			// });
-			setTasks(data.tasks);
+		loadToDoTasks()
+		.then((tasksLoaded) => {
+			setTasks(tasksLoaded || []);
 			setSync(true);
-			// nextElementKey = tasks.length
 		})
 		.catch((e) => {
 			console.log(e);
-			//throw e;
-			//alert(error.message);
 		});
 	},[]);
 }
@@ -618,16 +610,9 @@ function updateData (modified, setModified, sync, tasks) {
 	if(modified){
 		setModified(false);
 		if(sync){
-			let data = tasks
-			// data.forEach(element => {
-			// 	element.deadline = element.deadline.getTime();
-			// });
-			updateDoc(doc(firestore, "ToDo", "activeTasks"), {tasks: data})
-			.catch((e) => {
-				console.log(e)
-				//throw e;
-				//alert(error.message);
-			});
+			let data = tasks;
+			// persist locally
+			saveToDoTasks(data).catch(e => console.log(e));
 		}
 	}
 }
