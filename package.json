@@ -2,11 +2,15 @@
   "name": "autoplan",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
+  "homepage": "https://sp4cebar.com/autoplan",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "build:web": "expo export:web && node ./scripts/fix-gh-pages-paths.js",
+    "predeploy": "npm run build:web",
+    "deploy": "gh-pages -d web-build",
     "eject": "expo eject"
   },
   "dependencies": {
@@ -30,7 +34,8 @@
   "devDependencies": {
     "@babel/core": "^7.19.3",
     "babel-loader": "^8.2.5",
-    "webpack": "^4.47.0"
+    "webpack": "^4.47.0",
+    "gh-pages": "^6.3.0"
   },
   "overrides": {
     "@expo/webpack-config": {
