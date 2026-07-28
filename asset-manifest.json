@@ -1,0 +1,22 @@
+{
+  "files": {
+    "app.js": "/autoplan/static/js/app.dbe61822.chunk.js",
+    "app.js.map": "/autoplan/static/js/app.dbe61822.chunk.js.map",
+    "runtime~app.js": "/autoplan/static/js/runtime~app.bb2a5f40.js",
+    "runtime~app.js.map": "/autoplan/static/js/runtime~app.bb2a5f40.js.map",
+    "static/js/2.3dd9e5d5.chunk.js": "/autoplan/static/js/2.3dd9e5d5.chunk.js",
+    "static/js/2.3dd9e5d5.chunk.js.map": "/autoplan/static/js/2.3dd9e5d5.chunk.js.map",
+    "favicon-16.png": "/autoplan/favicon-16.png",
+    "favicon-32.png": "/autoplan/favicon-32.png",
+    "favicon.ico": "/autoplan/favicon.ico",
+    "index.html": "/autoplan/index.html",
+    "manifest.json": "/autoplan/manifest.json",
+    "serve.json": "/autoplan/serve.json",
+    "static/js/2.3dd9e5d5.chunk.js.LICENSE.txt": "/autoplan/static/js/2.3dd9e5d5.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime~app.bb2a5f40.js",
+    "static/js/2.3dd9e5d5.chunk.js",
+    "static/js/app.dbe61822.chunk.js"
+  ]
+}
